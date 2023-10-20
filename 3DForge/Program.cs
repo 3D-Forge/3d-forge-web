@@ -1,5 +1,11 @@
 using Backend3DForge.Services.Email;
 
+#if STORAGE_TYPE_FILESYSTEM
+using Backend3DForge.Services.FileStorage.FileSystem;
+#else
+using Backend3DForge.Services.FileStorage.FTP;
+#endif
+
 namespace Backend3DForge
 {
     public class Program
@@ -20,6 +26,31 @@ namespace Backend3DForge
                 e.Port = int.Parse(builder.Configuration["Services:Email:Port"]);
                 e.EmailTemplatesFoulder = builder.Configuration["Services:Email:EmailTemplatesFoulder"];
             });
+
+
+#if STORAGE_TYPE_FILESYSTEM
+            // Register File Storage Service
+            builder.Services.AddFSFileStorage(o =>
+            {
+                o.AvatarStoragePath = builder.Configuration["Services:FileSystem:AvatarStoragePath"];
+                o.PathToFilesToPrint = builder.Configuration["Services:FileSystem:PathToFilesToPrint"];
+                o.PathToPreviewFiles = builder.Configuration["Services:FileSystem:PathToPreviewFiles"];
+            });
+#else
+
+            builder.Services.AddFTPFileStorage(o =>
+            {
+                o.Host = builder.Configuration["Services:FTP:Host"];
+                o.Port = int.Parse(builder.Configuration["Services:FTP:Port"]);
+                o.Username = builder.Configuration["Services:FTP:Username"];
+                o.Password = builder.Configuration["Services:FTP:Password"];
+                o.SFTP = bool.Parse(builder.Configuration["Services:FTP:SFTP"]);
+
+                o.AvatarStoragePath = builder.Configuration["Services:FileSystem:AvatarStoragePath"];
+                o.PathToFilesToPrint = builder.Configuration["Services:FileSystem:PathToFilesToPrint"];
+                o.PathToPreviewFiles = builder.Configuration["Services:FileSystem:PathToPreviewFiles"];
+            });
+#endif
 
             var app = builder.Build();
 
