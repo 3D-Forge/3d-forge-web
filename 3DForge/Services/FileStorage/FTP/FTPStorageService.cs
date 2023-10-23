@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Backend3DForge.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Net;
@@ -49,7 +50,7 @@ namespace Backend3DForge.Services.FileStorage.FTP
             return response.GetResponseStream();
         }
 
-        public async Task UploadFileAsync(string filename, Stream fileStream, int fileSize = -1)
+        public async Task UploadFileAsync(string filename, Stream fileStream, long fileSize = -1)
         {
             if (fileStream == null)
             {
@@ -159,6 +160,19 @@ namespace Backend3DForge.Services.FileStorage.FTP
                     .TrimEnd('/');
             }
             return path.Replace("\\", "/");
+        }
+
+        public Task<Stream> DownloadAvatarAsync(User user)
+        {
+            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png");
+        }
+
+        public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png",
+                fileStream: fileStream,
+                fileSize: fileSize);
         }
     }
 }

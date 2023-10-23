@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Backend3DForge.Models;
+using Microsoft.Extensions.Options;
 
 namespace Backend3DForge.Services.FileStorage.FileSystem
 {
@@ -51,7 +52,7 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
             return Task.FromResult(new FileStream(GetFullPath(filename), FileMode.Open, FileAccess.Read) as Stream);
         }
 
-        public async Task UploadFileAsync(string filename, Stream fileStream, int fileSize = -1)
+        public async Task UploadFileAsync(string filename, Stream fileStream, long fileSize = -1)
         {
             if (filename == null)
             {
@@ -80,6 +81,19 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
             {
                 await fileStream.CopyToAsync(fs);
             }
+        }
+
+        public Task<Stream> DownloadAvatarAsync(User user)
+        {
+            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png");
+        }
+
+        public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png", 
+                fileStream: fileStream, 
+                fileSize: fileSize);
         }
     }
 }
