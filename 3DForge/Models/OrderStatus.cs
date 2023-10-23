@@ -5,8 +5,10 @@ namespace Backend3DForge.Models
     public class OrderStatus
     {
         [Key]
-        public int OrderStatusId { get; set; }
+        public int Id { get; set; }
         [Required]
         public string OrderStatusName { get; set; }
+
+        public ICollection<OrderStatusOrder> OrderStatusOrders { get; set; } = new List<OrderStatusOrder>();
     }
 }

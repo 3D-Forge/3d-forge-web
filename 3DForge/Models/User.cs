@@ -6,7 +6,7 @@ namespace Backend3DForge.Models
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public int Id { get; set; }
         [Required]
         public string Login { get; set; }
         [Required]
@@ -42,5 +42,12 @@ namespace Backend3DForge.Models
         public bool CanAdministrateSystem { get; set; }
         [Required]
         public DateTime RegistrationDate { get; set; }
+
+        public ICollection<ActivationCode> ActivationCodes { get; set; } = new List<ActivationCode>();
+        public ICollection<ForumThread> ForumThreads { get; set; } = new List<ForumThread>();
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+        public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

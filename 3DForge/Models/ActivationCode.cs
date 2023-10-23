@@ -5,9 +5,10 @@ namespace Backend3DForge.Models
     public class ActivationCode
     {
         [Key]
-        public int ActivationCodeId { get; set; }
+        public int Id { get; set; }
         [Required]
         public int UserId { get; set; }
+        public User User { get; set; }
         [Required]
         public string Code { get; set; }
         [Required]

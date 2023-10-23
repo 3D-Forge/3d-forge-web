@@ -164,13 +164,13 @@ namespace Backend3DForge.Services.FileStorage.FTP
 
         public Task<Stream> DownloadAvatarAsync(User user)
         {
-            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png");
+            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
         }
 
         public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
         {
             return UploadFileAsync(
-                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.UserId}.png",
+                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png",
                 fileStream: fileStream,
                 fileSize: fileSize);
         }

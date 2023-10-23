@@ -5,7 +5,7 @@ namespace Backend3DForge.Models
 	public class BannedWord
 	{
 		[Key]
-		public int BannedWordId { get; set; }
+		public int Id { get; set; }
 		[Required]
 		public string BannedWordName { get; set; }
 	}
