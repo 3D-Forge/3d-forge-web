@@ -16,20 +16,20 @@ namespace Backend3DForge.Models
         [Required]
         [Column(TypeName = "Date")]
         public DateTime Birthday { get; set; }
-        public string? Sex { get; set; } = null;
+        public string? Sex { get; set; }
         [Phone]
-        public string? PhoneNumber { get; set; } = null;
-        public string? Firstname { get; set; } = null;
-        public string? Midname { get; set; } = null;
-        public string? Lastname { get; set; } = null;
-        public string? Region { get; set; } = null;
-        public string? CityRegion { get; set; } = null;
-        public string? City { get; set; } = null;
-        public string? Street { get; set; } = null;
-        public string? House { get; set; } = null;
-        public string? Apartment { get; set; } = null;
-        public string? DepartmentNumber { get; set; } = null;
-        public string? DeliveryType { get; set; } = null;
+        public string? PhoneNumber { get; set; }
+        public string? Firstname { get; set; }
+        public string? Midname { get; set; }
+        public string? Lastname { get; set; }
+        public string? Region { get; set; }
+        public string? CityRegion { get; set; }
+        public string? City { get; set; }
+        public string? Street { get; set; }
+        public string? House { get; set; }
+        public string? Apartment { get; set; }
+        public string? DepartmentNumber { get; set; }
+        public string? DeliveryType { get; set; }
         [Required]
         public bool Blocked { get; set; }
         [Required]
