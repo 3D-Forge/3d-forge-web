@@ -1,8 +1,10 @@
+using Backend3DForge.Attributes;
 using Backend3DForge.Services.Email;
 
 #if STORAGE_TYPE_FILESYSTEM
 using Backend3DForge.Services.FileStorage.FileSystem;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 #else
 using Backend3DForge.Services.FileStorage.FTP;
@@ -29,6 +31,17 @@ namespace Backend3DForge
                 });
             });
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login";
+                });
+
+            builder.Services.AddSingleton<IAuthorizationHandler, CanAdministrateForumHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanRetrieveDeliveryHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanModerateCatalogHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanAdministrateSystemHandler>();
 
             // Register Email Service
             builder.Services.AddEmailService(e =>
@@ -82,6 +95,9 @@ namespace Backend3DForge
             {
                 p.SwaggerEndpoint("/swagger/v1/swagger.json", "");
             });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",

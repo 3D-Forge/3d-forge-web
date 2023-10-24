@@ -27,39 +27,39 @@ namespace Backend3DForge.Tools
 				{
 					new User() {
 						Login = "admin",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "admin@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateSystem = true,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
 						RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "developer",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "developer@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateSystem = true,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
 						RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "manager",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "manager@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
 						RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "accountant",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "accountant@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
@@ -68,7 +68,7 @@ namespace Backend3DForge.Tools
 					},
 					new User() {
 						Login = "support",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "support@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,

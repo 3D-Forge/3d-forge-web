@@ -37,7 +37,7 @@ namespace Backend3DForge.Models
         [Required]
         public bool CanRetrieveDelivery { get; set; }
         [Required]
-        public bool CanModeratеCatalog { get; set; }
+        public bool CanModerateCatalog { get; set; }
         [Required]
         public bool CanAdministrateSystem { get; set; }
         [Required]
