@@ -20,6 +20,16 @@ namespace Backend3DForge
 
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddSwaggerGen(p =>
+            {
+                p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "",
+                    Version = "v1"
+                });
+            });
+            builder.Services.AddSwaggerGen();
+
             // Register Email Service
             builder.Services.AddEmailService(e =>
             {
@@ -66,6 +76,12 @@ namespace Backend3DForge
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(p =>
+            {
+                p.SwaggerEndpoint("/swagger/v1/swagger.json", "");
+            });
 
             app.MapControllerRoute(
                 name: "default",
