@@ -7,22 +7,18 @@ namespace Backend3DForge.Responses
 {
     public class UserResponse : BaseResponse
     {
-        public UserResponse(bool success, string? message, Models.User? data) : base(success, message, data)
+        public UserResponse(bool success, string? message, Models.User? data) : base(success, message, data != null ? new User(data) : null)
         {
         }
 
         public class User
         {
-            [JsonPropertyName("id")]
-            public int Id { get; set; }
             [JsonPropertyName("login")]
             public string Login { get; set; }
-            [JsonPropertyName("passwordHash")]
-            public string PasswordHash { get; set; }
             [JsonPropertyName("email")]
             public string Email { get; set; }
             [JsonPropertyName("birthday")]
-            public DateTime Birthday { get; set; }
+            public DateTime? Birthday { get; set; }
             [JsonPropertyName("sex")]
             public string? Sex { get; set; }
             [JsonPropertyName("phoneNumber")]
@@ -59,14 +55,14 @@ namespace Backend3DForge.Responses
             public bool CanModerateCatalog { get; set; }
             [JsonPropertyName("canAdministrateSystem")]
             public bool CanAdministrateSystem { get; set; }
+            [JsonPropertyName("isActivated")]
+            public bool IsActivated { get; set; }
             [JsonPropertyName("registrationDate")]
             public DateTime RegistrationDate { get; set; }
 
             public User(Models.User user)
             {
-                Id = user.Id;
                 Login = user.Login;
-                PasswordHash = user.PasswordHash;
                 Email = user.Email;
                 Birthday = user.Birthday;
                 Sex = user.Sex;
@@ -87,6 +83,7 @@ namespace Backend3DForge.Responses
                 CanRetrieveDelivery = user.CanRetrieveDelivery;
                 CanModerateCatalog = user.CanModerateCatalog;
                 CanAdministrateSystem = user.CanAdministrateSystem;
+                IsActivated = user.IsActivated;
                 RegistrationDate = user.RegistrationDate;
             }
         }

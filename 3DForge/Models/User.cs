@@ -13,9 +13,8 @@ namespace Backend3DForge.Models
         public string PasswordHash { get; set; }
         [Required]
         public string Email { get; set; }
-        [Required]
         [Column(TypeName = "Date")]
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
         public string? Sex { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
@@ -40,6 +39,8 @@ namespace Backend3DForge.Models
         public bool CanModerateCatalog { get; set; }
         [Required]
         public bool CanAdministrateSystem { get; set; }
+        [Required]
+        public bool IsActivated { get; set; }
         [Required]
         public DateTime RegistrationDate { get; set; }
 

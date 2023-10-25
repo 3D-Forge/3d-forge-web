@@ -10,7 +10,7 @@ namespace Backend3DForge.Tools
 		{
 			if (isFirstStart)
 			{
-				isFirstStart = db.Users.Count() == 0;
+				isFirstStart = !db.Users.Any();
 				if (isFirstStart)
 				{
 					InitDatabase(db);
@@ -21,7 +21,7 @@ namespace Backend3DForge.Tools
 
 		private static void InitDatabase(DbApp db)
 		{
-			if (db.Users.Count() == 0)
+			if (!db.Users.Any())
 			{
 				db.Users.AddRange(new List<User>
 				{
@@ -34,7 +34,8 @@ namespace Backend3DForge.Tools
 						CanAdministrateForum = true,
 						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "developer",
@@ -45,7 +46,8 @@ namespace Backend3DForge.Tools
 						CanAdministrateForum = true,
 						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "manager",
@@ -55,7 +57,8 @@ namespace Backend3DForge.Tools
 						CanAdministrateForum = true,
 						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "accountant",
@@ -64,7 +67,8 @@ namespace Backend3DForge.Tools
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "support",
@@ -73,7 +77,8 @@ namespace Backend3DForge.Tools
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 				});
 				db.SaveChanges();
