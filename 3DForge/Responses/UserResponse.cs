@@ -1,7 +1,4 @@
-﻿using Backend3DForge.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Backend3DForge.Responses
 {

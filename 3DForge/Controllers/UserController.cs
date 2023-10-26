@@ -41,7 +41,7 @@ namespace Backend3DForge.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!", null));
             }
 
-            string token = StringTool.RandomString(10);
+            string token = StringTool.RandomString(256);
 
             try
             {
@@ -130,7 +130,12 @@ namespace Backend3DForge.Controllers
 
             if (user.Blocked)
             {
-                return Unauthorized(new BaseResponse.ErrorResponse("User is blocked!", null));
+                return Unauthorized(new BaseResponse.ErrorResponse("The user is blocked!", null));
+            }
+
+            if (!user.IsActivated)
+            {
+                return Unauthorized(new BaseResponse.ErrorResponse("The user is not activated!", null));
             }
 
             await HttpContext.SignInAsync(

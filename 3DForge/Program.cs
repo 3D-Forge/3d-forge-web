@@ -1,10 +1,13 @@
 using Backend3DForge.Attributes;
+using Backend3DForge.Services;
 using Backend3DForge.Services.Email;
 
 #if STORAGE_TYPE_FILESYSTEM
 using Backend3DForge.Services.FileStorage.FileSystem;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using NuGet.Protocol.Plugins;
+using System;
 
 #else
 using Backend3DForge.Services.FileStorage.FTP;
