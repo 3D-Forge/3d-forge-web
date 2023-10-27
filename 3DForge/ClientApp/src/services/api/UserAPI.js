@@ -1,8 +1,8 @@
 import { BaseAPI } from "./BaseAPI";
 
 export class UserAPI {
-    static async register(login, email, password) {
-        return await BaseAPI.post("user/register", { login, email, password });
+    static async register(login, email, password, confirmPassword) {
+        return await BaseAPI.post("user/register", { login, email, password, confirmPassword });
     }
 
     static async confirmEmail(email, token) {

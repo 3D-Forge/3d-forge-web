@@ -26,11 +26,6 @@ namespace Backend3DForge.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            if (request.Password.Length < 6)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Too short password!", null));
-            }
-
             if (DB.Users.Any(p => p.Login == request.Login))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same login!", null));
@@ -39,6 +34,16 @@ namespace Backend3DForge.Controllers
             if (DB.Users.Any(p => p.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!", null));
+            }
+
+            if (request.Password.Length < 6)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too short password!", null));
+            }
+
+            if (request.Password != request.ConfirmPassword)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!", null));
             }
 
             string token = StringTool.RandomString(256);

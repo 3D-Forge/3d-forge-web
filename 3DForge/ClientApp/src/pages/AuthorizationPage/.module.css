@@ -1,0 +1,182 @@
+.main {
+    position: fixed;
+    display: grid;
+    grid-template-columns: calc(20% + 200px) auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.intro {
+    position: relative;
+    background: linear-gradient(270deg, #9838c4 0.13%, #BA67D3 99.84%, #9048c7 99.85%);
+}
+
+.intro_main_part {
+    position: absolute;
+    width: 80%;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+}
+
+.logo_img {
+    content: url(./img/logo.png);
+    width: 70px;
+}
+
+.logo_text {
+    color: white;
+    font-size: 40px;
+    margin-left: 20px;
+}
+
+.description {
+    margin-top: 40px;
+    color: white;
+    text-align: justify;
+    font-size: 27px;
+}
+
+.intro_img {
+    position: absolute;
+    top: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    content: url(./img/authorization.png);
+    max-width: 82%;
+}
+
+.auth {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reg_request {
+    position: absolute;
+    display: flex;
+    top: 40px;
+    right: 5%;
+}
+
+.reg_request_question {
+    font-size: 20px;
+}
+
+.reg_request_link {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.auth_panel {
+    position: absolute;
+    border: 3px solid #A653CD;
+    border-radius: 15px;
+    background: rgba(140, 77, 159, 0.10);
+    width: 500px;
+    padding-block: 45px;
+    padding-inline: 60px;
+}
+
+.auth_header {
+    text-align: center;
+    font-size: 35px;
+    font-weight: 100;
+    letter-spacing: 1px;
+    padding-bottom: 30px;
+}
+
+.login_or_email {
+    padding-bottom: 20px;
+}
+
+.password {
+    padding-bottom: 30px;
+}
+
+.auth_input_header {
+    padding-bottom: 10px;
+}
+
+.auth_input_header_text {
+    font-size: 25px;
+}
+
+.auth_input {
+    width: calc(100% - 14px);
+    height: 40px;
+    border-radius: 10px;
+    border: 2px solid #A653CD;
+    background: rgba(228, 231, 233, 0.00);
+    font-size: 22px;
+    padding-left: 10px;
+}
+
+.necessary_star {
+    color: #A80909;
+    font-size: 25px;
+    margin-left: 8px;
+}
+
+.remember {
+    display: flex;
+    padding-bottom: 30px;
+}
+
+.remember_checkbox_cont {
+    position: relative;
+}
+
+.remember_checkbox {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #A653CD;
+    border-radius: 5px;
+    width: 23px;
+    height: 23px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.remember_checkbox_check {
+    content: url(./img/check.png);
+    max-width: 100%;
+}
+
+.remember_text {
+    text-align: justify;
+    font-size: 20px;
+    margin-left: 40px;
+}
+
+.auth_button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: 0;
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 25px;
+    background: #C99E22;
+    margin-bottom: 20px;
+}
+
+.forgot_password_link {
+    font-size: 22px;
+}

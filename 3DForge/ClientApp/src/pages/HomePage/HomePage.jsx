@@ -8,7 +8,7 @@ const HomePage = () => {
     });
 
     return (
-        <img className={cl.logo} />
+        <h1>Home page</h1>
     );
 }
 
