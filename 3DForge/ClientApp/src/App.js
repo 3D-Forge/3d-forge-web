@@ -1,22 +1,19 @@
-import React, { Component } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import AppRoutes from './AppRoutes';
-import { Layout } from './components/Layout';
-import './custom.css';
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage/HomePage';
+import AuthorizationPage from './pages/AuthorizationPage/AuthorizationPage';
+import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 
-export default class App extends Component {
-  static displayName = App.name;
-
-  render() {
-    return (
-      <Layout>
-        <Routes>
-          {AppRoutes.map((route, index) => {
-            const { element, ...rest } = route;
-            return <Route key={index} {...rest} element={element} />;
-          })}
-        </Routes>
-      </Layout>
-    );
-  }
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<HomePage />} />
+        <Route path='/auth' element={<AuthorizationPage />} />
+        <Route path='/register' element={<RegistrationPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;

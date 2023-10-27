@@ -10,7 +10,7 @@ namespace Backend3DForge.Tools
 		{
 			if (isFirstStart)
 			{
-				isFirstStart = db.Users.Count() == 0;
+				isFirstStart = !db.Users.Any();
 				if (isFirstStart)
 				{
 					InitDatabase(db);
@@ -21,59 +21,64 @@ namespace Backend3DForge.Tools
 
 		private static void InitDatabase(DbApp db)
 		{
-			if (db.Users.Count() == 0)
+			if (!db.Users.Any())
 			{
 				db.Users.AddRange(new List<User>
 				{
 					new User() {
 						Login = "admin",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "admin@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateSystem = true,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "developer",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "developer@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateSystem = true,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "manager",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "manager@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
-						CanModeratеCatalog = true,
+						CanModerateCatalog = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "accountant",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "accountant@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 					new User() {
 						Login = "support",
-						PasswordHash = "someHash",
+						PasswordHash = PasswordTool.Hash("somePassword"),
 						Email = "support@3df.com",
 						Birthday = DateTime.MinValue,
 						CanAdministrateForum = true,
 						CanRetrieveDelivery = true,
-						RegistrationDate = DateTime.Now
+                        IsActivated = true,
+                        RegistrationDate = DateTime.Now
 					},
 				});
 				db.SaveChanges();

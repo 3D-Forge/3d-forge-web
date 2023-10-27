@@ -1,8 +1,13 @@
+using Backend3DForge.Attributes;
+using Backend3DForge.Services;
 using Backend3DForge.Services.Email;
 
 #if STORAGE_TYPE_FILESYSTEM
 using Backend3DForge.Services.FileStorage.FileSystem;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using NuGet.Protocol.Plugins;
+using System;
 
 #else
 using Backend3DForge.Services.FileStorage.FTP;
@@ -19,6 +24,27 @@ namespace Backend3DForge
             builder.Services.AddSqlServer<DbApp>(builder.Configuration["ConnectionStrings:WebApiDatabase"]);
 
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSwaggerGen(p =>
+            {
+                p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "",
+                    Version = "v1"
+                });
+            });
+            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login";
+                });
+
+            builder.Services.AddSingleton<IAuthorizationHandler, CanAdministrateForumHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanRetrieveDeliveryHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanModerateCatalogHandler>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CanAdministrateSystemHandler>();
 
             // Register Email Service
             builder.Services.AddEmailService(e =>
@@ -66,6 +92,15 @@ namespace Backend3DForge
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(p =>
+            {
+                p.SwaggerEndpoint("/swagger/v1/swagger.json", "");
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",

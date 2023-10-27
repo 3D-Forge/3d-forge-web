@@ -44,6 +44,13 @@ namespace Backend3DForge
 				.HasForeignKey(cmr => cmr.OrderId)
 				.OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Login)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+				.HasIndex(u => u.Email)
+				.IsUnique();
 
             base.OnModelCreating(modelBuilder);
 		}
