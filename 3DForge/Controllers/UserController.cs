@@ -2,6 +2,7 @@
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.Email;
+using Backend3DForge.Services.FileStorage;
 using Backend3DForge.Tools;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -17,10 +18,12 @@ namespace Backend3DForge.Controllers
     public class UserController : BaseController
     {
         private readonly IEmailService emailService;
+        private readonly IFileStorage fileStorage;
 
-        public UserController(DbApp db, IEmailService emailService) : base(db)
+        public UserController(DbApp db, IEmailService emailService, IFileStorage fileStorage) : base(db)
         {
             this.emailService = emailService;
+            this.fileStorage = fileStorage;
         }
 
         [HttpPost("register")]
@@ -82,7 +85,7 @@ namespace Backend3DForge.Controllers
                 UserId = user.Id,
                 User = user,
                 Code = token,
-                Action = "confirm-email",
+                Action = "confirm-registration",
                 CreatedAt = user.RegistrationDate,
                 Expires = user.RegistrationDate.AddHours(12)
             });
@@ -173,6 +176,56 @@ namespace Backend3DForge.Controllers
                 return Ok(new BaseResponse.SuccessResponse("Authorized", null));
             }
             return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized", null));
+        }
+
+        [HttpGet("self/info")]
+        public IActionResult GetSelfInfo()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                return Ok(new UserResponse(true, null, AuthorizedUser));
+            }
+
+            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!", null));
+        }
+
+        [HttpGet("{userId}/info")]
+        public async Task<IActionResult> GetUserInfo(int userId)
+        {
+            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("A user is not found!", null));
+            }
+
+            return Ok(new UserResponse(true, null, user));
+        }
+
+        [HttpGet("self/avatar")]
+        public async Task<IActionResult> GetSelfAvatar()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                Stream fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
+                return new FileStreamResult(fileStream, "image/png");
+            }
+
+            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!", null));
+        }
+
+        [HttpGet("{userId}/avatar")]
+        public async Task<IActionResult> GetUserAvatar(int userId)
+        {
+            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("A user is not found!", null));
+            }
+
+            Stream fileStream = await fileStorage.DownloadAvatarAsync(user);
+            return new FileStreamResult(fileStream, "image/png");
         }
     }
 }
