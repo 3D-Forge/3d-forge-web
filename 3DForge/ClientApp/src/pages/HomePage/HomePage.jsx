@@ -11,8 +11,6 @@ const HomePage = () => {
         <div>
             <div className={cl.index}>
                 <div className={cl.div_2}>
-                  
-                   
                     <div className={cl.frame_2}>
                         <div className={cl.rectangle_2} />
                         <div className={cl.rectangle_3} />
@@ -22,20 +20,20 @@ const HomePage = () => {
                             className={cl.image_3D_modelling}
                             alt="Computer svgrepo"
                         />
-                        <div className={cl.element}>3d Моделювання</div>
+                        <div className={cl.element}>3d РњРѕРґРµР»СЋРІР°РЅРЅСЏ</div>
                         <p className={cl.p}>
-                            Cтворення 3D моделі у спеціальному програмному середовищі, такому як Blender, AutoCAD, чи інший програмний
-                            пакет для 3D моделювання.
+                            CС‚РІРѕСЂРµРЅРЅСЏ 3D РјРѕРґРµР»С– Сѓ СЃРїРµС†С–Р°Р»СЊРЅРѕРјСѓ РїСЂРѕРіСЂР°РјРЅРѕРјСѓ СЃРµСЂРµРґРѕРІРёС‰С–, С‚Р°РєРѕРјСѓ СЏРє Blender, AutoCAD, С‡Рё С–РЅС€РёР№ РїСЂРѕРіСЂР°РјРЅРёР№
+                            РїР°РєРµС‚ РґР»СЏ 3D РјРѕРґРµР»СЋРІР°РЅРЅСЏ.
                         </p>
                         <p className={cl.element_d_d_d}>
-                            Після створення 3D моделі, вона відправляється на друк на 3D-принтері.&nbsp;&nbsp;ми встановлюємо матеріал і
-                            параметри друку відповідно до вашого вибору. Після чого 3D-принтер надрукує фізичний об&#39;єкт.
+                            РџС–СЃР»СЏ СЃС‚РІРѕСЂРµРЅРЅСЏ 3D РјРѕРґРµР»С–, РІРѕРЅР° РІС–РґРїСЂР°РІР»СЏС”С‚СЊСЃСЏ РЅР° РґСЂСѓРє РЅР° 3D-РїСЂРёРЅС‚РµСЂС–.&nbsp;&nbsp;РјРё РІСЃС‚Р°РЅРѕРІР»СЋС”РјРѕ РјР°С‚РµСЂС–Р°Р» С–
+                            РїР°СЂР°РјРµС‚СЂРё РґСЂСѓРєСѓ РІС–РґРїРѕРІС–РґРЅРѕ РґРѕ РІР°С€РѕРіРѕ РІРёР±РѕСЂСѓ. РџС–СЃР»СЏ С‡РѕРіРѕ 3D-РїСЂРёРЅС‚РµСЂ РЅР°РґСЂСѓРєСѓС” С„С–Р·РёС‡РЅРёР№ РѕР±&#39;С”РєС‚.
                         </p>
                         <p className={cl.text_wrapper_11}>
-                            На завершення, ми отримуємо готову 3D модель, яка готова для використання або відправки клієнту.
+                            РќР° Р·Р°РІРµСЂС€РµРЅРЅСЏ, РјРё РѕС‚СЂРёРјСѓС”РјРѕ РіРѕС‚РѕРІСѓ 3D РјРѕРґРµР»СЊ, СЏРєР° РіРѕС‚РѕРІР° РґР»СЏ РІРёРєРѕСЂРёСЃС‚Р°РЅРЅСЏ Р°Р±Рѕ РІС–РґРїСЂР°РІРєРё РєР»С–С”РЅС‚Сѓ.
                         </p>
-                        <div className={cl.element_d}>3d Друк</div>
-                        <div className={cl.text_wrapper_12}>Вилучення моделі зі станка</div>
+                        <div className={cl.element_d}>3d Р”СЂСѓРє</div>
+                        <div className={cl.text_wrapper_12}>Р’РёР»СѓС‡РµРЅРЅСЏ РјРѕРґРµР»С– Р·С– СЃС‚Р°РЅРєР°</div>
                         <img
                             className={cl.image_3D_print}
                             alt="Extrude svgrepo com"
@@ -48,13 +46,13 @@ const HomePage = () => {
                         />
                     </div>
                     <p className={cl.div_5}>
-                        <span className={cl.span}>Обмеження - твоя </span>
-                        <span className={cl.text_wrapper_13}>фантазія</span>
+                        <span className={cl.span}>РћР±РјРµР¶РµРЅРЅСЏ - С‚РІРѕСЏ </span>
+                        <span className={cl.text_wrapper_13}>С„Р°РЅС‚Р°Р·С–СЏ</span>
                         <span className={cl.span}>!</span>
                     </p>
                     <p className={cl.text_wrapper_14}>
-                        Допоможемо твоїм ідеям стати реальністю. Поглибся у чарівний світ 3D та насолоджуйся найкращими візуальними
-                        рішеннями!
+                        Р”РѕРїРѕРјРѕР¶РµРјРѕ С‚РІРѕС—Рј С–РґРµСЏРј СЃС‚Р°С‚Рё СЂРµР°Р»СЊРЅС–СЃС‚СЋ. РџРѕРіР»РёР±СЃСЏ Сѓ С‡Р°СЂС–РІРЅРёР№ СЃРІС–С‚ 3D С‚Р° РЅР°СЃРѕР»РѕРґР¶СѓР№СЃСЏ РЅР°Р№РєСЂР°С‰РёРјРё РІС–Р·СѓР°Р»СЊРЅРёРјРё
+                        СЂС–С€РµРЅРЅСЏРјРё!
                     </p>
                     <img
                         className={cl.image_house}
@@ -66,11 +64,11 @@ const HomePage = () => {
                                 className={cl.element_printer_variant}
                                 alt="Element printer variant"
                             />
-                            <div className={cl.text_wrapper_15}>Друк</div>
+                            <div className={cl.text_wrapper_15}>Р”СЂСѓРє</div>
                         </div>
                         <div className={cl.overlap_group_wrapper}>
                             <div className={cl.overlap_group_2}>
-                                <div className={cl.text_wrapper_16}>Шлях</div>
+                                <div className={cl.text_wrapper_16}>РЁР»СЏС…</div>
                                 <img
                                     className={cl.delivery_svgrepo_com}
                                     alt="Delivery svgrepo com"
@@ -82,17 +80,17 @@ const HomePage = () => {
                                 className={cl.receive_package}
                                 alt="Receive package"
                             />
-                            <div className={cl.text_wrapper_17}>Отримання</div>
+                            <div className={cl.text_wrapper_17}>РћС‚СЂРёРјР°РЅРЅСЏ</div>
                         </div>
                     </div>
-                    <div className={cl.element_2}>ЕТАПИ СТВОРЕННЯ 3D МОДЕЛІ</div>
+                    <div className={cl.element_2}>Р•РўРђРџР РЎРўР’РћР Р•РќРќРЇ 3D РњРћР”Р•Р›Р†</div>
                     <div className={cl.overlap_wrapper}>
                         <div className={cl.overlap}>
                             <img
                                 className={cl.double_arrow_up}
                                 alt="Double arrow up"
                             />
-                            <div className={cl.text_wrapper_18}>Вгору</div>
+                            <div className={cl.text_wrapper_18}>Р’РіРѕСЂСѓ</div>
                         </div>
                     </div>
                     <img
@@ -105,23 +103,23 @@ const HomePage = () => {
         <div className={cl.footer}>
             <img className={cl.line} alt="Logo"/>
             <p className={cl.text_wrapper}>
-                Ми надаємо можливість створювати, ділитися та замовляти унікальні 3D-моделі. Наша мета - зробити 3D-друк
-                доступним для кожного. Долучайтеся до нашої спільноти та створюйте разом з нами!
+                РњРё РЅР°РґР°С”РјРѕ РјРѕР¶Р»РёРІС–СЃС‚СЊ СЃС‚РІРѕСЂСЋРІР°С‚Рё, РґС–Р»РёС‚РёСЃСЏ С‚Р° Р·Р°РјРѕРІР»СЏС‚Рё СѓРЅС–РєР°Р»СЊРЅС– 3D-РјРѕРґРµР»С–. РќР°С€Р° РјРµС‚Р° - Р·СЂРѕР±РёС‚Рё 3D-РґСЂСѓРє
+                РґРѕСЃС‚СѓРїРЅРёРј РґР»СЏ РєРѕР¶РЅРѕРіРѕ. Р”РѕР»СѓС‡Р°Р№С‚РµСЃСЏ РґРѕ РЅР°С€РѕС— СЃРїС–Р»СЊРЅРѕС‚Рё С‚Р° СЃС‚РІРѕСЂСЋР№С‚Рµ СЂР°Р·РѕРј Р· РЅР°РјРё!
             </p>
             <p className={cl.div}>+380 999 999 99 99</p>
             <div className={cl.text_wrapper_2}>3d.forgehub@gmail.com</div>
-            <div className={cl.text_wrapper_3}>Про Нас</div>
-            <div className={cl.text_wrapper_4}>Зв&#39;яжіться з нами</div>
-            <div className={cl.text_wrapper_5}>Підпишіться на розсилку</div>
+            <div className={cl.text_wrapper_3}>РџСЂРѕ РќР°СЃ</div>
+            <div className={cl.text_wrapper_4}>Р—РІ&#39;СЏР¶С–С‚СЊСЃСЏ Р· РЅР°РјРё</div>
+            <div className={cl.text_wrapper_5}>РџС–РґРїРёС€С–С‚СЊСЃСЏ РЅР° СЂРѕР·СЃРёР»РєСѓ</div>
             <img className={cl.instagram} alt="Instagram"/>
             < img className={cl.facebook_svgrepo_com} alt="facebookSvgrepoCom" />
 
             <img className={cl.google_svgrepo} alt="googleSvgrepo" />
             <div className={cl.overlap_group}>
                 <img className={cl.letter_svgrepo_com} alt="Letter svgrepo com"/>
-                <div className={cl.text_wrapper_6}>Введіть Ваш Email</div>
+                <div className={cl.text_wrapper_6}>Р’РІРµРґС–С‚СЊ Р’Р°С€ Email</div>
             </div>
-            <div className={cl.text_wrapper_7}>Підписатися</div>
+            <div className={cl.text_wrapper_7}>РџС–РґРїРёСЃР°С‚РёСЃСЏ</div>
             <img
                 className={cl.img}
                 alt="Line"/>
