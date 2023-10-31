@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Azure.Core;
+using Backend3DForge.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend3DForge.Requests
@@ -6,37 +8,40 @@ namespace Backend3DForge.Requests
     public class UpdateUserInfoRequest
     {
         [Required]
-        public string Login { get; set; }
-        [Required]
-        public string Email { get; set; }
-        [Required]
-        public DateTime? Birthday { get; set; }
-        [Required]
-        public string? Sex { get; set; }
-        [Required]
+        public int Id { get; set; }
+        [StringLength(32, MinimumLength = 4, ErrorMessage = "Login is too short or long")]
+        public string? Login { get; set; }
+        public string? Email { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
-        [Required]
         public string? Firstname { get; set; }
-        [Required]
         public string? Midname { get; set; }
-        [Required]
         public string? Lastname { get; set; }
-        [Required]
         public string? Region { get; set; }
-        [Required]
         public string? CityRegion { get; set; }
-        [Required]
         public string? City { get; set; }
-        [Required]
         public string? Street { get; set; }
-        [Required]
         public string? House { get; set; }
-        [Required]
         public string? Apartment { get; set; }
-        [Required]
         public string? DepartmentNumber { get; set; }
-        [Required]
         public string? DeliveryType { get; set; }
+
+        public bool HasDifferences(User user)
+		{
+            return user.Login != Login
+            && user.Email != Email
+            && user.PhoneNumber != PhoneNumber
+            && user.Firstname != Firstname
+            && user.Midname != Midname
+            && user.Lastname != Lastname
+            && user.Region != Region
+            && user.CityRegion != CityRegion
+            && user.City != City
+            && user.Street != Street
+            && user.House != House
+            && user.Apartment != Apartment
+            && user.DepartmentNumber != DepartmentNumber
+            && user.DeliveryType != DeliveryType;
+		}
     }
 }

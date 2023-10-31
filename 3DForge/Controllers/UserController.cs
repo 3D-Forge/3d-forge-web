@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security.Claims;
 
@@ -26,27 +27,32 @@ namespace Backend3DForge.Controllers
             this.fileStorage = fileStorage;
         }
 
+        private void GenerateEmailActivation()
+        {
+
+        }
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (DB.Users.Any(p => p.Login == request.Login))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same login!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same login!"));
             }
 
             if (DB.Users.Any(p => p.Email == request.Email))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
             }
 
             if (request.Password.Length < 6)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Too short password!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
             }
 
             if (request.Password != request.ConfirmPassword)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
             }
 
             string token = StringTool.RandomString(256);
@@ -56,14 +62,14 @@ namespace Backend3DForge.Controllers
                 await emailService.SendEmailAsync(
                     request.Email,
                     "Confirm registration",
-                    $"Hello, {request.Login}! You need to confirm your email to create " +
-                    $"an account by clicking the link below (the link will be expired in 12 hours).\n" +
-                    $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}",
-                    false);
+                    "Hello,! You need to confirm your email to create " +
+                    "an account by clicking the link below (the link will be expired in 12 hours).\n" +
+                    $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}"
+                    );
             }
             catch (Exception ex)
             {
-                return BadRequest(new BaseResponse.ErrorResponse(ex.Message, null));
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
             }
 
             User user = (await DB.Users.AddAsync(new User
@@ -92,7 +98,7 @@ namespace Backend3DForge.Controllers
 
             await DB.SaveChangesAsync();
 
-            return Ok(new BaseResponse.SuccessResponse("Email is sent!", null));
+            return Ok(new BaseResponse.SuccessResponse("Email is sent!"));
         }
 
         [HttpGet("confirm-email/{email}")]
@@ -104,16 +110,29 @@ namespace Backend3DForge.Controllers
             
             if (activationCode == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!", null));
+                return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
             }
 
             if (DateTime.Now > activationCode.Expires)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The link is expired!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
             }
 
-            User user = activationCode.User;
-            user.IsActivated = true;
+			User user = activationCode.User;
+            var splited = activationCode.Action.Split(',');
+
+			switch (splited[0])
+			{
+                case "confirm-registration":
+					user.IsActivated = true;
+                    break;
+                case "change-email":
+                    user.Email = splited[1];
+                    break;
+                default:
+                    return BadRequest(new BaseResponse.ErrorResponse("Unknown action"));
+			}
+            
             DB.ActivationCodes.Remove(activationCode);
             await DB.SaveChangesAsync();
 
@@ -128,22 +147,22 @@ namespace Backend3DForge.Controllers
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("Invalid login or email!", null));
+                return NotFound(new BaseResponse.ErrorResponse("Invalid login or email!"));
             }
 
             if (!PasswordTool.Validate(request.Password, user.PasswordHash))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid password!", null));
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
             }
 
             if (user.Blocked)
             {
-                return Unauthorized(new BaseResponse.ErrorResponse("The user is blocked!", null));
+                return Unauthorized(new BaseResponse.ErrorResponse("The user is blocked!"));
             }
 
             if (!user.IsActivated)
             {
-                return Unauthorized(new BaseResponse.ErrorResponse("The user is not activated!", null));
+                return Unauthorized(new BaseResponse.ErrorResponse("The user is not activated!"));
             }
 
             await HttpContext.SignInAsync(
@@ -175,7 +194,7 @@ namespace Backend3DForge.Controllers
             {
                 return Ok(new BaseResponse.SuccessResponse("Authorized", null));
             }
-            return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized", null));
+            return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized"));
         }
 
         [HttpGet("self/info")]
@@ -186,17 +205,17 @@ namespace Backend3DForge.Controllers
                 return Ok(new UserResponse(true, null, AuthorizedUser));
             }
 
-            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!", null));
+            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
         }
 
-        [HttpGet("{userId}/info")]
-        public async Task<IActionResult> GetUserInfo(int userId)
+        [HttpGet("{userLogin}/info")]
+        public async Task<IActionResult> GetUserInfo(string userLogin)
         {
-            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Id == userId);
+            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("A user is not found!", null));
+                return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
             }
 
             return Ok(new UserResponse(true, null, user));
@@ -211,21 +230,171 @@ namespace Backend3DForge.Controllers
                 return new FileStreamResult(fileStream, "image/png");
             }
 
-            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!", null));
+            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
         }
 
-        [HttpGet("{userId}/avatar")]
-        public async Task<IActionResult> GetUserAvatar(int userId)
+        [HttpGet("{userLogin}/avatar")]
+        public async Task<IActionResult> GetUserAvatar(string userLogin)
         {
-            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Id == userId);
+            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("A user is not found!", null));
+                return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
             }
 
             Stream fileStream = await fileStorage.DownloadAvatarAsync(user);
             return new FileStreamResult(fileStream, "image/png");
         }
+
+        [HttpPut("update/info")]
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
+        {
+            var result = DB.Users.SingleOrDefault(x => x.Id == request.Id);
+
+            if (result == null)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("User ID not found"));
+            }
+
+			bool different = false;
+
+            if (result.Login != (request.Login ?? result.Login))
+            {
+				if (DB.Users.Any(p => p.Login == request.Login))
+				{
+					return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
+				}
+
+				result.Login = request.Login;
+				different = true;
+			}
+            if (result.Email != (request.Email ?? result.Email))
+            {
+				if (DB.Users.Any(p => p.Email == request.Email))
+				{
+					return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
+				}
+
+				string token = StringTool.RandomString(256);
+
+				try
+				{
+					await emailService.SendEmailAsync(
+						request.Email,
+						"Confirm email change",
+						"Hello,! You need to confirm your new email " +
+						"by clicking the link below (the link will be expired in 12 hours).\n" +
+						$"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}",
+						false);
+				}
+				catch (Exception ex)
+				{
+					return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+				}
+
+				await DB.ActivationCodes.AddAsync(new ActivationCode
+				{
+					UserId = result.Id,
+					User = result,
+					Code = token,
+					Action = "change-email," + request.Email,
+					CreatedAt = DateTime.Now,
+					Expires = DateTime.Now.AddHours(12)
+				});
+
+				different = true;
+			}
+            if (result.PhoneNumber != (request.PhoneNumber ?? result.PhoneNumber))
+            {
+                result.PhoneNumber = request.PhoneNumber;
+				different = true;
+			}
+			if (result.Firstname != (request.Firstname ?? result.Firstname))
+            {
+                result.Firstname = request.Firstname;
+				different = true;
+			}
+			if (result.Midname != (request.Midname ?? result.Midname))
+            {
+                result.Midname = request.Midname;
+				different = true;
+			}
+			if (result.Lastname != (request.Lastname ?? result.Lastname))
+            {
+                result.Lastname = request.Lastname;
+				different = true;
+			}
+			if (result.Region != (request.Region ?? result.Region))
+            {
+                result.Region = request.Region;
+				different = true;
+			}
+			if (result.CityRegion != (request.CityRegion ?? result.CityRegion))
+            {
+                result.CityRegion = request.CityRegion;
+				different = true;
+			}
+			if (result.City != (request.City ?? result.City))
+            {
+                result.City = request.City;
+				different = true;
+			}
+			if (result.Street != (request.Street ?? result.Street))
+            {
+                result.Street = request.Street;
+				different = true;
+			}
+			if (result.House != (request.House ?? result.House))
+            {
+                result.House = request.House;
+				different = true;
+			}
+			if (result.Apartment != (request.Apartment ?? result.Apartment))
+            {
+                result.Apartment = request.Apartment;
+				different = true;
+			}
+			if (result.DepartmentNumber != (request.DepartmentNumber ?? result.DepartmentNumber))
+            {
+                result.DepartmentNumber = request.DepartmentNumber;
+				different = true;
+			}
+			if (result.DeliveryType != (request.DeliveryType ?? result.DeliveryType))
+            {
+                result.DeliveryType = request.DeliveryType;
+				different = true;
+			}
+
+			if (!different)
+			{
+				return BadRequest(new BaseResponse.ErrorResponse("Data are identical"));
+			}
+
+			DB.SaveChanges();
+
+			return Ok(new UserResponse(true, "Data Updated", result));
+        }
+
+        [HttpPut("update/avatar")]
+        public async Task<IActionResult> UpdateUserAvatar(string userLogin, IFormFile userAvatarFile)
+        {
+			User? user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+
+			if (user == null)
+			{
+				return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
+			}
+
+			if (userAvatarFile.ContentType != "image/png")
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Accepted only .png images"));
+            }
+
+            await fileStorage.DeleteAvatarAsync(user);
+			await fileStorage.UploadAvatarAsync(user, userAvatarFile.OpenReadStream(), userAvatarFile.Length);
+
+            return Ok(new UserResponse(true, "Avatar uploaded", user));
+		}
     }
 }

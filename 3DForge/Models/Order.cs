@@ -16,7 +16,8 @@ namespace Backend3DForge.Models
         public string Firstname { get; set; }
         public string Midname { get; set; }
         public string? Lastname { get; set; }
-        public string? Region { get; set; }
+		public string? Country { get; set; }
+		public string? Region { get; set; }
         public string? CityRegion { get; set; }
         public string? City { get; set; }
         public string? Street { get; set; }

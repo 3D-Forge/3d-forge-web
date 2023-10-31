@@ -13,14 +13,12 @@ namespace Backend3DForge.Models
         public string PasswordHash { get; set; }
         [Required]
         public string Email { get; set; }
-        [Column(TypeName = "Date")]
-        public DateTime? Birthday { get; set; }
-        public string? Sex { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
         public string? Firstname { get; set; }
         public string? Midname { get; set; }
         public string? Lastname { get; set; }
+        public string? Country { get; set; }
         public string? Region { get; set; }
         public string? CityRegion { get; set; }
         public string? City { get; set; }

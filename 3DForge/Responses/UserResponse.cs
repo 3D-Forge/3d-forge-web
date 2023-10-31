@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.Metrics;
+using System.Text.Json.Serialization;
 
 namespace Backend3DForge.Responses
 {
@@ -14,10 +15,6 @@ namespace Backend3DForge.Responses
             public string Login { get; set; }
             [JsonPropertyName("email")]
             public string Email { get; set; }
-            [JsonPropertyName("birthday")]
-            public DateTime? Birthday { get; set; }
-            [JsonPropertyName("sex")]
-            public string? Sex { get; set; }
             [JsonPropertyName("phoneNumber")]
             public string? PhoneNumber { get; set; }
             [JsonPropertyName("firstName")]
@@ -26,7 +23,9 @@ namespace Backend3DForge.Responses
             public string? Midname { get; set; }
             [JsonPropertyName("lastName")]
             public string? Lastname { get; set; }
-            [JsonPropertyName("region")]
+            [JsonPropertyName("counrty")]
+            public string? Country { get; set; }
+			[JsonPropertyName("region")]
             public string? Region { get; set; }
             [JsonPropertyName("cityRegion")]
             public string? CityRegion { get; set; }
@@ -61,13 +60,12 @@ namespace Backend3DForge.Responses
             {
                 Login = user.Login;
                 Email = user.Email;
-                Birthday = user.Birthday;
-                Sex = user.Sex;
                 PhoneNumber = user.PhoneNumber;
                 Firstname = user.Firstname;
                 Midname = user.Midname;
                 Lastname = user.Lastname;
-                Region = user.Region;
+				Country = user.Country;
+				Region = user.Region;
                 CityRegion = user.CityRegion;
                 City = user.City;
                 Street = user.Street;

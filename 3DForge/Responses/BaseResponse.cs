@@ -20,14 +20,14 @@ namespace Backend3DForge.Responses
 
         public class SuccessResponse : BaseResponse
         {
-            public SuccessResponse(string? message, object? data) : base(true, message, data)
+            public SuccessResponse(string? message, object? data = null) : base(true, message, data)
             {
             }
         }
 
         public class ErrorResponse : BaseResponse
         {
-            public ErrorResponse(string? message, object? data) : base(false, message, data)
+            public ErrorResponse(string? message, object? data = null) : base(false, message, data)
             {
             }
         }
