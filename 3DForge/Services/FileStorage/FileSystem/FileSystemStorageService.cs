@@ -95,5 +95,10 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
                 fileStream: fileStream, 
                 fileSize: fileSize);
         }
+
+        public Task DeleteAvatarAsync(User user)
+        {
+            return DeleteFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+        }
     }
 }
