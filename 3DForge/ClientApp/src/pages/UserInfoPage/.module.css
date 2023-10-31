@@ -1,0 +1,41 @@
+.main {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.content {
+    position: relative;
+    display: grid;
+    grid-template-columns: 350px 20px 1fr;
+    width: 95%
+}
+
+.base_info {
+    position: relative;
+    background-color: white;
+    border: 2px solid #FFF;
+    border-radius: 20px;
+}
+
+.avatar {
+    position: absolute;
+    width: 100%;
+    content: url(./img/no-avatar.png);
+    border-radius: 20px;
+}
+
+.advanced_info {
+    border: 2px solid #FFF;
+    border-radius: 20px;
+}
+
+.general_info_header {
+    color: white;
+}
+
+.address_header {
+    color: white;
+}

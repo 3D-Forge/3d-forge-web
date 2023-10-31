@@ -2,6 +2,7 @@ import React from 'react';
 import cl from "./.module.css";
 import { useNavigate } from 'react-router-dom';
 import { UserAPI } from '../../services/api/UserAPI';
+import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 
 const AuthorizationPage = () => {
 
@@ -81,7 +82,7 @@ const AuthorizationPage = () => {
                     }}>
                         {
                             isAuthorizing
-                                ? <p className={cl.log_in_button_text}>...</p>
+                                ? <LoadingAnimation size="30px" loadingCurveWidth="6px" />
                                 : <p className={cl.log_in_button_text}>Увійти</p>
                         }
                     </div>

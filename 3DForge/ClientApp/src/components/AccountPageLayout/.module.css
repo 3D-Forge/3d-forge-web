@@ -109,11 +109,11 @@
     border-radius: 50%;
 }
 
-.switch_checkbox:checked + .switch_slider {
+.switch_checkbox:checked+.switch_slider {
     background-color: #2195f300;
 }
 
-.switch_checkbox:checked + .switch_slider:before {
+.switch_checkbox:checked+.switch_slider:before {
     -webkit-transform: translateX(19.7px);
     -ms-transform: translateX(19.7px);
     transform: translateX(19.7px);
@@ -158,15 +158,51 @@
     max-height: 60px;
     background-color: black;
     content: url(./img/no-avatar.png);
+    transition: 0.1s;
+}
+
+.avatar:hover {
+    border-radius: 10px;
 }
 
 .drop_menu {
-    position: absolute;
+    cursor: pointer;
+    position: relative;
     left: -70px;
+    height: 100%;
+}
+
+.drop_menu_img {
+    position: absolute;
     top: 50%;
     transform: translateY(-50%);
     max-width: 40px;
     content: url(./img/down-arrow.png);
+}
+
+.drop_list {
+    position: absolute;
+    top: 95px;
+    left: -130px;
+    background-color: #C99E22;
+    border-radius: 10px;
+    padding-inline: 5px;
+    z-index: 1;
+}
+
+.drop_list_element {
+    white-space: nowrap;
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding-block: 10px;
+    padding-inline: 15px;
+    margin-block: 5px;
+}
+
+.drop_list_element:hover {
+    background-color: purple;
 }
 
 .login {
@@ -207,4 +243,93 @@
     background: #C99E22;
     letter-spacing: 1px;
     padding-inline: 5px;
+}
+
+.loading {
+    position: absolute;
+    left: -180px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.info_footer {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 2px 1fr 2px 1fr;
+    margin-bottom: 30px;
+}
+
+.line_separator {
+    background-color: white;
+}
+
+.info_footer_container {
+    padding-block: 10px;
+    padding-inline: 6%;
+}
+
+.info_footer_header {
+    color: white;
+    letter-spacing: 1px;
+    font-size: 25px;
+}
+
+.info_footer_text {
+    color: white;
+    letter-spacing: 1.5px;
+    line-height: 30px;
+    font-size: 20px;
+    word-wrap: break-word;
+}
+
+.about_us_text {
+    margin-top: 15px;
+}
+
+.contacts_phone_numbers,
+.contacts_emails {
+    margin-top: 15px;
+}
+
+.contact_icon_list {
+    display: flex;
+}
+
+.contact_icon {
+    margin-top: 40px;
+}
+
+.contact_icon_instagram {
+    content: url(./img/instagram.png);
+}
+
+.contact_icon_facebook {
+    content: url(./img/facebook.png);
+    margin-left: 10px;
+}
+
+.contact_icon_google_plus {
+    content: url(./img/google-plus.png);
+    margin-left: 10px;
+}
+
+.subscribe_button {
+    cursor: pointer;
+    display: flex;
+    width: fit-content;
+    border-radius: 10px;
+    border: 1.5px solid #8F8F8F;
+    margin-block: 10px;
+    padding: 5px;
+}
+
+.subscribe_button_img {
+    content: url(./img/email.png);
+}
+
+.subscribe_button_text {
+    color: white;
+    font-size: 20px;
+    margin-top: 6px;
+    margin-left: 10px;
 }

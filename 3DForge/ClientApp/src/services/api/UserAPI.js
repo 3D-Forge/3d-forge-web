@@ -20,4 +20,20 @@ export class UserAPI {
     static async check() {
         return await BaseAPI.get('user/check');
     }
+
+    static async getSelfInfo() {
+        return await BaseAPI.get('user/self/info');
+    }
+
+    static async getUserInfo(id) {
+        return await BaseAPI.get(`user/${id}/info`);
+    }
+
+    static async getSelfAvatar() {
+        return await BaseAPI.get(`user/self/avatar`);
+    }
+
+    static async getUserAvatar(id) {
+        return await BaseAPI.get(`user/${id}/avatar`);
+    }
 }
