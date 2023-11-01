@@ -71,12 +71,6 @@
     letter-spacing: 1px;
 }
 
-.go_down_img {
-    cursor: pointer;
-    content: url(./img/go-down.png);
-    border-radius: 50%;
-}
-
 .intro_img {
     position: absolute;
     top: -90px;

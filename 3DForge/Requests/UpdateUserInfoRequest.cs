@@ -7,8 +7,6 @@ namespace Backend3DForge.Requests
 {
     public class UpdateUserInfoRequest
     {
-        [Required]
-        public int Id { get; set; }
         [StringLength(32, MinimumLength = 4, ErrorMessage = "Login is too short or long")]
         public string? Login { get; set; }
         public string? Email { get; set; }

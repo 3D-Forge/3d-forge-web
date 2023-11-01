@@ -6,6 +6,7 @@ using Backend3DForge.Services.FileStorage;
 using Backend3DForge.Tools;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -27,20 +28,15 @@ namespace Backend3DForge.Controllers
             this.fileStorage = fileStorage;
         }
 
-        private void GenerateEmailActivation()
-        {
-
-        }
-        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            if (DB.Users.Any(p => p.Login == request.Login))
+            if (await DB.Users.AnyAsync(p => p.Login == request.Login))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same login!"));
             }
 
-            if (DB.Users.Any(p => p.Email == request.Email))
+            if (await DB.Users.AnyAsync(p => p.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
             }
@@ -59,12 +55,14 @@ namespace Backend3DForge.Controllers
 
             try
             {
-                await emailService.SendEmailAsync(
-                    request.Email,
-                    "Confirm registration",
-                    "Hello,! You need to confirm your email to create " +
-                    "an account by clicking the link below (the link will be expired in 12 hours).\n" +
-                    $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}"
+                await emailService.SendEmailUseTemplateAsync(
+                    email: request.Email,
+                    tepmlateName: "confirm_email_after_registration.html",
+                    parameters: new Dictionary<string, string>
+                    {
+                        { "login", request.Login },
+                        { "link", $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" }
+                    }
                     );
             }
             catch (Exception ex)
@@ -107,7 +105,7 @@ namespace Backend3DForge.Controllers
             ActivationCode? activationCode = await DB.ActivationCodes
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.User.Email == WebUtility.UrlDecode(email) && p.Code == token);
-            
+
             if (activationCode == null)
             {
                 return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
@@ -118,21 +116,21 @@ namespace Backend3DForge.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
             }
 
-			User user = activationCode.User;
+            User user = activationCode.User;
             var splited = activationCode.Action.Split(',');
 
-			switch (splited[0])
-			{
+            switch (splited[0])
+            {
                 case "confirm-registration":
-					user.IsActivated = true;
+                    user.IsActivated = true;
                     break;
                 case "change-email":
                     user.Email = splited[1];
                     break;
                 default:
                     return BadRequest(new BaseResponse.ErrorResponse("Unknown action"));
-			}
-            
+            }
+
             DB.ActivationCodes.Remove(activationCode);
             await DB.SaveChangesAsync();
 
@@ -166,7 +164,7 @@ namespace Backend3DForge.Controllers
             }
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, 
+                CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -247,154 +245,171 @@ namespace Backend3DForge.Controllers
             return new FileStreamResult(fileStream, "image/png");
         }
 
+        [Authorize]
         [HttpPut("update/info")]
-        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request, [FromQuery(Name = "login")] string? userLogin = null)
         {
-            var result = DB.Users.SingleOrDefault(x => x.Id == request.Id);
+            var user = AuthorizedUser;
 
-            if (result == null)
+            if (userLogin is not null && AuthorizedUser.CanAdministrateSystem)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("User ID not found"));
+                user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+                if (user == null)
+                {
+                    return NotFound(new BaseResponse.ErrorResponse("User login not found"));
+                }
             }
 
-			bool different = false;
+            if (user == null)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("User login not found"));
+            }
 
-            if (result.Login != (request.Login ?? result.Login))
-            {
-				if (DB.Users.Any(p => p.Login == request.Login))
-				{
-					return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
-				}
+            bool different = false;
 
-				result.Login = request.Login;
-				different = true;
-			}
-            if (result.Email != (request.Email ?? result.Email))
+            if (user.Login != (request.Login ?? user.Login))
             {
-				if (DB.Users.Any(p => p.Email == request.Email))
-				{
-					return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
-				}
+                if (await DB.Users.AnyAsync(p => p.Login == request.Login))
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same login!"));
+                }
 
-				string token = StringTool.RandomString(256);
+                user.Login = request.Login;
+                different = true;
+            }
+            if (user.Email != (request.Email ?? user.Email))
+            {
+                if (await DB.Users.AnyAsync(p => p.Email == request.Email))
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
+                }
 
-				try
-				{
-					await emailService.SendEmailAsync(
-						request.Email,
-						"Confirm email change",
-						"Hello,! You need to confirm your new email " +
-						"by clicking the link below (the link will be expired in 12 hours).\n" +
-						$"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}",
-						false);
-				}
-				catch (Exception ex)
-				{
-					return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
-				}
+                string token = StringTool.RandomString(256);
 
-				await DB.ActivationCodes.AddAsync(new ActivationCode
-				{
-					UserId = result.Id,
-					User = result,
-					Code = token,
-					Action = "change-email," + request.Email,
-					CreatedAt = DateTime.Now,
-					Expires = DateTime.Now.AddHours(12)
-				});
+                try
+                {
+                    await emailService.SendEmailUseTemplateAsync(
+                        email: request.Email,
+                        tepmlateName: "confirm_email.html",
+                        parameters: new Dictionary<string, string>
+                        {
+                            { "login", user.Login },
+                            { "link", $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" },
+                        }
+                        );
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+                }
 
-				different = true;
-			}
-            if (result.PhoneNumber != (request.PhoneNumber ?? result.PhoneNumber))
-            {
-                result.PhoneNumber = request.PhoneNumber;
-				different = true;
-			}
-			if (result.Firstname != (request.Firstname ?? result.Firstname))
-            {
-                result.Firstname = request.Firstname;
-				different = true;
-			}
-			if (result.Midname != (request.Midname ?? result.Midname))
-            {
-                result.Midname = request.Midname;
-				different = true;
-			}
-			if (result.Lastname != (request.Lastname ?? result.Lastname))
-            {
-                result.Lastname = request.Lastname;
-				different = true;
-			}
-			if (result.Region != (request.Region ?? result.Region))
-            {
-                result.Region = request.Region;
-				different = true;
-			}
-			if (result.CityRegion != (request.CityRegion ?? result.CityRegion))
-            {
-                result.CityRegion = request.CityRegion;
-				different = true;
-			}
-			if (result.City != (request.City ?? result.City))
-            {
-                result.City = request.City;
-				different = true;
-			}
-			if (result.Street != (request.Street ?? result.Street))
-            {
-                result.Street = request.Street;
-				different = true;
-			}
-			if (result.House != (request.House ?? result.House))
-            {
-                result.House = request.House;
-				different = true;
-			}
-			if (result.Apartment != (request.Apartment ?? result.Apartment))
-            {
-                result.Apartment = request.Apartment;
-				different = true;
-			}
-			if (result.DepartmentNumber != (request.DepartmentNumber ?? result.DepartmentNumber))
-            {
-                result.DepartmentNumber = request.DepartmentNumber;
-				different = true;
-			}
-			if (result.DeliveryType != (request.DeliveryType ?? result.DeliveryType))
-            {
-                result.DeliveryType = request.DeliveryType;
-				different = true;
-			}
+                await DB.ActivationCodes.AddAsync(new ActivationCode
+                {
+                    UserId = user.Id,
+                    User = user,
+                    Code = token,
+                    Action = "change-email," + request.Email,
+                    CreatedAt = DateTime.Now,
+                    Expires = DateTime.Now.AddHours(12)
+                });
 
-			if (!different)
-			{
-				return BadRequest(new BaseResponse.ErrorResponse("Data are identical"));
-			}
+                different = true;
+            }
+            if (user.PhoneNumber != (request.PhoneNumber ?? user.PhoneNumber))
+            {
+                user.PhoneNumber = request.PhoneNumber;
+                different = true;
+            }
+            if (user.Firstname != (request.Firstname ?? user.Firstname))
+            {
+                user.Firstname = request.Firstname;
+                different = true;
+            }
+            if (user.Midname != (request.Midname ?? user.Midname))
+            {
+                user.Midname = request.Midname;
+                different = true;
+            }
+            if (user.Lastname != (request.Lastname ?? user.Lastname))
+            {
+                user.Lastname = request.Lastname;
+                different = true;
+            }
+            if (user.Region != (request.Region ?? user.Region))
+            {
+                user.Region = request.Region;
+                different = true;
+            }
+            if (user.CityRegion != (request.CityRegion ?? user.CityRegion))
+            {
+                user.CityRegion = request.CityRegion;
+                different = true;
+            }
+            if (user.City != (request.City ?? user.City))
+            {
+                user.City = request.City;
+                different = true;
+            }
+            if (user.Street != (request.Street ?? user.Street))
+            {
+                user.Street = request.Street;
+                different = true;
+            }
+            if (user.House != (request.House ?? user.House))
+            {
+                user.House = request.House;
+                different = true;
+            }
+            if (user.Apartment != (request.Apartment ?? user.Apartment))
+            {
+                user.Apartment = request.Apartment;
+                different = true;
+            }
+            if (user.DepartmentNumber != (request.DepartmentNumber ?? user.DepartmentNumber))
+            {
+                user.DepartmentNumber = request.DepartmentNumber;
+                different = true;
+            }
+            if (user.DeliveryType != (request.DeliveryType ?? user.DeliveryType))
+            {
+                user.DeliveryType = request.DeliveryType;
+                different = true;
+            }
 
-			DB.SaveChanges();
+            if (!different)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Data are identical"));
+            }
 
-			return Ok(new UserResponse(true, "Data Updated", result));
+            await DB.SaveChangesAsync();
+
+            return Ok(new UserResponse(true, "Data Updated", user));
         }
 
+        [Authorize]
         [HttpPut("update/avatar")]
-        public async Task<IActionResult> UpdateUserAvatar(string userLogin, IFormFile userAvatarFile)
+        public async Task<IActionResult> UpdateUserAvatar(IFormFile userAvatarFile, [FromQuery(Name = "login")] string? userLogin = null)
         {
-			User? user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+            var user = AuthorizedUser;
 
-			if (user == null)
-			{
-				return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
-			}
+            if (userLogin is not null && AuthorizedUser.CanAdministrateSystem)
+            {
+                user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+                if (user == null)
+                {
+                    return NotFound(new BaseResponse.ErrorResponse("User login not found"));
+                }
+            }
 
-			if (userAvatarFile.ContentType != "image/png")
+            if (userAvatarFile.ContentType != "image/png")
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Accepted only .png images"));
             }
 
             await fileStorage.DeleteAvatarAsync(user);
-			await fileStorage.UploadAvatarAsync(user, userAvatarFile.OpenReadStream(), userAvatarFile.Length);
+            await fileStorage.UploadAvatarAsync(user, userAvatarFile.OpenReadStream(), userAvatarFile.Length);
 
             return Ok(new UserResponse(true, "Avatar uploaded", user));
-		}
+        }
     }
 }

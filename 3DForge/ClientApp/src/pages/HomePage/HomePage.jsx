@@ -35,7 +35,6 @@ const HomePage = () => {
                             </div>
                         </div>
                     </div>
-                    <img className={cl.go_down_img} alt="move down" />
                     <img className={cl.intro_img} alt="intro image" />
                 </div>
                 <h1 className={cl.creating_3D_model_header}>ЕТАПИ СТВОРЕННЯ 3D МОДЕЛІ</h1>
