@@ -1,4 +1,5 @@
-﻿using Backend3DForge.Models;
+﻿using Backend3DForge.Attributes;
+using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.Email;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security.Claims;
 
@@ -206,6 +206,7 @@ namespace Backend3DForge.Controllers
             return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
         }
 
+        [CanAdministrateSystem]
         [HttpGet("{userLogin}/info")]
         public async Task<IActionResult> GetUserInfo(string userLogin)
         {
@@ -224,13 +225,24 @@ namespace Backend3DForge.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                Stream fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
+                Stream fileStream;
+
+                try
+                {
+                    fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
+                }
+                catch
+                {
+                    return NotFound(new BaseResponse.ErrorResponse("File is not found!", null));
+                }
+
                 return new FileStreamResult(fileStream, "image/png");
             }
 
             return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
         }
 
+        [CanAdministrateSystem]
         [HttpGet("{userLogin}/avatar")]
         public async Task<IActionResult> GetUserAvatar(string userLogin)
         {

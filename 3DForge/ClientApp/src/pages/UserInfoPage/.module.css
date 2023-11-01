@@ -4,6 +4,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 40px;
+    margin-bottom: 150px;
 }
 
 .content {
@@ -16,26 +17,141 @@
 .base_info {
     position: relative;
     background-color: white;
-    border: 2px solid #FFF;
+    border: 3px solid #FFF;
     border-radius: 20px;
 }
 
 .avatar {
     position: absolute;
     width: 100%;
-    content: url(./img/no-avatar.png);
     border-radius: 20px;
 }
 
+.login_email_country_city {
+    position: absolute;
+    top: 455px;
+    transform: translateY(-50%);
+    width: 100%;
+}
+
+.login {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.email {
+    color: #3E86F0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-block: 10px;
+}
+
+.country_and_city {
+    text-align: center;
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.log_out_button {
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #C99E22;
+    border-radius: 12px;
+    padding-block: 10px;
+    padding-inline: 20px;
+}
+
+.log_out_button_text {
+    color: white;
+    font-size: 25px;
+    font-weight: 600;
+}
+
 .advanced_info {
-    border: 2px solid #FFF;
+    border: 3px solid #FFF;
     border-radius: 20px;
+    padding: 2%;
 }
 
 .general_info_header {
     color: white;
+    font-size: 30px;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    letter-spacing: 1px;
+}
+
+.general_info {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 30px;
+    grid-column-gap: 3%;
+    margin-block: 30px;
 }
 
 .address_header {
     color: white;
+    font-size: 30px;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    letter-spacing: 1px;
+}
+
+.address {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 30px;
+    grid-column-gap: 3%;
+    margin-top: 30px;
+}
+
+.info_field {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.info_field_email {
+    grid-column: span 2;
+}
+
+.info_field_street {
+    grid-column: span 2;
+}
+
+.info_field_header {
+    color: white;
+    font-size: 28px;
+    font-weight: 100;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.info_field_cell {
+    position: relative;
+    height: 35px;
+    border: 2px solid white;
+    border-radius: 15px;
+    padding-block: 5px;
+    padding-left: 15px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.info_field_value {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 25px;
 }

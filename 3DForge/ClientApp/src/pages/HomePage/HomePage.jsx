@@ -66,7 +66,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 <div className={cl.go_up_button_cont}>
-                    <div className={cl.go_up_button} onClick={() => window.scrollTo(0, 0)}>
+                    <div className={cl.go_up_button} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                         <img className={cl.go_up_img} alt="move up" />
                         <p className={cl.go_up_text}>Вгору</p>
                     </div>

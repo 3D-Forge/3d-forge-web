@@ -2,6 +2,7 @@ import React from "react";
 import cl from "./.module.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserAPI } from "../../services/api/UserAPI";
+import noAvatarImg from './img/no-avatar.png';
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 const AccountPageLayout = () => {
@@ -11,6 +12,7 @@ const AccountPageLayout = () => {
     const [isAuthorized, setAuthorizationState] = React.useState(false);
     const [isCheckingAuthState, setCheckingAuthState] = React.useState(true);
     const [isDropMenuVisible, setDropMenuVisibility] = React.useState(false);
+    const [userAvatar, setUserAvatar] = React.useState(undefined);
 
     const dropMenuRef = React.useRef();
 
@@ -37,7 +39,7 @@ const AccountPageLayout = () => {
             return (
                 <>
                     <img className={cl.shop} alt="shop" />
-                    <img className={cl.avatar} alt="avatar" onClick={() => { navigate("/user/info") }} />
+                    <img className={cl.avatar} alt="avatar" src={userAvatar} onClick={() => { navigate("/user/info") }} />
                     <div className={cl.drop_menu} ref={dropMenuRef}>
                         <img className={cl.drop_menu_img} onClick={() => setDropMenuVisibility(p => !p)} alt="drop menu" />
                         <div className={cl.drop_list} style={{ display: isDropMenuVisible ? 'block' : 'none' }}>
@@ -78,6 +80,22 @@ const AccountPageLayout = () => {
             }
             setCheckingAuthState(false);
         });
+
+        if (userAvatar === undefined) {
+            UserAPI.getSelfAvatar()
+                .then(res => {
+                    if (res.status === 404) {
+                        throw new Error();
+                    }
+                    return res.blob();
+                })
+                .then(blob => {
+                    setUserAvatar(URL.createObjectURL(blob));
+                })
+                .catch(() => {
+                    setUserAvatar(noAvatarImg);
+                });
+        }
 
         window.addEventListener("click", WindowClickEvent);
 

@@ -25,15 +25,15 @@ export class UserAPI {
         return await BaseAPI.get('user/self/info');
     }
 
-    static async getUserInfo(id) {
-        return await BaseAPI.get(`user/${id}/info`);
+    static async getUserInfo(login) {
+        return await BaseAPI.get(`user/${login}/info`);
     }
 
     static async getSelfAvatar() {
         return await BaseAPI.get(`user/self/avatar`);
     }
 
-    static async getUserAvatar(id) {
-        return await BaseAPI.get(`user/${id}/avatar`);
+    static async getUserAvatar(login) {
+        return await BaseAPI.get(`user/${login}/avatar`);
     }
 }

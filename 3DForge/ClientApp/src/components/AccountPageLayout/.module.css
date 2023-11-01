@@ -323,6 +323,10 @@
     padding: 5px;
 }
 
+.subscribe_button:hover {
+    border: 1.5px solid #C99E22;
+}
+
 .subscribe_button_img {
     content: url(./img/email.png);
 }

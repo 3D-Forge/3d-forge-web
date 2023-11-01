@@ -15,15 +15,15 @@ const RegistrationPage = () => {
     async function RegisterRequest(login, email, password, confirmPassword) {
         setRegisteringStatus(true);
         await UserAPI.register(login, email, password, confirmPassword)
-        .then(res => { return res.json() })
-        .then(data => {
-            if (data.success === undefined) {
-                alert("Some fields are empty!");
-            }
-            else {
-                alert(data.message);
-            }
-        });
+            .then(res => { return res.json() })
+            .then(data => {
+                if (data.success === undefined) {
+                    alert("Some fields are empty!");
+                }
+                else {
+                    alert(data.message);
+                }
+            });
         setRegisteringStatus(false);
     }
 
