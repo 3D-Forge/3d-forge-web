@@ -23,7 +23,7 @@ namespace Backend3DForge.Responses
             public string? Midname { get; set; }
             [JsonPropertyName("lastName")]
             public string? Lastname { get; set; }
-            [JsonPropertyName("counrty")]
+            [JsonPropertyName("country")]
             public string? Country { get; set; }
 			[JsonPropertyName("region")]
             public string? Region { get; set; }
