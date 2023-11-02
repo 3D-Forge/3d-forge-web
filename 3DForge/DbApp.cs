@@ -52,6 +52,10 @@ namespace Backend3DForge
 				.HasIndex(u => u.Email)
 				.IsUnique();
 
+            modelBuilder.Entity<Keyword>()
+				.HasKey(p => p.Name)
+				.HasName("PK_Keyword");
+
             base.OnModelCreating(modelBuilder);
 		}
 	}

@@ -117,5 +117,41 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
         {
             return DeleteFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
         }
+
+        public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
+        {
+            return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+        }
+
+        public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                    filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}",
+                    fileStream: fileStream,
+                    fileSize: fileSize);
+        }
+
+        public Task DeletePreviewModel(CatalogModel catalogModel)
+        {
+            return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+        }
+
+        public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
+        {
+            return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
+        }
+
+        public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                    filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}",
+                    fileStream: fileStream,
+                    fileSize: fileSize);
+        }
+
+        public Task DeletePrintFile(CatalogModel catalogModel)
+        {
+            return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
+        }
     }
 }
