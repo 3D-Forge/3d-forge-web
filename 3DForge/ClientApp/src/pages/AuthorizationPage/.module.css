@@ -176,6 +176,10 @@
     margin-bottom: 20px;
 }
 
+.auth_button:hover {
+    background-color: #9b7b1c;
+}
+
 .forgot_password_link {
     font-size: 22px;
 }

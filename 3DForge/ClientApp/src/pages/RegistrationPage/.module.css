@@ -182,3 +182,7 @@
     font-size: 25px;
     background: #C99E22;
 }
+
+.reg_button:hover {
+    background-color: #9b7b1c;
+}
