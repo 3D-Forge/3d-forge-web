@@ -26,24 +26,30 @@ namespace Backend3DForge.Services.FileStorage.FTP
                 throw new ArgumentNullException(nameof(filename));
             }
 
-            filename = NormalizePath(filename);
-            string[] pathParts = filename.Split('/');
-
-            FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
-            WebResponse response = await request.GetResponseAsync();
-
-            response.Close();
-
-            // delete empty directories
-            for (int i = pathParts.Length - 1; i > 0; i--)
+            try
             {
-                string path = string.Join("/", pathParts.Take(i));
-                if (await IsDirectoryEmptyAsync(path))
+                filename = NormalizePath(filename);
+                string[] pathParts = filename.Split('/');
+
+                FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
+                WebResponse response = await request.GetResponseAsync();
+
+                response.Close();
+
+                // delete empty directories
+                for (int i = pathParts.Length - 1; i > 0; i--)
                 {
-                    await DeleteDirectoryAsync(path);
+                    string path = string.Join("/", pathParts.Take(i));
+                    if (await IsDirectoryEmptyAsync(path))
+                    {
+                        await DeleteDirectoryAsync(path);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                this.logger.Log(LogLevel.Error, ex.ToString());
+            }
         }
 
         public async Task<Stream> DownloadFileAsync(string filename)

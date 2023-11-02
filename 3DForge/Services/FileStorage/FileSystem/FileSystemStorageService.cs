@@ -30,6 +30,11 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
                 throw new ArgumentNullException("filename");
             }
 
+            if (!File.Exists(GetFullPath(filename)))
+            {
+                return Task.CompletedTask;
+            }
+
             string dir = Path.GetDirectoryName(GetFullPath(filename));
 
             File.Delete(GetFullPath(filename));
