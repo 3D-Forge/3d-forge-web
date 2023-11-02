@@ -1,7 +1,5 @@
 ﻿using Backend3DForge.Models;
 using Microsoft.Extensions.Options;
-using System;
-using System.IO;
 using System.Net;
 
 namespace Backend3DForge.Services.FileStorage.FTP
@@ -9,10 +7,16 @@ namespace Backend3DForge.Services.FileStorage.FTP
     public class FTPStorageService : IFileStorage
     {
         protected readonly FTPStorageConfigurationMetadata configuration;
+        protected readonly ILogger logger;
 
-        public FTPStorageService(IOptions<FTPStorageConfigurationMetadata> configuration)
+        public FTPStorageService(IOptions<FTPStorageConfigurationMetadata> configuration, ILogger logger)
         {
             this.configuration = configuration.Value;
+
+            this.MkDirAsync(this.configuration.AvatarStoragePath).Wait();
+            this.MkDirAsync(this.configuration.PathToPreviewFiles).Wait();
+            this.MkDirAsync(this.configuration.PathToFilesToPrint).Wait();
+            this.logger = logger;
         }
 
         public async Task DeleteFileAsync(string filename)
@@ -162,9 +166,18 @@ namespace Backend3DForge.Services.FileStorage.FTP
             return path.Replace("\\", "/");
         }
 
-        public Task<Stream> DownloadAvatarAsync(User user)
+        public async Task<Stream> DownloadAvatarAsync(User user)
         {
-            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+            Stream stream = null;
+            try
+            {
+                stream = await DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+            }
+            catch (WebException ex)
+            {
+                stream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "src", "img", "no-avatar.png"), FileMode.Open, FileAccess.Read);
+            }
+            return stream;
         }
 
         public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)

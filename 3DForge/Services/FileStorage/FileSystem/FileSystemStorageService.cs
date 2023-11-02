@@ -17,7 +17,7 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
         {
             this.configuration = configuration.Value;
 
-            if(!Directory.Exists(RootPath))
+            if (!Directory.Exists(RootPath))
             {
                 Directory.CreateDirectory(RootPath);
             }
@@ -47,6 +47,11 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
             if (filename == null)
             {
                 throw new ArgumentNullException("filename");
+            }
+
+            if (!File.Exists(GetFullPath(filename)))
+            {
+                throw new FileNotFoundException("File not found", filename);
             }
 
             return Task.FromResult(new FileStream(GetFullPath(filename), FileMode.Open, FileAccess.Read) as Stream);
@@ -85,14 +90,21 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
 
         public Task<Stream> DownloadAvatarAsync(User user)
         {
-            return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+            try
+            {
+                return DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+            }
+            catch (FileNotFoundException)
+            {
+                return Task.FromResult(new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "src", "img", "no-avatar.png"), FileMode.Open, FileAccess.Read) as Stream);
+            }
         }
 
         public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
         {
             return UploadFileAsync(
-                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png", 
-                fileStream: fileStream, 
+                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png",
+                fileStream: fileStream,
                 fileSize: fileSize);
         }
 

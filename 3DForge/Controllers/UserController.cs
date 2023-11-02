@@ -195,15 +195,11 @@ namespace Backend3DForge.Controllers
             return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized"));
         }
 
+        [Authorize]
         [HttpGet("self/info")]
         public IActionResult GetSelfInfo()
         {
-            if (User?.Identity?.IsAuthenticated == true)
-            {
-                return Ok(new UserResponse(true, null, AuthorizedUser));
-            }
-
-            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
+            return Ok(new UserResponse(true, null, AuthorizedUser));
         }
 
         [CanAdministrateSystem]
@@ -220,26 +216,22 @@ namespace Backend3DForge.Controllers
             return Ok(new UserResponse(true, null, user));
         }
 
+        [Authorize]
         [HttpGet("self/avatar")]
         public async Task<IActionResult> GetSelfAvatar()
         {
-            if (User?.Identity?.IsAuthenticated == true)
+            Stream fileStream;
+
+            try
             {
-                Stream fileStream;
-
-                try
-                {
-                    fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
-                }
-                catch
-                {
-                    return NotFound(new BaseResponse.ErrorResponse("File is not found!", null));
-                }
-
-                return new FileStreamResult(fileStream, "image/png");
+                fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message, ex));
             }
 
-            return Unauthorized(new BaseResponse.ErrorResponse("The user is not authorized!"));
+            return new FileStreamResult(fileStream, "image/png");
         }
 
         [CanAdministrateSystem]
@@ -253,7 +245,17 @@ namespace Backend3DForge.Controllers
                 return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
             }
 
-            Stream fileStream = await fileStorage.DownloadAvatarAsync(user);
+            Stream fileStream;
+
+            try
+            {
+                fileStream = await fileStorage.DownloadAvatarAsync(AuthorizedUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message, ex));
+            }
+
             return new FileStreamResult(fileStream, "image/png");
         }
 
