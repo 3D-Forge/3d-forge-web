@@ -108,7 +108,7 @@ const AccountPageLayout = () => {
     return (
         <>
             <nav className={cl.nav_header}>
-                <div className={cl.logo}>
+                <div className={cl.logo} onClick={() => navigate('/')}>
                     <img className={cl.logo_img} alt='logo' />
                     <h1 className={cl.logo_text}>3D Forge</h1>
                 </div>

@@ -157,7 +157,6 @@
     max-width: 60px;
     max-height: 60px;
     background-color: black;
-    content: url(./img/no-avatar.png);
     transition: 0.1s;
 }
 
