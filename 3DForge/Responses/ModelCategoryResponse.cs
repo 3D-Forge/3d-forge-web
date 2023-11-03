@@ -9,6 +9,11 @@ namespace Backend3DForge.Responses
             Data = new View(model);
         }
 
+        public ModelCategoryResponse(ICollection<ModelCategory> models) : base(true, null, null)
+        {
+            Data = models.Select(p => new View(p));
+        }
+
         public class View
         {
             public int Id { get; set; }

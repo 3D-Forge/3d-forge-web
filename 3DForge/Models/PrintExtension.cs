@@ -9,6 +9,13 @@ namespace Backend3DForge.Models
         [Required]
         public string PrintExtensionName { get; set; }
 
+        public PrintExtension() { }
+
+        public PrintExtension(string printExtensionName)
+        {
+            PrintExtensionName = printExtensionName;
+        }
+
         public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();
         public ICollection<OrderedModel> OrderedModels { get; set; } = new List<OrderedModel>();
     }

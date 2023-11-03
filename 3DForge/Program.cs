@@ -21,6 +21,8 @@ namespace Backend3DForge
 
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddMemoryCache();
+
             builder.Services.AddSwaggerGen(p =>
             {
                 p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo

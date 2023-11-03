@@ -5,6 +5,7 @@ using Backend3DForge.Services.FileStorage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using NuGet.Packaging;
 
 namespace Backend3DForge.Controllers
@@ -15,10 +16,27 @@ namespace Backend3DForge.Controllers
     {
 
         protected readonly IFileStorage fileStorage;
+        protected readonly IMemoryCache memoryCache;
 
-        public CatalogController(DbApp db, IFileStorage fileStorage) : base(db)
+        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache) : base(db)
         {
             this.fileStorage = fileStorage;
+            this.memoryCache = memoryCache;
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            ModelCategoryResponse? response;
+
+            if(!memoryCache.TryGetValue("GET api/catalog/categories", out response))
+            {
+                var categories = await DB.ModelCategories.ToArrayAsync();
+                response = new ModelCategoryResponse(categories);
+                memoryCache.Set("GET api/catalog/categories", response, TimeSpan.FromMinutes(10));
+            }
+
+            return Ok(response);
         }
 
         [Authorize]

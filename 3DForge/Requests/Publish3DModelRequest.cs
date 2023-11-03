@@ -23,7 +23,7 @@ namespace Backend3DForge.Requests
         public string[]? Keywords { get; set; }
         [Required]
         [MinLength(1)]
-        [MaxLength(5)]
+        [MaxLength(3)]
         public int[] Categories { get; set; }
     }
 }
