@@ -10,8 +10,10 @@ const AuthorizationPage = () => {
 
     const loginOrEmailRef = React.useRef();
     const passwordRef = React.useRef();
+    const modalWindowLoginRef = React.useRef();
 
     const [isAuthorizing, setAuthorizingStatus] = React.useState(false);
+    const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
 
     async function AuthorizeRequest(loginOrEmail, password) {
         setAuthorizingStatus(true);
@@ -32,6 +34,54 @@ const AuthorizationPage = () => {
             });
         setAuthorizingStatus(false);
     }
+
+    function GetResetPasswordPermission() {
+        UserAPI.sendResetPasswordPermission(modalWindowLoginRef.current.value)
+            .then(res => { return res.json(); })
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    modalWindowLoginRef.current.value = "";
+                    setModalWindowVisibility(false);
+                }
+            });
+    }
+
+    function RenderModalWindow() {
+        if (!isModalWindowVisible) {
+            return;
+        }
+
+        return (
+            <div className={cl.modal_window_background}>
+                <div className={cl.modal_window}>
+                    <div className={cl.modal_window_content}>
+                        <h2 className={cl.modal_window_header}>Відправка посилання на пошту</h2>
+                        <p className={cl.modal_window_description}>
+                            Напишіть логін вашого акаунту для відправки письма з
+                            посиланням на на сторінку зміни паролю.
+                        </p>
+                        <div className={cl.modal_window_login_panel}>
+                            <h3 className={cl.modal_window_login_panel_header}>Логін</h3>
+                            <input className={cl.modal_window_login_input} type="text" ref={modalWindowLoginRef} />
+                        </div>
+                    </div>
+                    <div className={cl.modal_window_control}>
+                        <div className={cl.modal_window_send_email_button} onClick={() => GetResetPasswordPermission()}>
+                            <span className={cl.modal_window_send_email_button_text}>Відправити</span>
+                        </div>
+                        <div className={cl.modal_window_cancel_button} onClick={() => setModalWindowVisibility(false)}>
+                            <span className={cl.modal_window_cancel_button_text}>Скасувати</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    React.useEffect(() => {
+        document.body.style.overflow = "auto";
+    });
 
     return (
         <div className={cl.main}>
@@ -86,9 +136,10 @@ const AuthorizationPage = () => {
                                 : <p className={cl.log_in_button_text}>Увійти</p>
                         }
                     </div>
-                    <a className={cl.forgot_password_link} href='/register'>Забули свій пароль?</a>
+                    <p className={cl.forgot_password} onClick={() => setModalWindowVisibility(true)}>Забули свій пароль?</p>
                 </form>
             </div>
+            {RenderModalWindow()}
         </div>
     );
 }

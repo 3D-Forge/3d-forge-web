@@ -6,7 +6,7 @@ export class UserAPI {
     }
 
     static async confirmEmail(email, token) {
-        return await BaseAPI.get(`user/confirm-email/${encodeURIComponent(email)}?token=${token}`)
+        return await BaseAPI.get(`user/confirm-registration-email/${encodeURIComponent(email)}?token=${token}`)
     }
 
     static async login(loginOrEmail, password) {
@@ -19,6 +19,20 @@ export class UserAPI {
 
     static async check() {
         return await BaseAPI.get('user/check');
+    }
+
+    static async sendResetPasswordPermission(login) {
+        return await BaseAPI.post(`user/${login}/send-reset-password-permission`);
+    }
+
+    static async resetPassword(login, newPassword, confirmNewPassword, oldPassword = null, token = null) {
+        return await BaseAPI.put(`user/${login}/reset-password`,
+            {
+                newPassword,
+                confirmNewPassword,
+                oldPassword,
+                token
+            });
     }
 
     static async getSelfInfo() {

@@ -27,6 +27,10 @@ const RegistrationPage = () => {
         setRegisteringStatus(false);
     }
 
+    React.useEffect(() => {
+        document.body.style.overflow = "auto";
+    });
+
     return (
         <div className={cl.main}>
             <aside className={cl.intro}>

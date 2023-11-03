@@ -2,7 +2,6 @@ import React from "react";
 import cl from "./.module.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserAPI } from "../../services/api/UserAPI";
-import noAvatarImg from './img/no-avatar.png';
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 const AccountPageLayout = () => {
@@ -39,7 +38,12 @@ const AccountPageLayout = () => {
             return (
                 <>
                     <img className={cl.shop} alt="shop" />
-                    <img className={cl.avatar} alt="avatar" src={userAvatar} onClick={() => { navigate("/user/info") }} />
+                    {!userAvatar ?
+                        <div className={cl.loading_avatar}>
+                            <LoadingAnimation size="30px" loadingCurveWidth="6px" />
+                        </div>
+                        : <img className={cl.avatar} alt="avatar" src={userAvatar} onClick={() => { navigate("/user/info") }} />
+                    }
                     <div className={cl.drop_menu} ref={dropMenuRef}>
                         <img className={cl.drop_menu_img} onClick={() => setDropMenuVisibility(p => !p)} alt="drop menu" />
                         <div className={cl.drop_list} style={{ display: isDropMenuVisible ? 'block' : 'none' }}>
@@ -84,18 +88,8 @@ const AccountPageLayout = () => {
 
         if (userAvatar === undefined) {
             UserAPI.getSelfAvatar()
-                .then(res => {
-                    if (res.status === 404) {
-                        throw new Error();
-                    }
-                    return res.blob();
-                })
-                .then(blob => {
-                    setUserAvatar(URL.createObjectURL(blob));
-                })
-                .catch(() => {
-                    setUserAvatar(noAvatarImg);
-                });
+                .then(res => { return res.blob(); })
+                .then(blob => { setUserAvatar(URL.createObjectURL(blob)); });
         }
 
         window.addEventListener("click", WindowClickEvent);
@@ -108,7 +102,7 @@ const AccountPageLayout = () => {
     return (
         <>
             <nav className={cl.nav_header}>
-                <div className={cl.logo} onClick={() => navigate('/')}>
+                <div className={cl.logo} onClick={() => { window.location.pathname = '/' }}>
                     <img className={cl.logo_img} alt='logo' />
                     <h1 className={cl.logo_text}>3D Forge</h1>
                 </div>

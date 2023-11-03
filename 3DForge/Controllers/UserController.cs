@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
 
@@ -57,7 +58,7 @@ namespace Backend3DForge.Controllers
             {
                 await emailService.SendEmailUseTemplateAsync(
                     email: request.Email,
-                    tepmlateName: "confirm_email_after_registration.html",
+                    templateName: "confirm_email_after_registration.html",
                     parameters: new Dictionary<string, string>
                     {
                         { "login", request.Login },
@@ -182,7 +183,7 @@ namespace Backend3DForge.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return Ok();
+            return Redirect("/");
         }
 
         [HttpGet("check")]
@@ -193,6 +194,108 @@ namespace Backend3DForge.Controllers
                 return Ok(new BaseResponse.SuccessResponse("Authorized", null));
             }
             return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized"));
+        }
+
+        [HttpPost("{userLogin}/send-reset-password-permission")]
+        public async Task<IActionResult> SendResetPasswordPermission(string userLogin)
+        {
+            User? user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
+            }
+
+            string token = StringTool.RandomString(256);
+
+            try
+            {
+                //await emailService.SendEmailUseTemplateAsync(
+                //    email: user.Email,
+                //    templateName: "reset_password_permission.html",
+                //    parameters: new Dictionary<string, string>
+                //    {
+                //        { "login", user.Login },
+                //        { "link", $"https://{HttpContext.Request.Host}/reset-password?login={user.Login}&token={token}" }
+                //    });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+            }
+
+            DateTime time = DateTime.Now;
+
+            await DB.ActivationCodes.AddAsync(new ActivationCode
+            {
+                UserId = user.Id,
+                User = user,
+                Code = token,
+                Action = "reset-password-permission",
+                CreatedAt = time,
+                Expires = time.AddHours(12)
+            });
+
+            await DB.SaveChangesAsync();
+
+            return Ok(new BaseResponse.SuccessResponse("Email is sent!", $"https://{HttpContext.Request.Host}/reset-password?login={user.Login}&token={token}"));
+        }
+
+        [HttpPut("{userLogin}/reset-password")]
+        public async Task<IActionResult> ResetPassword(string userLogin, [FromBody] ResetPasswordRequest request)
+        {
+            if (request.NewPassword.Length < 6)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
+            }
+
+            User? user;
+
+            if (!request.Token.IsNullOrEmpty())
+            {
+                ActivationCode? activationCode = await DB.ActivationCodes
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.User.Login == userLogin && p.Code == request.Token);
+
+                if (activationCode == null)
+                {
+                    return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+                }
+
+                if (DateTime.Now > activationCode.Expires)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
+                }
+
+                user = activationCode.User;
+                user.PasswordHash = PasswordTool.Hash(request.NewPassword);
+
+                DB.ActivationCodes.Remove(activationCode);
+            }
+            else
+            {
+                user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
+
+                if (user == null)
+                {
+                    return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
+                }
+
+                if (!PasswordTool.Validate(request.OldPassword ?? "", user.PasswordHash))
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
+                }
+
+                user.PasswordHash = PasswordTool.Hash(request.NewPassword);
+            }
+
+            await DB.SaveChangesAsync();
+            return Ok(new BaseResponse.SuccessResponse("The password is changed!"));
         }
 
         [Authorize]
@@ -304,7 +407,7 @@ namespace Backend3DForge.Controllers
                 {
                     await emailService.SendEmailUseTemplateAsync(
                         email: request.Email,
-                        tepmlateName: "confirm_email.html",
+                        templateName: "confirm_email.html",
                         parameters: new Dictionary<string, string>
                         {
                             { "login", user.Login },

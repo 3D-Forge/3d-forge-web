@@ -6,15 +6,18 @@ import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 import AccountPageLayout from './components/AccountPageLayout/AccountPageLayout';
 import UserInfoPage from './pages/UserInfoPage/UserInfoPage';
 import { UserAPI } from './services/api/UserAPI';
+import UserEditPage from './pages/UserEditPage/UserEditPage';
+import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 
 const App = () => {
 
   React.useEffect(() => {
     UserAPI.check().then((res) => {
       if (
-        window.location.pathname !== '/auth'
+        window.location.pathname !== '/'
         && window.location.pathname !== '/register'
-        && window.location.pathname !== '/'
+        && window.location.pathname !== '/auth'
+        && !window.location.pathname.includes('/reset-password')
         && res.status === 401) {
         window.location.replace("/");
       }
@@ -34,10 +37,11 @@ const App = () => {
         <Route path='' element={<AccountPageLayout />}>
           <Route index element={<HomePage />} />
           <Route path='user/info' element={<UserInfoPage />} />
-          <Route path='user/edit' element={<></>} />
+          <Route path='user/edit' element={<UserEditPage />} />
         </Route>
         <Route path='auth' element={<AuthorizationPage />} />
         <Route path='register' element={<RegistrationPage />} />
+        <Route path='reset-password' element={<ResetPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );

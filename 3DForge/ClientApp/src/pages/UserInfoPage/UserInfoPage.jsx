@@ -1,7 +1,6 @@
 import React from "react";
 import cl from "./.module.css";
 import { UserAPI } from "../../services/api/UserAPI";
-import noAvatarImg from './img/no-avatar.png';
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const UserInfoPage = () => {
@@ -42,18 +41,8 @@ const UserInfoPage = () => {
 
         if (userAvatar === undefined) {
             UserAPI.getSelfAvatar()
-                .then(res => {
-                    if (res.status === 404) {
-                        throw new Error();
-                    }
-                    return res.blob();
-                })
-                .then(blob => {
-                    setUserAvatar(URL.createObjectURL(blob));
-                })
-                .catch(() => {
-                    setUserAvatar(noAvatarImg);
-                });
+                .then(res => { return res.blob(); })
+                .then(blob => { setUserAvatar(URL.createObjectURL(blob)); });
         }
     });
 

@@ -180,6 +180,114 @@
     background-color: #9b7b1c;
 }
 
-.forgot_password_link {
+.forgot_password {
+    cursor: pointer;
     font-size: 22px;
+    text-decoration: underline;
+    color: #9838c4;
+}
+
+.modal_window_background {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.801);
+}
+
+.modal_window {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    max-width: 500px;
+    background: linear-gradient(270deg, #7C26BF 0.13%, #BA67D3 99.84%, #7030B5 99.85%);
+    border-radius: 15px;
+    color: white;
+}
+
+.modal_window_content {
+    padding-inline: 40px;
+    padding-block: 30px;
+}
+
+.modal_window_header {
+    font-size: 30px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.modal_window_description {
+    font-size: 20px;
+    line-height: 35px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.modal_window_login_panel_header {
+    font-size: 26px;
+    font-weight: 100;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.modal_window_login_input {
+    border-radius: 10px;
+    border: 2px solid #1C0033;
+    font-size: 22px;
+    width: 100%;
+    padding-left: 8px;
+    padding-block: 3px;
+}
+
+.modal_window_control {
+    display: flex;
+    flex-flow: row-reverse;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background: linear-gradient(270deg, #4D1876 0.12%, #BA67D3 100.8%, #2C0E4C 100.81%);
+    padding: 10px;
+}
+
+.modal_window_send_email_button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    font-size: 22px;
+    background: #C99E22;
+    padding-inline: 20px;
+    letter-spacing: 1px;
+    margin-right: 25px;
+}
+
+.modal_window_send_email_button:hover {
+    background-color: #d1c190;
+}
+
+.modal_window_cancel_button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    font-size: 22px;
+    padding-inline: 20px;
+    letter-spacing: 1px;
+    margin-right: 15px;
+}
+
+.modal_window_cancel_button:hover {
+    background-color: #ffffff64;
 }

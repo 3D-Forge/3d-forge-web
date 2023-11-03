@@ -61,10 +61,16 @@ namespace Backend3DForge.Services
 
             while (activationCode != null)
             {
-                User user = activationCode.User;
-
-                DB.ActivationCodes.Remove(activationCode);
-                DB.Users.Remove(user);
+                switch (activationCode.Action)
+                {
+                    case "confirm-registration":
+                        {
+                            User user = activationCode.User;
+                            DB.ActivationCodes.Remove(activationCode);
+                            DB.Users.Remove(user);
+                        }
+                        break;
+                }
 
                 DB.SaveChanges();
 

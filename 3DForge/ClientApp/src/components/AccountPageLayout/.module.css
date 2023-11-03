@@ -4,6 +4,7 @@
 }
 
 .logo {
+    cursor: pointer;
     position: relative;
     position: absolute;
     left: 30px;
@@ -16,13 +17,11 @@
 }
 
 .logo_img {
-    cursor: pointer;
     content: url(./img/logo.png);
     width: 70px;
 }
 
 .logo_text {
-    cursor: pointer;
     color: white;
     font-size: 40px;
     margin-left: 20px;
@@ -161,6 +160,26 @@
 }
 
 .avatar:hover {
+    border-radius: 10px;
+}
+
+.loading_avatar {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: -145px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    transition: 0.1s;
+}
+
+.loading_avatar:hover {
     border-radius: 10px;
 }
 
