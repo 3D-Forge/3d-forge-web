@@ -26,24 +26,30 @@ namespace Backend3DForge.Services.FileStorage.FTP
                 throw new ArgumentNullException(nameof(filename));
             }
 
-            filename = NormalizePath(filename);
-            string[] pathParts = filename.Split('/');
-
-            FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
-            WebResponse response = await request.GetResponseAsync();
-
-            response.Close();
-
-            // delete empty directories
-            for (int i = pathParts.Length - 1; i > 0; i--)
+            try
             {
-                string path = string.Join("/", pathParts.Take(i));
-                if (await IsDirectoryEmptyAsync(path))
+                filename = NormalizePath(filename);
+                string[] pathParts = filename.Split('/');
+
+                FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
+                WebResponse response = await request.GetResponseAsync();
+
+                response.Close();
+
+                // delete empty directories
+                for (int i = pathParts.Length - 1; i > 0; i--)
                 {
-                    await DeleteDirectoryAsync(path);
+                    string path = string.Join("/", pathParts.Take(i));
+                    if (await IsDirectoryEmptyAsync(path))
+                    {
+                        await DeleteDirectoryAsync(path);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                this.logger.Log(LogLevel.Error, ex.ToString());
+            }
         }
 
         public async Task<Stream> DownloadFileAsync(string filename)
@@ -191,6 +197,42 @@ namespace Backend3DForge.Services.FileStorage.FTP
         public Task DeleteAvatarAsync(User user)
         {
             return DeleteFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+        }
+
+        public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
+        {
+            return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+        }
+
+        public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                    filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}",
+                    fileStream: fileStream,
+                    fileSize: fileSize);
+        }
+
+        public Task DeletePreviewModel(CatalogModel catalogModel)
+        {
+            return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+        }
+
+        public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
+        {
+            return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
+        }
+
+        public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+                    filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}",
+                    fileStream: fileStream,
+                    fileSize: fileSize);
+        }
+
+        public Task DeletePrintFile(CatalogModel catalogModel)
+        {
+            return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
         }
     }
 }

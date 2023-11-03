@@ -1,6 +1,5 @@
 ﻿using Backend3DForge.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Backend3DForge.Controllers
@@ -8,7 +7,7 @@ namespace Backend3DForge.Controllers
     public class BaseController : ControllerBase
     {
         protected DbApp DB { get; }
-        protected User? AuthorizedUser
+        protected User AuthorizedUser
         {
             get
             {
@@ -17,10 +16,15 @@ namespace Backend3DForge.Controllers
 
                 if (!int.TryParse(strId, out int id))
                 {
-                    return null;
+                    throw new InvalidOperationException("This property accessible only for authorized users.");
                 }
 
                 User? user = DB.Users.SingleOrDefault(p => p.Id == id);
+
+                if(user is null)
+                {
+                    throw new InvalidOperationException("This property accessible only for authorized users.");
+                }
 
                 return user;
             }

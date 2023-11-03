@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 
 namespace Backend3DForge.Models
 {
     public class Keyword
     {
         [Key]
-        public int Id { get; set; }
-        [Required]
-        public string KeywordName { get; set; }
+        [MaxLength(30)]
+        [RegexStringValidator("^[\\w\\d_]+$")]
+        public string Name { get; set; }
 
         public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>(); 
     }

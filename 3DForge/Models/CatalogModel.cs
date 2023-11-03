@@ -14,8 +14,12 @@ namespace Backend3DForge.Models
         public int PrintExtensionId { get; set; }
         public PrintExtension PrintExtension { get; set; }
         [Required]
+        public long PrintFileSize { get; set; }
+        [Required]
         public int ModelExtensionId { get; set; }
         public ModelExtension ModelExtension { get; set; }
+        [Required]
+        public long ModelFileSize { get; set; }
         [Required]
 		public int UserId { get; set; }
         public User User { get; set; }
@@ -31,8 +35,6 @@ namespace Backend3DForge.Models
         public float Depth { get; set; }
         [Required]
         public string Color { get; set; }
-        [Required]
-        public long FileSize { get; set; }
 
         public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
         public ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();
