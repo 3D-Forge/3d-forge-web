@@ -39,6 +39,17 @@ namespace Backend3DForge.Controllers
             return Ok(response);
         }
 
+        [HttpGet("keywords")]
+        public async Task<IActionResult> SearchKeywords([FromQuery(Name = "q")] string q)
+        {
+            q = q.ToLower();
+            var result = await DB.Keywords
+                .Where(p => p.Name.ToLower().Contains(q))
+                .Take(20)
+                .ToArrayAsync();
+            return Ok(new KeywordResponse(result));
+        }
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddNewModel([FromBody] Publish3DModelRequest request, IFormFile print, IFormFile model)
