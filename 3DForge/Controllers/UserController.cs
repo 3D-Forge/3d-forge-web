@@ -210,14 +210,14 @@ namespace Backend3DForge.Controllers
 
             try
             {
-                //await emailService.SendEmailUseTemplateAsync(
-                //    email: user.Email,
-                //    templateName: "reset_password_permission.html",
-                //    parameters: new Dictionary<string, string>
-                //    {
-                //        { "login", user.Login },
-                //        { "link", $"https://{HttpContext.Request.Host}/reset-password?login={user.Login}&token={token}" }
-                //    });
+                await emailService.SendEmailUseTemplateAsync(
+                    email: user.Email,
+                    templateName: "reset_password_permission.html",
+                    parameters: new Dictionary<string, string>
+                    {
+                        { "login", user.Login },
+                        { "link", $"https://{HttpContext.Request.Host}/reset-password?login={user.Login}&token={token}" }
+                    });
             }
             catch (Exception ex)
             {
@@ -238,7 +238,7 @@ namespace Backend3DForge.Controllers
 
             await DB.SaveChangesAsync();
 
-            return Ok(new BaseResponse.SuccessResponse("Email is sent!", $"https://{HttpContext.Request.Host}/reset-password?login={user.Login}&token={token}"));
+            return Ok(new BaseResponse.SuccessResponse("Email is sent!"));
         }
 
         [HttpPut("{userLogin}/reset-password")]
