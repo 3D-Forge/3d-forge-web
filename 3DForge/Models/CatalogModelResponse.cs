@@ -15,7 +15,12 @@ namespace Backend3DForge.Models
 		[Required]
 		public int Rate { get; set; }
 		[Required]
-		public string ResponseText { get; set; }
+		[MaxLength(512)]
+		public string Text { get; set; }
+		[MaxLength(512)]
+		public string Pros { get; set; }
+		[MaxLength(512)]
+		public string Cons { get; set; }
 		[Required]
 		public DateTime CreatedAt { get; set; }
 	}
