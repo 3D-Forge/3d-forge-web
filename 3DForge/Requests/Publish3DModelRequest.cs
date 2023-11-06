@@ -11,14 +11,7 @@ namespace Backend3DForge.Requests
         [MaxLength(500)]
         public string Description { get; set; }
         [Required]
-        public float Height { get; set; }
-        [Required]
-        public float Width { get; set; }
-        [Required]
         public float Depth { get; set; }
-        [Required]
-        [MaxLength(7)]
-        public string Color { get; set; }
         [MaxLength(25)]
         public string[]? Keywords { get; set; }
         [Required]

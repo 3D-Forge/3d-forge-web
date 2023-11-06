@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NuGet.Packaging;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Controllers
 {
@@ -29,7 +30,7 @@ namespace Backend3DForge.Controllers
         {
             ModelCategoryResponse? response;
 
-            if(!memoryCache.TryGetValue("GET api/catalog/categories", out response))
+            if (!memoryCache.TryGetValue("GET api/catalog/categories", out response))
             {
                 var categories = await DB.ModelCategories.ToArrayAsync();
                 response = new ModelCategoryResponse(categories);
@@ -52,16 +53,26 @@ namespace Backend3DForge.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> AddNewModel([FromBody] Publish3DModelRequest request, IFormFile print, IFormFile model)
+        public async Task<IActionResult> AddNewModel([FromForm] Publish3DModelRequest request, [FromForm] IFormFileCollection files)
         {
-            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.PrintExtensionName == print.ContentType);
+            if (files.Count != 2)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Please select files"));
+            }
+
+            var model = files[0];
+            var modelEx = Path.GetExtension(model.FileName).Replace(".","");
+            var print = files[1];
+            var printEx = Path.GetExtension(print.FileName).Replace(".", "");
+
+            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.PrintExtensionName == printEx);
 
             if (printExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
             }
 
-            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.ModelExtensionName == model.ContentType);
+            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.ModelExtensionName == modelEx);
             if (modelExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
@@ -108,10 +119,9 @@ namespace Backend3DForge.Controllers
             {
                 Name = request.Name,
                 Description = request.Description,
-                Height = request.Height,
-                Width = request.Width,
+                Height = 0,
+                Width = 0,
                 Depth = request.Depth,
-                Color = request.Color,
                 ModelExtensionId = modelExtension.Id,
                 PrintExtensionId = printExtension.Id,
                 ModelFileSize = model.Length,

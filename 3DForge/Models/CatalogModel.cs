@@ -25,16 +25,13 @@ namespace Backend3DForge.Models
         public User User { get; set; }
         [Required]
         public DateTime Uploaded { get; set; }
+        public DateTime? Publicized { get; set; } = null;
         [Required]
-        public DateTime? Publicized { get; set; }
-        [Required]
-        public float Height { get; set; }
+        public float Height { get; set; } 
         [Required]
         public float Width { get; set; }
         [Required]
         public float Depth { get; set; }
-        [Required]
-        public string Color { get; set; }
 
         public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
         public ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();

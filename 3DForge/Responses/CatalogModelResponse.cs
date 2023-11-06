@@ -32,8 +32,6 @@ namespace Backend3DForge.Responses
             public float Width { get; set; }
             [Required]
             public float Depth { get; set; }
-            [Required]
-            public string Color { get; set; }
 
             public ICollection<ModelCategoryResponse.View> Categoryes { get; set; } = new List<ModelCategoryResponse.View>();
             public ICollection<string> Keywords { get; set; } = new List<string>();
@@ -50,7 +48,6 @@ namespace Backend3DForge.Responses
                 this.Height = model.Height;
                 this.Width = model.Width;
                 this.Depth = model.Depth;
-                this.Color = model.Color;
 
                 this.Categoryes.AddRange(model.ModelCategoryes.Select(p => new ModelCategoryResponse.View(p)));
                 this.Keywords.AddRange(model.Keywords.Select(p => p.Name));
