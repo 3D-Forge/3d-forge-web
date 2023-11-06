@@ -21,19 +21,21 @@ namespace Backend3DForge.Models
         [Required]
         public long ModelFileSize { get; set; }
         [Required]
-		public int UserId { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; }
         [Required]
         public DateTime Uploaded { get; set; }
         public DateTime? Publicized { get; set; } = null;
         [Required]
-        public float Height { get; set; } 
+        public float Height { get; set; }
         [Required]
         public float Width { get; set; }
         [Required]
         public float Depth { get; set; }
 
-        public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
+        public bool IsModelPublicized { get => Publicized is not null; }
+
+		public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
         public ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();
         public ICollection<OrderedModel> OrderedModels { get; set; } = new List<OrderedModel>();
     }

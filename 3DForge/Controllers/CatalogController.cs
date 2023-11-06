@@ -1,13 +1,19 @@
-﻿using Backend3DForge.Models;
+﻿using Azure.Core;
+using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
+using Backend3DForge.Services.Email;
 using Backend3DForge.Services.FileStorage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using NuGet.Common;
 using NuGet.Packaging;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Net;
+using CatalogModelResponse = Backend3DForge.Responses.CatalogModelResponse;
 
 namespace Backend3DForge.Controllers
 {
@@ -18,14 +24,16 @@ namespace Backend3DForge.Controllers
 
         protected readonly IFileStorage fileStorage;
         protected readonly IMemoryCache memoryCache;
+		protected readonly IEmailService emailService;
 
-        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache) : base(db)
+		public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService) : base(db)
         {
             this.fileStorage = fileStorage;
             this.memoryCache = memoryCache;
-        }
+            this.emailService = emailService;
+		}
 
-        [HttpGet("categories")]
+		[HttpGet("categories")]
         public async Task<IActionResult> GetCategories()
         {
             ModelCategoryResponse? response;
@@ -129,7 +137,7 @@ namespace Backend3DForge.Controllers
                 ModelFileSize = model.Length,
                 PrintFileSize = print.Length,
                 User = AuthorizedUser,
-                Uploaded = DateTime.UtcNow,
+                Uploaded = DateTime.UtcNow
             })).Entity;
 
             newModel.Keywords.AddRange(keywords);
@@ -142,7 +150,6 @@ namespace Backend3DForge.Controllers
                 this.fileStorage.UploadPreviewModel(newModel, model.OpenReadStream()),
                 this.fileStorage.UploadPrintFile(newModel, print.OpenReadStream())
             });
-
             return Ok(new Responses.CatalogModelResponse(newModel));
         }
 
@@ -166,12 +173,12 @@ namespace Backend3DForge.Controllers
                 }
                 else
                 {
-                    response = new Responses.CatalogModelResponse(model);
+                    response = new CatalogModelResponse(model);
                 }
                 this.memoryCache.Set($"GET api/catalog/{modelId}", response, TimeSpan.FromSeconds(10));
             }
 
-            if(response.Success)
+            if (response.Success)
                 return Ok(response);
             else 
                 return NotFound(response);
@@ -201,5 +208,121 @@ namespace Backend3DForge.Controllers
             HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename={model.Name}_{model.User.Login}.{model.ModelExtensionName}");
             return new FileStreamResult(fileStream, "application/octet-stream");
         }
+
+        [Authorize]
+        [HttpGet("unaccepted")]
+        public async Task<IActionResult> GetUnacceptedModels()
+        {
+            if (!AuthorizedUser.CanModerateCatalog)
+            {
+                return StatusCode(403);
+            }
+
+			var models = DB.CatalogModels.Where(x => x.Publicized == null).ToList();
+
+			return Ok(new BaseResponse.SuccessResponse("Unreviewed models: ", new CatalogModelResponse(models)));
+        }
+
+        [Authorize]
+        [HttpPost("{modelId}/accept")]
+        public async Task<IActionResult> AcceptModel([FromRoute] int modelId, [FromBody] AcceptRequest acceptRequest)
+        {
+			var model = await DB.CatalogModels
+                .Include(p => p.User)
+                .SingleOrDefaultAsync(p => p.Id == modelId);
+
+			if (model is null)
+			{
+				return NotFound("Model not found");
+			}
+
+			var owner = model.User;
+
+			if (!AuthorizedUser.CanModerateCatalog && owner != AuthorizedUser)
+			{
+				return StatusCode(403);
+			}
+
+			//if (owner != AuthorizedUser)
+			{
+				try
+				{
+					await emailService.SendEmailUseTemplateAsync(
+						email: owner.Email,
+						templateName: "model_acception_notification.html",
+						parameters: new Dictionary<string, string>
+						{
+							{ "login", owner.Login },
+							{ "action", acceptRequest.Accepted ? "accepted" : "not accepted" },
+                            { "message", acceptRequest.Message ?? "No message provided."},
+						}
+					);
+				}
+				catch (Exception ex)
+				{
+					return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+				}
+			}
+
+			if (acceptRequest.Accepted)
+			{
+				model.Publicized = DateTime.Now;
+            }
+            else
+            {
+                DB.Remove(model);
+			}
+
+            await DB.SaveChangesAsync();
+
+			return Ok(new BaseResponse.SuccessResponse("Model reviewed"));
+		}
+
+        [Authorize]
+        [HttpPost("{modelId}/delete")]
+        public async Task<IActionResult> DeleteModel([FromRoute] int modelId, [FromBody] string reason)
+        {
+            var model = await DB.CatalogModels
+				.Include(p => p.User)
+				.SingleOrDefaultAsync(p => p.Id == modelId);
+
+			if (model is null)
+			{
+				return NotFound("Model not found");
+			}
+
+			var owner = model.User;
+
+			if (!AuthorizedUser.CanModerateCatalog && owner != AuthorizedUser)
+			{
+				return StatusCode(403);
+			}
+
+            if (owner != AuthorizedUser)
+            {
+                try
+                {
+                    await emailService.SendEmailUseTemplateAsync(
+                        email: owner.Email,
+                        templateName: "model_deletion_notification.html",
+                        parameters: new Dictionary<string, string>
+                        {
+                            { "login", owner.Login },
+                            { "reason", reason }
+                        }
+                    );
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+                }
+            }
+
+            DB.Remove(model);
+
+			await DB.SaveChangesAsync();
+
+			return Ok(new BaseResponse.SuccessResponse("Model deleted"));
+		}
     }
 }
