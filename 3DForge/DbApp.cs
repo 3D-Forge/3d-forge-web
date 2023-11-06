@@ -56,6 +56,13 @@ namespace Backend3DForge
 				.HasKey(p => p.Name)
 				.HasName("PK_Keyword");
 
+			modelBuilder.Entity<PrintExtension>()
+				.HasKey(p => p.Name)
+				.HasName("PK_PrintExtension");
+			modelBuilder.Entity<ModelExtension>()
+				.HasKey(p => p.Name)
+				.HasName("PK_ModelExtension");
+
             base.OnModelCreating(modelBuilder);
 		}
 	}

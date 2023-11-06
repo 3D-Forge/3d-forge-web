@@ -201,38 +201,38 @@ namespace Backend3DForge.Services.FileStorage.FTP
 
         public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
         {
-            return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+            return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
         }
 
         public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
         {
             return UploadFileAsync(
-                    filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}",
+                    filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}",
                     fileStream: fileStream,
                     fileSize: fileSize);
         }
 
         public Task DeletePreviewModel(CatalogModel catalogModel)
         {
-            return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtension.ModelExtensionName}");
+            return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
         }
 
         public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
         {
-            return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
+            return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
         }
 
         public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
         {
             return UploadFileAsync(
-                    filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}",
+                    filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}",
                     fileStream: fileStream,
                     fileSize: fileSize);
         }
 
         public Task DeletePrintFile(CatalogModel catalogModel)
         {
-            return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtension.PrintExtensionName}");
+            return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
         }
     }
 }

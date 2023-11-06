@@ -65,14 +65,14 @@ namespace Backend3DForge.Controllers
             var print = files[1];
             var printEx = Path.GetExtension(print.FileName).Replace(".", "");
 
-            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.PrintExtensionName == printEx);
+            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Name == printEx);
 
             if (printExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
             }
 
-            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.ModelExtensionName == modelEx);
+            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Name == modelEx);
             if (modelExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
@@ -99,6 +99,8 @@ namespace Backend3DForge.Controllers
                 }
             }
 
+            await DB.SaveChangesAsync();
+
             HashSet<ModelCategory> categories = new HashSet<ModelCategory>();
 
             foreach(var category in request.Categories)
@@ -122,8 +124,8 @@ namespace Backend3DForge.Controllers
                 Height = 0,
                 Width = 0,
                 Depth = request.Depth,
-                ModelExtensionId = modelExtension.Id,
-                PrintExtensionId = printExtension.Id,
+                ModelExtensionName = modelExtension.Name,
+                PrintExtensionName = printExtension.Name,
                 ModelFileSize = model.Length,
                 PrintFileSize = print.Length,
                 User = AuthorizedUser,
@@ -142,6 +144,62 @@ namespace Backend3DForge.Controllers
             });
 
             return Ok(new Responses.CatalogModelResponse(newModel));
+        }
+
+        [HttpGet("{modelId}")]
+        public async Task<IActionResult> GetModel([FromRoute] int modelId)
+        {
+            BaseResponse? response;
+
+            if(!this.memoryCache.TryGetValue($"GET api/catalog/{modelId}", out response))
+            {
+                var model = await DB.CatalogModels
+                 .Include(p => p.User)
+                 .Include(p => p.ModelCategoryes)
+                 .Include(p => p.Keywords)
+                 .Include(p => p.ModelExtension)
+                 .Include(p => p.PrintExtension)
+                 .SingleOrDefaultAsync(p => p.Id == modelId);
+                if (model is null)
+                {
+                    response = new BaseResponse.ErrorResponse("Model not found");
+                }
+                else
+                {
+                    response = new Responses.CatalogModelResponse(model);
+                }
+                this.memoryCache.Set($"GET api/catalog/{modelId}", response, TimeSpan.FromSeconds(10));
+            }
+
+            if(response.Success)
+                return Ok(response);
+            else 
+                return NotFound(response);
+        }
+
+        [HttpGet("{modelId}/preview")]
+        public async Task<IActionResult> GetModelPreview([FromRoute] int modelId) 
+        {
+            Stream fileStream;
+
+            var model = await DB.CatalogModels
+                .Include(p => p.User)
+                .SingleOrDefaultAsync(p => p.Id == modelId);
+
+            if (model is null)
+                return NotFound(new BaseResponse.ErrorResponse($"Model '{modelId}' not found"));
+
+            try
+            {
+                fileStream = await fileStorage.DownloadPreviewModel(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message, ex));
+            }
+            HttpContext.Response.ContentLength = model.ModelFileSize;
+            HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename={model.Name}_{model.User.Login}.{model.ModelExtensionName}");
+            return new FileStreamResult(fileStream, "application/octet-stream");
         }
     }
 }

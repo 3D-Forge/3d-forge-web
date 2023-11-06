@@ -5,15 +5,13 @@ namespace Backend3DForge.Models
     public class PrintExtension
     {
         [Key]
-        public int Id { get; set; }
-        [Required]
-        public string PrintExtensionName { get; set; }
+        public string Name { get; set; }
 
         public PrintExtension() { }
 
-        public PrintExtension(string printExtensionName)
+        public PrintExtension(string name)
         {
-            PrintExtensionName = printExtensionName;
+            Name = name;
         }
 
         public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();

@@ -8,6 +8,12 @@ namespace Backend3DForge.Responses
     {
         public CatalogModelResponse(CatalogModel model) : base(true, null, null)
         {
+            Data = new View(model);
+        }
+
+        public CatalogModelResponse(ICollection<CatalogModel> models) : base(true, null, null)
+        {
+            Data = models.Select(p => new View(p));
         }
 
         public class View

@@ -11,12 +11,12 @@ namespace Backend3DForge.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public int PrintExtensionId { get; set; }
+        public string PrintExtensionName { get; set; }
         public PrintExtension PrintExtension { get; set; }
         [Required]
         public long PrintFileSize { get; set; }
         [Required]
-        public int ModelExtensionId { get; set; }
+        public string ModelExtensionName { get; set; }
         public ModelExtension ModelExtension { get; set; }
         [Required]
         public long ModelFileSize { get; set; }

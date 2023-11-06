@@ -61,7 +61,7 @@ namespace Backend3DForge.Tools
                 dataKey: "printExtensions",
                 getEntityDbSet: (db) => db.PrintExtensions,
                 createNewEntity: (record) => new (record),
-                validate: (existingEntity, entity) => existingEntity.PrintExtensionName == entity
+                validate: (existingEntity, entity) => existingEntity.Name == entity
             );
 
             InitializeTableWithData<ModelExtension, string>(
@@ -70,7 +70,7 @@ namespace Backend3DForge.Tools
                 dataKey: "previewExtensions",
                 getEntityDbSet: (db) => db.ModelExtensions,
                 createNewEntity: (record) => new (record),
-                validate: (existingEntity, entity) => existingEntity.ModelExtensionName == entity
+                validate: (existingEntity, entity) => existingEntity.Name == entity
             );
         }
 
