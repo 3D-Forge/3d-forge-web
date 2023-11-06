@@ -66,7 +66,6 @@ namespace Backend3DForge.Responses
                 Lastname = user.Lastname;
 				Country = user.Country;
 				Region = user.Region;
-                CityRegion = user.CityRegion;
                 City = user.City;
                 Street = user.Street;
                 House = user.House;

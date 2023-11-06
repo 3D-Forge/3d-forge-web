@@ -457,11 +457,6 @@ namespace Backend3DForge.Controllers
                 user.Region = request.Region;
                 different = true;
             }
-            if (user.CityRegion != (request.CityRegion ?? user.CityRegion))
-            {
-                user.CityRegion = request.CityRegion;
-                different = true;
-            }
             if (user.City != (request.City ?? user.City))
             {
                 user.City = request.City;

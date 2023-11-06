@@ -33,7 +33,6 @@ namespace Backend3DForge.Requests
             && user.Midname != Midname
             && user.Lastname != Lastname
             && user.Region != Region
-            && user.CityRegion != CityRegion
             && user.City != City
             && user.Street != Street
             && user.House != House
