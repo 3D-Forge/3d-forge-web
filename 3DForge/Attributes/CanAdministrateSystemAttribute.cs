@@ -2,10 +2,10 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanAdministrateSystemAttribute : AuthorizeAttribute
-    {
-        public CanAdministrateSystemAttribute()
-        {
-        }
-    }
+	public class CanAdministrateSystemAttribute : AuthorizeAttribute
+	{
+		public CanAdministrateSystemAttribute()
+		{
+		}
+	}
 }

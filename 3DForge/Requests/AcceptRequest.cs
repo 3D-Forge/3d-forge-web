@@ -6,6 +6,6 @@ namespace Backend3DForge.Requests
 	{
 		[Required]
 		public bool Accepted { get; set; }
-		public string? Message {  get; set; }
+		public string? Message { get; set; }
 	}
 }

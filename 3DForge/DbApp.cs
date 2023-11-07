@@ -32,27 +32,27 @@ namespace Backend3DForge
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<Post>()
+			modelBuilder.Entity<Post>()
 				.HasOne(p => p.User)
 				.WithMany()
 				.HasForeignKey(p => p.UserId)
 				.OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<CatalogModelResponse>()
+			modelBuilder.Entity<CatalogModelResponse>()
 				.HasOne(cmr => cmr.Order)
 				.WithMany()
 				.HasForeignKey(cmr => cmr.OrderId)
 				.OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Login)
-                .IsUnique();
+			modelBuilder.Entity<User>()
+				.HasIndex(u => u.Login)
+				.IsUnique();
 
-            modelBuilder.Entity<User>()
+			modelBuilder.Entity<User>()
 				.HasIndex(u => u.Email)
 				.IsUnique();
 
-            modelBuilder.Entity<Keyword>()
+			modelBuilder.Entity<Keyword>()
 				.HasKey(p => p.Name)
 				.HasName("PK_Keyword");
 
@@ -63,7 +63,7 @@ namespace Backend3DForge
 				.HasKey(p => p.Name)
 				.HasName("PK_ModelExtension");
 
-            base.OnModelCreating(modelBuilder);
+			base.OnModelCreating(modelBuilder);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanRetrieveDeliveryRequirement : IAuthorizationRequirement
-    {
-    }
+	public class CanRetrieveDeliveryRequirement : IAuthorizationRequirement
+	{
+	}
 }

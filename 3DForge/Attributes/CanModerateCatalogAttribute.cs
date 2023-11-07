@@ -2,10 +2,10 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanModerateCatalogAttribute : AuthorizeAttribute
-    {
-        public CanModerateCatalogAttribute()
-        {
-        }
-    }
+	public class CanModerateCatalogAttribute : AuthorizeAttribute
+	{
+		public CanModerateCatalogAttribute()
+		{
+		}
+	}
 }

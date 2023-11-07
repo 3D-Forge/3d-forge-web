@@ -2,7 +2,7 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanAdministrateSystemRequirement : IAuthorizationRequirement
-    {
-    }
+	public class CanAdministrateSystemRequirement : IAuthorizationRequirement
+	{
+	}
 }

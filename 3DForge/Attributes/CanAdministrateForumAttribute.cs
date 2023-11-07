@@ -2,10 +2,10 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanAdministrateForumAttribute : AuthorizeAttribute
-    {
-        public CanAdministrateForumAttribute()
-        {
-        }
-    }
+	public class CanAdministrateForumAttribute : AuthorizeAttribute
+	{
+		public CanAdministrateForumAttribute()
+		{
+		}
+	}
 }

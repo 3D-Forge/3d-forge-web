@@ -9,7 +9,7 @@ namespace Backend3DForge.Models
 		[Required]
 		public int OrderedModelId { get; set; }
 		public OrderedModel OrderedModel { get; set; }
-        [Required]
+		[Required]
 		public DateTime CreatedAt { get; set; }
 		[Required]
 		public int UserId { get; set; }

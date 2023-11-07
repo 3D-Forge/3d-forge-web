@@ -2,7 +2,7 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanModerateCatalogRequirement : IAuthorizationRequirement
-    {
-    }
+	public class CanModerateCatalogRequirement : IAuthorizationRequirement
+	{
+	}
 }

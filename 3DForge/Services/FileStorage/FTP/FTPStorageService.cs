@@ -4,235 +4,235 @@ using System.Net;
 
 namespace Backend3DForge.Services.FileStorage.FTP
 {
-    public class FTPStorageService : IFileStorage
-    {
-        protected readonly FTPStorageConfigurationMetadata configuration;
-        protected readonly ILogger logger;
+	public class FTPStorageService : IFileStorage
+	{
+		protected readonly FTPStorageConfigurationMetadata configuration;
+		protected readonly ILogger logger;
 
-        public FTPStorageService(IOptions<FTPStorageConfigurationMetadata> configuration, ILogger logger)
-        {
-            this.configuration = configuration.Value;
+		public FTPStorageService(IOptions<FTPStorageConfigurationMetadata> configuration, ILogger logger)
+		{
+			this.configuration = configuration.Value;
 
-            this.MkDirAsync(this.configuration.AvatarStoragePath).Wait();
-            this.MkDirAsync(this.configuration.PathToPreviewFiles).Wait();
-            this.MkDirAsync(this.configuration.PathToFilesToPrint).Wait();
-            this.logger = logger;
-        }
+			this.MkDirAsync(this.configuration.AvatarStoragePath).Wait();
+			this.MkDirAsync(this.configuration.PathToPreviewFiles).Wait();
+			this.MkDirAsync(this.configuration.PathToFilesToPrint).Wait();
+			this.logger = logger;
+		}
 
-        public async Task DeleteFileAsync(string filename)
-        {
-            if (string.IsNullOrEmpty(filename))
-            {
-                throw new ArgumentNullException(nameof(filename));
-            }
+		public async Task DeleteFileAsync(string filename)
+		{
+			if (string.IsNullOrEmpty(filename))
+			{
+				throw new ArgumentNullException(nameof(filename));
+			}
 
-            try
-            {
-                filename = NormalizePath(filename);
-                string[] pathParts = filename.Split('/');
+			try
+			{
+				filename = NormalizePath(filename);
+				string[] pathParts = filename.Split('/');
 
-                FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
-                WebResponse response = await request.GetResponseAsync();
+				FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DeleteFile);
+				WebResponse response = await request.GetResponseAsync();
 
-                response.Close();
+				response.Close();
 
-                // delete empty directories
-                for (int i = pathParts.Length - 1; i > 0; i--)
-                {
-                    string path = string.Join("/", pathParts.Take(i));
-                    if (await IsDirectoryEmptyAsync(path))
-                    {
-                        await DeleteDirectoryAsync(path);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.Log(LogLevel.Error, ex.ToString());
-            }
-        }
+				// delete empty directories
+				for (int i = pathParts.Length - 1; i > 0; i--)
+				{
+					string path = string.Join("/", pathParts.Take(i));
+					if (await IsDirectoryEmptyAsync(path))
+					{
+						await DeleteDirectoryAsync(path);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				this.logger.Log(LogLevel.Error, ex.ToString());
+			}
+		}
 
-        public async Task<Stream> DownloadFileAsync(string filename)
-        {
-            FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DownloadFile);
+		public async Task<Stream> DownloadFileAsync(string filename)
+		{
+			FtpWebRequest? request = CreateFTPConnection(filename, WebRequestMethods.Ftp.DownloadFile);
 
-            FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync();
-            return response.GetResponseStream();
-        }
+			FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync();
+			return response.GetResponseStream();
+		}
 
-        public async Task UploadFileAsync(string filename, Stream fileStream, long fileSize = -1)
-        {
-            if (fileStream == null)
-            {
-                throw new ArgumentNullException(nameof(fileStream));
-            }
+		public async Task UploadFileAsync(string filename, Stream fileStream, long fileSize = -1)
+		{
+			if (fileStream == null)
+			{
+				throw new ArgumentNullException(nameof(fileStream));
+			}
 
-            filename = NormalizePath(filename);
+			filename = NormalizePath(filename);
 
-            string[] pathParts = filename.Split('/');
-            string path = string.Empty;
-            for (int i = 0; i < pathParts.Length - 1; i++)
-            {
-                path = $"{path}/{pathParts[i]}";
-                if (!await IsDirectoryExists(path))
-                {
-                    await MkDirAsync(path);
-                }
-            }
+			string[] pathParts = filename.Split('/');
+			string path = string.Empty;
+			for (int i = 0; i < pathParts.Length - 1; i++)
+			{
+				path = $"{path}/{pathParts[i]}";
+				if (!await IsDirectoryExists(path))
+				{
+					await MkDirAsync(path);
+				}
+			}
 
-            FtpWebRequest request = CreateFTPConnection(filename, WebRequestMethods.Ftp.UploadFile);
+			FtpWebRequest request = CreateFTPConnection(filename, WebRequestMethods.Ftp.UploadFile);
 
-            request.ContentLength = fileSize > 0 ? fileSize : fileStream.Length;
+			request.ContentLength = fileSize > 0 ? fileSize : fileStream.Length;
 
-            Stream ftpStream = request.GetRequestStream();
-            await fileStream.CopyToAsync(ftpStream);
-            ftpStream.Close();
-        }
+			Stream ftpStream = request.GetRequestStream();
+			await fileStream.CopyToAsync(ftpStream);
+			ftpStream.Close();
+		}
 
-        protected async Task<bool> IsDirectoryExists(string directoryPath)
-        {
-            try
-            {
-                FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.ListDirectoryDetails);
-                using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
-                {
-                    return true;
-                }
-            }
-            catch (WebException)
-            {
-                return false;
-            }
-        }
+		protected async Task<bool> IsDirectoryExists(string directoryPath)
+		{
+			try
+			{
+				FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.ListDirectoryDetails);
+				using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
+				{
+					return true;
+				}
+			}
+			catch (WebException)
+			{
+				return false;
+			}
+		}
 
-        protected async Task MkDirAsync(string directoryPath)
-        {
-            FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.MakeDirectory);
+		protected async Task MkDirAsync(string directoryPath)
+		{
+			FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.MakeDirectory);
 
-            var response = await request.GetResponseAsync();
-            response.Close();
-        }
+			var response = await request.GetResponseAsync();
+			response.Close();
+		}
 
-        protected async Task<bool> IsDirectoryEmptyAsync(string directoryPath)
-        {
-            try
-            {
-                FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.ListDirectory);
+		protected async Task<bool> IsDirectoryEmptyAsync(string directoryPath)
+		{
+			try
+			{
+				FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.ListDirectory);
 
-                using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
-                using (Stream responseStream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(responseStream))
-                {
-                    string? line;
-                    while ((line = await reader.ReadLineAsync()) != null)
-                    {
-                        if (!string.IsNullOrWhiteSpace(line))
-                            return false;
-                    }
-                }
+				using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
+				using (Stream responseStream = response.GetResponseStream())
+				using (StreamReader reader = new StreamReader(responseStream))
+				{
+					string? line;
+					while ((line = await reader.ReadLineAsync()) != null)
+					{
+						if (!string.IsNullOrWhiteSpace(line))
+							return false;
+					}
+				}
 
-                return true;
-            }
-            catch (WebException)
-            {
-                return false;
-            }
-        }
+				return true;
+			}
+			catch (WebException)
+			{
+				return false;
+			}
+		}
 
-        protected async Task DeleteDirectoryAsync(string directoryPath)
-        {
-            FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.RemoveDirectory);
+		protected async Task DeleteDirectoryAsync(string directoryPath)
+		{
+			FtpWebRequest request = CreateFTPConnection(directoryPath, WebRequestMethods.Ftp.RemoveDirectory);
 
-            FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync();
-            response.Close();
-        }
+			FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync();
+			response.Close();
+		}
 
-        protected FtpWebRequest CreateFTPConnection(string path, string method)
-        {
-            path = NormalizePath(path);
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{configuration.UriPath}/{path}");
-            request.Method = method;
-            request.Credentials = new NetworkCredential(configuration.Username, configuration.Password);
+		protected FtpWebRequest CreateFTPConnection(string path, string method)
+		{
+			path = NormalizePath(path);
+			FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{configuration.UriPath}/{path}");
+			request.Method = method;
+			request.Credentials = new NetworkCredential(configuration.Username, configuration.Password);
 
-            return request;
-        }
+			return request;
+		}
 
-        protected string NormalizePath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+		protected string NormalizePath(string path)
+		{
+			if (string.IsNullOrEmpty(path))
+			{
+				throw new ArgumentNullException(nameof(path));
+			}
 
-            if (path.StartsWith("/"))
-            {
-                path = path.Substring(1)
-                    .TrimEnd('/');
-            }
-            return path.Replace("\\", "/");
-        }
+			if (path.StartsWith("/"))
+			{
+				path = path.Substring(1)
+					.TrimEnd('/');
+			}
+			return path.Replace("\\", "/");
+		}
 
-        public async Task<Stream> DownloadAvatarAsync(User user)
-        {
-            Stream stream = null;
-            try
-            {
-                stream = await DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
-            }
-            catch (WebException ex)
-            {
-                stream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "src", "img", "no-avatar.png"), FileMode.Open, FileAccess.Read);
-            }
-            return stream;
-        }
+		public async Task<Stream> DownloadAvatarAsync(User user)
+		{
+			Stream stream = null;
+			try
+			{
+				stream = await DownloadFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+			}
+			catch (WebException ex)
+			{
+				stream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "src", "img", "no-avatar.png"), FileMode.Open, FileAccess.Read);
+			}
+			return stream;
+		}
 
-        public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
-        {
-            return UploadFileAsync(
-                filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png",
-                fileStream: fileStream,
-                fileSize: fileSize);
-        }
+		public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1)
+		{
+			return UploadFileAsync(
+				filename: $"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png",
+				fileStream: fileStream,
+				fileSize: fileSize);
+		}
 
-        public Task DeleteAvatarAsync(User user)
-        {
-            return DeleteFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
-        }
+		public Task DeleteAvatarAsync(User user)
+		{
+			return DeleteFileAsync($"{configuration.AvatarStoragePath}{Path.DirectorySeparatorChar}u{user.Id}.png");
+		}
 
-        public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
-        {
-            return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
-        }
+		public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
+		{
+			return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
+		}
 
-        public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
-        {
-            return UploadFileAsync(
-                    filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}",
-                    fileStream: fileStream,
-                    fileSize: fileSize);
-        }
+		public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+		{
+			return UploadFileAsync(
+					filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}",
+					fileStream: fileStream,
+					fileSize: fileSize);
+		}
 
-        public Task DeletePreviewModel(CatalogModel catalogModel)
-        {
-            return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
-        }
+		public Task DeletePreviewModel(CatalogModel catalogModel)
+		{
+			return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
+		}
 
-        public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
-        {
-            return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
-        }
+		public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
+		{
+			return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+		}
 
-        public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
-        {
-            return UploadFileAsync(
-                    filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}",
-                    fileStream: fileStream,
-                    fileSize: fileSize);
-        }
+		public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
+		{
+			return UploadFileAsync(
+					filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}",
+					fileStream: fileStream,
+					fileSize: fileSize);
+		}
 
-        public Task DeletePrintFile(CatalogModel catalogModel)
-        {
-            return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
-        }
-    }
+		public Task DeletePrintFile(CatalogModel catalogModel)
+		{
+			return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+		}
+	}
 }

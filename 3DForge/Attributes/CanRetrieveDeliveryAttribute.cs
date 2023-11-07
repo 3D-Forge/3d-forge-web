@@ -2,10 +2,10 @@
 
 namespace Backend3DForge.Attributes
 {
-    public class CanRetrieveDeliveryAttribute : AuthorizeAttribute
-    {
-        public CanRetrieveDeliveryAttribute()
-        {
-        }
-    }
+	public class CanRetrieveDeliveryAttribute : AuthorizeAttribute
+	{
+		public CanRetrieveDeliveryAttribute()
+		{
+		}
+	}
 }

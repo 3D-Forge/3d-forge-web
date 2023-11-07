@@ -9,7 +9,7 @@ namespace Backend3DForge.Models
 		[Required]
 		public int CatalogModelId { get; set; }
 		public CatalogModel CatalogModel { get; set; }
-        [Required]
+		[Required]
 		public int OrderId { get; set; }
 		public OrderedModel Order { get; set; }
 		[Required]
