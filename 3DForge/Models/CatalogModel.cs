@@ -32,8 +32,10 @@ namespace Backend3DForge.Models
 		public float Width { get; set; }
 		[Required]
 		public float Depth { get; set; }
+		public float Rating { get; set; } = 0;
 
-		public bool IsModelPublicized { get => Publicized is not null; }
+
+        public bool IsModelPublicized { get => Publicized is not null; }
 
 		public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
 		public ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();
