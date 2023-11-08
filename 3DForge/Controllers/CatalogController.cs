@@ -58,26 +58,30 @@ namespace Backend3DForge.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] SearchModelRequest request)
         {
-            request.Query = request.Query.ToLower();
+            request.Query = (request?.Query ?? "").ToLower();
 
             CatalogModelResponse? response;
 
-            string cacheKey = $"GET api/catalog/search?q={request.Query}&p={request.Page}&ps={request.PageSize}" +
+            string cacheKey = $"GET api/catalog/search?q={request.Query ?? ""}&p={request.Page}&ps={request.PageSize}" +
                               $"{(request.Keywords is null ? "" : $"&k={string.Join(',', request.Keywords)}")}" +
                               $"{(request.Categories is null ? "" : $"&c={string.Join(',', request.Categories)}")}" +
                               $"&sp={request.SortParameter}&sd={request.SortDirection}";
 
             if (!memoryCache.TryGetValue(cacheKey, out response))
             {
-                var query = DB.CatalogModels
+                IQueryable<CatalogModel> query = DB.CatalogModels
                 .Include(p => p.User)
                 .Include(p => p.ModelCategoryes)
                 .Include(p => p.Keywords)
                 .Include(p => p.ModelExtension)
-                .Include(p => p.PrintExtension)
-                .Where(p => p.Name.ToLower().Contains(request.Query) || p.Description.ToLower().Contains(request.Query));
+                .Include(p => p.PrintExtension);
 
-                if(request.MinRating is not null)
+                if (request.Query is not null)
+                {
+                    query = query.Where(p => p.Name.ToLower().Contains(request.Query.ToLower()) || p.Description.ToLower().Contains(request.Query.ToLower()));
+                }
+
+                if (request.MinRating is not null)
                 {
                     query = query.Where(p => p.Rating >= request.MinRating);
                 }

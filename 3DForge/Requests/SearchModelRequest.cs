@@ -7,8 +7,7 @@ namespace Backend3DForge.Requests
     {
 
         [FromQuery(Name = "q")]
-        [Required]
-        public required string Query { get; set; }
+        public string? Query { get; set; }
 
         [FromQuery(Name = "categories")]
         public int[]? Categories { get; set; }
