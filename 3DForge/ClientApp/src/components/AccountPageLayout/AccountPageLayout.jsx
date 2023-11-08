@@ -50,7 +50,10 @@ const AccountPageLayout = () => {
                             <div class={cl.drop_menu_triangle} />
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_orders}`}>Мої замовлення</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_settings}`}
-                                onClick={() => navigate('/user/edit')}>Налаштування</p>
+                                onClick={() => {
+                                    navigate('/user/edit');
+                                    setDropMenuVisibility(false)
+                                }}>Налаштування</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_logout}`}
                                 onClick={() => LogoutRequest()}>Вихід</p>
                         </div>

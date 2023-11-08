@@ -61,7 +61,9 @@ namespace Backend3DForge.Services
 
 			while (activationCode != null)
 			{
-				switch (activationCode.Action)
+				string actionType = activationCode.Action.Split(',')[0];
+
+                switch (actionType)
 				{
 					case "confirm-registration":
 						{
@@ -70,7 +72,12 @@ namespace Backend3DForge.Services
 							DB.Users.Remove(user);
 						}
 						break;
-				}
+					case "reset-password-permission":
+						{
+                            DB.ActivationCodes.Remove(activationCode);
+                        }
+						break;
+                }
 
 				DB.SaveChanges();
 
