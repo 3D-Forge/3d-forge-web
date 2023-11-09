@@ -60,7 +60,7 @@ namespace Backend3DForge.Controllers
         {
             request.Query = (request?.Query ?? "").ToLower();
 
-            CatalogModelResponse? response;
+            PageResponse<CatalogModelResponse.View>? response;
 
             string cacheKey = $"GET api/catalog/search?q={request.Query ?? ""}&p={request.Page}&ps={request.PageSize}" +
                               $"{(request.Keywords is null ? "" : $"&k={string.Join(',', request.Keywords)}")}" +
@@ -118,14 +118,20 @@ namespace Backend3DForge.Controllers
                         query = request.SortDirection == "asc" ? query.OrderBy(p => p.Rating) : query.OrderByDescending(p => p.Rating);
                         break;
                 }
+                int totalItemsCount = await query.CountAsync();
+                int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / request.PageSize);
 
-                query = query.Take(request.PageSize)
-                    .Skip(request.Page * request.PageSize);
+                query = query.Skip((request.Page - 1) * request.PageSize)
+                    .Take(request.PageSize);
 
-                var result = await query.ToArrayAsync();
-                response = new CatalogModelResponse(result);
+                var result = await query.Select(p => new CatalogModelResponse.View(p)).ToListAsync();
+                response = new PageResponse<CatalogModelResponse.View>(
+                    result,
+                    request.Page,
+                    request.PageSize,
+                    totalPagesCount);
 
-                memoryCache.Set(cacheKey, response, TimeSpan.FromMinutes(10));
+                memoryCache.Set(cacheKey, response, TimeSpan.FromSeconds(30));
             }
 
             return Ok(response);

@@ -16,7 +16,7 @@ namespace Backend3DForge.Responses
 			Data = models.Select(p => new View(p));
 		}
 
-		public class View
+        public class View
 		{
 			[Key]
 			public int Id { get; set; }
