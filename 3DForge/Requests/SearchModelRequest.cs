@@ -30,5 +30,8 @@ namespace Backend3DForge.Requests
         public float? MinRating { get; set; }
         [FromQuery(Name = "max_rating")]
         public float? MaxRating { get; set; }
+
+        [FromQuery(Name = "author")]
+        public string? Author { get; set; }
     }
 }

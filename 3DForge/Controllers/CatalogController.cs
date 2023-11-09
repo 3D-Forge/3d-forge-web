@@ -76,6 +76,11 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.ModelExtension)
                 .Include(p => p.PrintExtension);
 
+                if(request.Author is not null)
+                {
+                    query = query.Where(p => p.User.Login == request.Author);
+                }
+
                 if (request.Query is not null)
                 {
                     query = query.Where(p => p.Name.ToLower().Contains(request.Query.ToLower()) || p.Description.ToLower().Contains(request.Query.ToLower()));
@@ -107,8 +112,7 @@ namespace Backend3DForge.Controllers
                         query = request.SortDirection == "asc" ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
                         break;
                     case "price":
-                        // TO DO
-                        // query = request.SortDirection == "asc" ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+                        query = request.SortDirection == "asc" ? query.OrderBy(p => p.MinPrice) : query.OrderByDescending(p => p.MinPrice);
                         break;
                     case "rating":
                         query = request.SortDirection == "asc" ? query.OrderBy(p => p.Rating) : query.OrderByDescending(p => p.Rating);

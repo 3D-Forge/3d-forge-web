@@ -33,7 +33,7 @@ namespace Backend3DForge.Models
 		[Required]
 		public float Depth { get; set; }
 		public float Rating { get; set; } = 0;
-
+		public double MinPrice { get; set; } = 0;
 
         public bool IsModelPublicized { get => Publicized is not null; }
 
