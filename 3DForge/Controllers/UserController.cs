@@ -394,44 +394,6 @@ namespace Backend3DForge.Controllers
 				user.Login = request.Login;
 				different = true;
 			}
-			if (user.Email != (request.Email ?? user.Email))
-			{
-				if (await DB.Users.AnyAsync(p => p.Email == request.Email))
-				{
-					return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
-				}
-
-				string token = StringTool.RandomString(256);
-
-				try
-				{
-					await emailService.SendEmailUseTemplateAsync(
-						email: request.Email,
-						templateName: "confirm_email.html",
-						parameters: new Dictionary<string, string>
-						{
-							{ "login", user.Login },
-							{ "link", $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" },
-						}
-						);
-				}
-				catch (Exception ex)
-				{
-					return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
-				}
-
-				await DB.ActivationCodes.AddAsync(new ActivationCode
-				{
-					UserId = user.Id,
-					User = user,
-					Code = token,
-					Action = "change-email," + request.Email,
-					CreatedAt = DateTime.Now,
-					Expires = DateTime.Now.AddHours(12)
-				});
-
-				different = true;
-			}
 			if (user.PhoneNumber != (request.PhoneNumber ?? user.PhoneNumber))
 			{
 				user.PhoneNumber = request.PhoneNumber;
@@ -490,7 +452,7 @@ namespace Backend3DForge.Controllers
 
 			if (!different)
 			{
-				return BadRequest(new BaseResponse.ErrorResponse("Data are identical"));
+				return Ok(new BaseResponse.SuccessResponse("Data are identical"));
 			}
 
 			await DB.SaveChangesAsync();

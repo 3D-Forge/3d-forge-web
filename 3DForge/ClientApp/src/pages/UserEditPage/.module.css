@@ -35,6 +35,16 @@
     width: 190px;
 }
 
+.avatar_unloaded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    width: 190px;
+    border: 3px solid white;
+    border-radius: 50%;
+}
+
 .avatar_editor {
     position: relative;
     display: flex;
@@ -100,10 +110,10 @@
     align-items: center;
     justify-content: center;
     width: 120px;
+    height: 48px;
     font-size: 22px;
     background-color: #C99E22;
     border-radius: 12px;
-    padding-block: 11px;
     padding-inline: 35px;
     letter-spacing: 1px;
 }
@@ -257,7 +267,7 @@
 }
 
 .info_field_street {
-    grid-column: span 3;
+    grid-column: span 2;
 }
 
 .section_delivery_header {
@@ -475,7 +485,8 @@
     margin-top: 30px;
 }
 
-.notification_checkbox_checked, .notification_checkbox_unchecked {
+.notification_checkbox_checked,
+.notification_checkbox_unchecked {
     cursor: pointer;
     display: flex;
     width: fit-content;
@@ -483,6 +494,9 @@
     padding: 2px;
     border-radius: 12px;
     height: 40px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .notification_checkbox_checked .notification_checkbox_no {

@@ -7,7 +7,6 @@ namespace Backend3DForge.Requests
 	{
 		[StringLength(32, MinimumLength = 4, ErrorMessage = "Login is too short or long")]
 		public string? Login { get; set; }
-		public string? Email { get; set; }
 		[Phone]
 		public string? PhoneNumber { get; set; }
 		public string? Firstname { get; set; }
@@ -25,7 +24,6 @@ namespace Backend3DForge.Requests
 		public bool HasDifferences(User user)
 		{
 			return user.Login != Login
-			&& user.Email != Email
 			&& user.PhoneNumber != PhoneNumber
 			&& user.Firstname != Firstname
 			&& user.Midname != Midname

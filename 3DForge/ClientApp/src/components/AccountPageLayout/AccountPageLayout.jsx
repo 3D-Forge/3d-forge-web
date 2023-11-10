@@ -47,11 +47,11 @@ const AccountPageLayout = () => {
                     <div className={cl.drop_menu} ref={dropMenuRef}>
                         <img className={cl.drop_menu_img} onClick={() => setDropMenuVisibility(p => !p)} alt="drop menu" />
                         <div className={cl.drop_list} style={{ display: isDropMenuVisible ? 'block' : 'none' }}>
-                            <div class={cl.drop_menu_triangle} />
+                            <div className={cl.drop_menu_triangle} />
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_orders}`}>Мої замовлення</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_settings}`}
                                 onClick={() => {
-                                    navigate('/user/edit');
+                                    window.location.pathname = 'user/edit';
                                     setDropMenuVisibility(false)
                                 }}>Налаштування</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_logout}`}

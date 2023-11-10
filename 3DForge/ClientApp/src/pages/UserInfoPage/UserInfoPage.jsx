@@ -27,8 +27,6 @@ const UserInfoPage = () => {
     }
 
     React.useEffect(() => {
-        document.body.style.background = "linear-gradient(270deg, #7C26BF 0.13%, #BA67D3 99.84%, #7030B5 99.85%)";
-
         if (userInfo === undefined) {
             UserAPI.getSelfInfo()
                 .then(res => { return res.json() })
@@ -48,10 +46,15 @@ const UserInfoPage = () => {
 
     return (
         <div className={cl.main}>
-            {userInfo !== undefined && userAvatar !== undefined ?
+            {userInfo !== undefined ?
                 <div className={cl.content}>
                     <div className={cl.base_info}>
-                        <img className={cl.avatar} alt="user avatar" src={userAvatar} />
+                        {userAvatar !== undefined ?
+                            <img className={cl.avatar} alt="user avatar" src={userAvatar} /> :
+                            <div className={cl.avatar_unloaded}>
+                                <LoadingAnimation size="100px" loadingCurveWidth="20px" />
+                            </div>
+                        }
                         <div className={cl.login_email_country_city}>
                             <p className={cl.login}>{userInfo?.login ?? '-'}</p>
                             <p className={cl.email}>{userInfo?.email ?? '-'}</p>
@@ -68,31 +71,31 @@ const UserInfoPage = () => {
                             <div className={`${cl.info_field} ${cl.info_field_last_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_last_name}`}>Прізвище</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_last_name}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_last_name}`}>{userInfo?.lastName ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_last_name}`}>{userInfo?.lastName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_first_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_first_name}`}>Ім’я</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_first_name}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_first_name}`}>{userInfo?.firstName ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_first_name}`}>{userInfo?.firstName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_middle_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_middle_name}`}>По-батькові</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_middle_name}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_middle_name}`}>{userInfo?.midName ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_middle_name}`}>{userInfo?.midName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_email}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_email}`}>Пошта</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_email}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_email}`}>{userInfo?.email ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_email}`}>{userInfo?.email}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_phone_number}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_phone_number}`}>Номер телефону</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_phone_number}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_phone_number}`}>{userInfo?.phoneNumber ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_phone_number}`}>{userInfo?.phoneNumber}</span>
                                 </div>
                             </div>
                         </div>
@@ -101,37 +104,31 @@ const UserInfoPage = () => {
                             <div className={`${cl.info_field} ${cl.info_field_street}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_street}`}>Вулиця</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_street}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_street}`}>{userInfo?.street ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_street}`}>{userInfo?.street}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_region}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_region}`}>Область</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_region}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_region}`}>{userInfo?.region ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_region}`}>{userInfo?.region}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_city}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_city}`}>Місто</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_city}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_city}`}>{userInfo?.city ?? '-'}</span>
-                                </div>
-                            </div>
-                            <div className={`${cl.info_field} ${cl.info_field_city_region}`}>
-                                <h3 className={`${cl.info_field_header} ${cl.info_field_header_city_region}`}>Район</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_city_region}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_city_region}`}>{userInfo?.cityRegion ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_city}`}>{userInfo?.city}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_house_number}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_house_number}`}>Номер будинку</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_house_number}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_house_number}`}>{userInfo?.house ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_house_number}`}>{userInfo?.house}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_apartment}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_apartment}`}>Квартира</h3>
                                 <div className={`${cl.info_field_cell} ${cl.info_field_cell_apartment}`}>
-                                    <span className={`${cl.info_field_value} ${cl.info_field_value_apartment}`}>{userInfo?.apartment ?? '-'}</span>
+                                    <span className={`${cl.info_field_value} ${cl.info_field_value_apartment}`}>{userInfo?.apartment}</span>
                                 </div>
                             </div>
                         </div>

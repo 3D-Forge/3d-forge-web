@@ -5,26 +5,34 @@ export class BaseAPI {
         return response;
     }
 
-    static async post(url, data, options = {}) {
+    static async post(url, data, contentType = undefined, options = {}) {
+        let headers = {};
+        
+        if (contentType) {
+            headers["Content-Type"] = contentType;
+        }
+
         let response = fetch(`/api/${url}`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
+            headers: headers,
+            body: contentType === "application/json" ? JSON.stringify(data) : data,
             ...options,
         }).then((response) => BaseAPI.addAuthorizationHeader(response, options));
         response.catch((error) => BaseAPI.errorHandling(error));
         return response;
     }
 
-    static async put(url, data, options = {}) {
+    static async put(url, data, contentType = undefined, options = {}) {
+        let headers = {};
+        
+        if (contentType) {
+            headers["Content-Type"] = contentType;
+        }
+
         let response = fetch(`/api/${url}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
+            headers: headers,
+            body: contentType === "application/json" ? JSON.stringify(data) : data,
             ...options,
         }).then((response) => BaseAPI.addAuthorizationHeader(response, options));
         response.catch((error) => BaseAPI.errorHandling(error));
