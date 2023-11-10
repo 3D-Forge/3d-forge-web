@@ -137,8 +137,6 @@
   ],
   "printExtensions": [
     "stl",
-    "stp",
-    "step",
     "obj"
   ],
   "previewExtensions": [
