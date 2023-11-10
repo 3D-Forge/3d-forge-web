@@ -8,6 +8,7 @@ using Backend3DForge.Attributes;
 using Backend3DForge.Services.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Backend3DForge.Services.ModelCalculator;
 
 namespace Backend3DForge
 {
@@ -43,6 +44,8 @@ namespace Backend3DForge
 			builder.Services.AddSingleton<IAuthorizationHandler, CanRetrieveDeliveryHandler>();
 			builder.Services.AddSingleton<IAuthorizationHandler, CanModerateCatalogHandler>();
 			builder.Services.AddSingleton<IAuthorizationHandler, CanAdministrateSystemHandler>();
+
+			builder.Services.AddTransient<IModelCalculator, ModelCalculator>();
 
 			// Register Email Service
 			builder.Services.AddEmailService(e =>
