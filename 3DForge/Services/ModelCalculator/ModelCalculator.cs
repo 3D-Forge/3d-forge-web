@@ -1,4 +1,5 @@
-﻿using QuantumConcepts.Formats.StereoLithography;
+﻿using Backend3DForge.Services.ModelCalculator.Models;
+using QuantumConcepts.Formats.StereoLithography;
 using System.Text;
 
 namespace Backend3DForge.Services.ModelCalculator
@@ -15,28 +16,19 @@ namespace Backend3DForge.Services.ModelCalculator
 
             ModelCalculatorResult result;
 
-            byte[] modelData;
-
-            using (var ms = new MemoryStream())
-            {
-                await modelStream.CopyToAsync(ms);
-                modelData = ms.ToArray();
-            }
-
-
             switch (format)
             {
                 case "stl":
-                    result = CalculateStlSurfaceArea(modelData);
+                    result = CalculateStlSurfaceArea(modelStream);
                     break;
                 case "stp":
-                    result = await CalculateStpSurfaceArea(modelData);
+                    result = await CalculateStpSurfaceArea(modelStream);
                     break;
                 case "step":
-                    result = await CalculateStpSurfaceArea(modelData);
+                    result = await CalculateStpSurfaceArea(modelStream);
                     break;
                 case "obj":
-                    result = await CalculateObjSurfaceArea(modelData);
+                    result = await CalculateObjSurfaceArea(modelStream);
                     break;
                 default:
                     throw new ArgumentException("Unsupported format", nameof(format));
@@ -45,24 +37,47 @@ namespace Backend3DForge.Services.ModelCalculator
             return result;
         }
 
-        private async Task<ModelCalculatorResult> CalculateStpSurfaceArea(byte[] modelData)
+        private async Task<ModelCalculatorResult> CalculateStpSurfaceArea(Stream stream)
         {
             throw new NotImplementedException();
         }
 
-        private async Task<ModelCalculatorResult> CalculateObjSurfaceArea(byte[] modelData)
+        private async Task<ModelCalculatorResult> CalculateObjSurfaceArea(Stream modelStream)
         {
-            throw new NotImplementedException();
-        }
 
-        public ModelCalculatorResult CalculateStlSurfaceArea(byte[] stlData)
-        {
-            STLDocument stl;
+            byte[] modelData;
 
-            using (var stream = new MemoryStream(stlData))
+            using (var ms = new MemoryStream())
             {
-                stl = STLDocument.Read(stream);
+                await modelStream.CopyToAsync(ms);
+                modelData = ms.ToArray();
             }
+
+            ObjModel objModel;
+
+            using (var ms = new MemoryStream(modelData))
+            {
+                objModel = await ObjReader.ReadObjFile(ms);
+            }
+
+            var xSize = objModel.Vertices.Max(p => p.X) - objModel.Vertices.Min(p => p.X);
+            var ySize = objModel.Vertices.Max(p => p.Y) - objModel.Vertices.Min(p => p.Y);
+            var zSize = objModel.Vertices.Max(p => p.Z) - objModel.Vertices.Min(p => p.Z);
+            var surfaceArea = objModel.Faces.Sum(p => CalculateArea(p.Vertices));
+            double volume = objModel.Faces.Sum(p => SignedVolumeOfTriangle(p.Vertices));
+
+            return new ModelCalculatorResult
+            {
+                SurfaceArea = surfaceArea,
+                Volume = volume,
+                X = xSize,
+                Y = ySize,
+                Z = zSize
+            };
+        }
+        public ModelCalculatorResult CalculateStlSurfaceArea(Stream modelStream)
+        {
+            STLDocument stl = STLDocument.Read(modelStream);
 
             var facets = stl.ToArray();
 
@@ -71,8 +86,8 @@ namespace Backend3DForge.Services.ModelCalculator
             double ySize = stl.Max(p => p.Vertices.Max(v => v.Y)) - stl.Min(p => p.Vertices.Min(v => v.Y));
             double zSize = stl.Max(p => p.Vertices.Max(v => v.Z)) - stl.Min(p => p.Vertices.Min(v => v.Z));
             // mm^2
-            double surfaceArea = stl.Sum(p => CalculateArea(p.Vertices));
-            double volume = CalculateTriangleVolume(stl.Facets, 1);
+            double surfaceArea = stl.Sum(p => CalculateArea(p.Vertices.ToVector3()));
+            double volume = stl.Sum(p => SignedVolumeOfTriangle(p.Vertices.ToVector3()));
 
             return new ModelCalculatorResult
             {
@@ -84,15 +99,15 @@ namespace Backend3DForge.Services.ModelCalculator
             };
         }
 
-        private double CalculateArea(IList<Vertex> vertices)
+        private double CalculateArea(IEnumerable<Vector3> vertices)
         {
             double totalArea = 0;
 
-            for (int i = 1; i < vertices.Count - 1; i++)
+            for (int i = 1; i < vertices.Count() - 1; i++)
             {
-                Vertex vertex1 = vertices[0];
-                Vertex vertex2 = vertices[i];
-                Vertex vertex3 = vertices[i + 1];
+                Vector3 vertex1 = vertices.ElementAt(0);
+                Vector3 vertex2 = vertices.ElementAt(i);
+                Vector3 vertex3 = vertices.ElementAt(i + 1);
 
                 double triangleArea = CalculateTriangleArea(vertex1, vertex2, vertex3);
                 totalArea += triangleArea;
@@ -101,7 +116,7 @@ namespace Backend3DForge.Services.ModelCalculator
             return totalArea;
         }
 
-        private double CalculateTriangleArea(Vertex vertex1, Vertex vertex2, Vertex vertex3)
+        private double CalculateTriangleArea(Vector3 vertex1, Vector3 vertex2, Vector3 vertex3)
         {
             double side1 = Math.Sqrt(Math.Pow(vertex2.X - vertex1.X, 2) + Math.Pow(vertex2.Y - vertex1.Y, 2) + Math.Pow(vertex2.Z - vertex1.Z, 2));
             double side2 = Math.Sqrt(Math.Pow(vertex3.X - vertex2.X, 2) + Math.Pow(vertex3.Y - vertex2.Y, 2) + Math.Pow(vertex3.Z - vertex2.Z, 2));
@@ -113,19 +128,11 @@ namespace Backend3DForge.Services.ModelCalculator
             return triangleArea;
         }
 
-        private double CalculateTriangleVolume(ICollection<Facet> facets, double materialMass)
+        private double SignedVolumeOfTriangle(IEnumerable<Vector3> vertices)
         {
-            double totalVolume = facets.Sum(facet => SignedVolumeOfTriangle(facet));
-            double totalMass = totalVolume * materialMass;
-
-            return totalVolume;
-        }
-
-        private double SignedVolumeOfTriangle(Facet facet)
-        {
-            Vertex p1 = facet.Vertices[0];
-            Vertex p2 = facet.Vertices[1];
-            Vertex p3 = facet.Vertices[2];
+            Vertex p1 = vertices.ElementAt(0);
+            Vertex p2 = vertices.ElementAt(1);
+            Vertex p3 = vertices.ElementAt(2);
 
             double v321 = p3.X * p2.Y * p1.Z;
             double v231 = p2.X * p3.Y * p1.Z;
