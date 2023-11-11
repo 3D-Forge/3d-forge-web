@@ -76,6 +76,9 @@ namespace Backend3DForge.Controllers
 				Login = request.Login,
 				PasswordHash = PasswordTool.Hash(request.Password),
 				Email = request.Email,
+                OrderStateChangedNotification = true,
+				GetForumResponseNotification = true,
+				ModelRatedNotification = true,
 				Blocked = false,
 				CanAdministrateForum = false,
 				CanModerateCatalog = false,
@@ -449,8 +452,23 @@ namespace Backend3DForge.Controllers
 				user.DeliveryType = request.DeliveryType;
 				different = true;
 			}
+            if (user.OrderStateChangedNotification != request.OrderStateChangedNotification)
+            {
+                user.OrderStateChangedNotification = request.OrderStateChangedNotification;
+                different = true;
+            }
+            if (user.GetForumResponseNotification != request.GetForumResponseNotification)
+            {
+                user.GetForumResponseNotification = request.GetForumResponseNotification;
+                different = true;
+            }
+            if (user.ModelRatedNotification != request.ModelRatedNotification)
+            {
+                user.ModelRatedNotification = request.ModelRatedNotification;
+                different = true;
+            }
 
-			if (!different)
+            if (!different)
 			{
 				return Ok(new BaseResponse.SuccessResponse("Data are identical"));
 			}

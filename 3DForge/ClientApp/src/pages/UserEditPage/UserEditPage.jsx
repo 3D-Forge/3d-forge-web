@@ -10,7 +10,7 @@ const UserEditPage = () => {
     const [currentDeliveryType, setDeliveryType] = React.useState(undefined);
     const [currentModalWindowType, setModalWindowType] = React.useState(undefined);
     const [hasOrderStateChangedNote, setOrderStateChangedNote] = React.useState(true);
-    const [hasGotForumResponseNote, setGotForumResponseNote] = React.useState(true);
+    const [hasGetForumResponseNote, setGetForumResponseNote] = React.useState(true);
     const [hasModelRatedNote, setModelRatedNote] = React.useState(true);
 
     const avatarInputRef = React.useRef();
@@ -30,6 +30,8 @@ const UserEditPage = () => {
     const citySelectorListRef = React.useRef();
     const departmentSelectorRef = React.useRef();
     const departmentSelectorListRef = React.useRef();
+    const streetSelectorRef = React.useRef();
+    const streetSelectorListRef = React.useRef();
 
     function ScrollToSection(sectionId) {
         let element = document.getElementById(sectionId);
@@ -85,7 +87,10 @@ const UserEditPage = () => {
             house: houseInputRef.current.value,
             apartment: apartmentInputRef.current.value,
             departmentNumber: userInfo.departmentNumber,
-            deliveryType: userInfo.deliveryType
+            deliveryType: currentDeliveryType,
+            orderStateChangedNotification: hasOrderStateChangedNote,
+            getForumResponseNotification: hasGetForumResponseNote,
+            modelRatedNotification: hasModelRatedNote
         });
 
         let saveAvatarResponse = userAvatar.file ? await UserAPI.updateUserAvatar(formData) : { status: 200 };
@@ -107,27 +112,162 @@ const UserEditPage = () => {
         }
     }
 
-    function RenderModalWindow() {
-        switch (currentModalWindowType) {
-            case "change-email":
-                return (
-                    <div className={cl.modal_widow_background}>
-                        <div className={cl.modal_widow_panel}>
-                            <div className={cl.modal_widow_content}>
-
-                            </div>
-                            <div className={cl.modal_widow_control}>
-
-                            </div>
+    function RenderDeliveryMenu() {
+        if (currentDeliveryType === "branch") {
+            return (
+                <>
+                    <h3 className={`${cl.info_field_header} ${cl.info_filed_delivery_header}`}>Номер відділення</h3>
+                    <div className={`${cl.info_selector} ${cl.info_selector_department}`} ref={departmentSelectorRef}>
+                        <span className={cl.info_selector_department_value}>Відд 1, Харків, вул. Польова, 67</span>
+                        <img className={cl.info_selector_department_arrow_down} alt="arrow down" />
+                        <div className={`${cl.info_selector_list} ${cl.info_selector_list_department}`} ref={departmentSelectorListRef}>
+                            <input className={`${cl.info_selector_list_search} ${cl.info_selector_list_search_department}`} type="text" placeholder="Введіть номер або адресу" />
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 1,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Польова, 67</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 2,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп.Героїв Харкова, 54а</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 3,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Тюрінська, 124</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 4,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Достоєвського, 5</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 5,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, пл. Ю. Кононенка, 1а</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 7,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп. Свободи Людвіга, 35</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 8,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. М. Гончарівська, 28/30</span>
+                            </p>
                         </div>
                     </div>
-                );
-            case "change-password":
-                return;
-            case "delete-account":
-                return;
-            default:
-                return;
+                </>
+            );
+        }
+
+        if (currentDeliveryType === "courier") {
+            return (
+                <>
+                    <h3 className={`${cl.info_field_header} ${cl.info_filed_delivery_header}`}>Вулиця</h3>
+                    <div className={`${cl.info_selector} ${cl.info_selector_street}`} ref={streetSelectorRef}>
+                        <span className={cl.info_selector_street_value}>Медичка</span>
+                        <img className={cl.info_selector_street_arrow_down} alt="arrow down" />
+                        <div className={`${cl.info_selector_list} ${cl.info_selector_list_street}`} ref={streetSelectorListRef}>
+                            <input className={`${cl.info_selector_list_search} ${cl.info_selector_list_search_street}`} type="text" placeholder="Введіть назву вулиці" />
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Польова
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Героїв Харкова
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Тюрінська
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Достоєвського
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Кононенка
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Свободи Людвіга
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Гончарівська
+                            </p>
+                        </div>
+                    </div>
+                    <div className={`${cl.info_field} ${cl.info_field_delivery_house}`}>
+                        <h3 className={`${cl.info_field_header} ${cl.info_field_header_delivery_house}`}>Будинок</h3>
+                        <input className={`${cl.info_field_input} ${cl.info_field_input_delivery_house}`}
+                            type='number' />
+                    </div>
+                    <div className={`${cl.info_field} ${cl.info_field_delivery_apartment}`}>
+                        <h3 className={`${cl.info_field_header} ${cl.info_field_header_delivery_apartment}`}>Квартира</h3>
+                        <input className={`${cl.info_field_input} ${cl.info_field_input_delivery_apartment}`}
+                            type='number' />
+                    </div>
+                </>
+            );
+        }
+
+        if (currentDeliveryType === "post-office") {
+            return (
+                <>
+                    <h3 className={`${cl.info_field_header} ${cl.info_filed_delivery_header}`}>Поштомат</h3>
+                    <div className={`${cl.info_selector} ${cl.info_selector_department}`} ref={departmentSelectorRef}>
+                        <span className={cl.info_selector_department_value}>Відд 1, Харків, вул. Польова, 67</span>
+                        <img className={cl.info_selector_department_arrow_down} alt="arrow down" />
+                        <div className={`${cl.info_selector_list} ${cl.info_selector_list_department}`} ref={departmentSelectorListRef}>
+                            <input className={`${cl.info_selector_list_search} ${cl.info_selector_list_search_department}`} type="text" placeholder="Введіть номер або адресу" />
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 1,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Польова, 67</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 2,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп.Героїв Харкова, 54а</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 3,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Тюрінська, 124</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 4,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Достоєвського, 5</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 5,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, пл. Ю. Кононенка, 1а</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 7,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп. Свободи Людвіга, 35</span>
+                            </p>
+                            <p className={`${cl.info_selector_list_option}`}>
+                                Відд 8,
+                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. М. Гончарівська, 28/30</span>
+                            </p>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+    }
+
+    function RenderModalWindow() {
+        if (currentModalWindowType === "change-email") {
+            return (
+                <div className={cl.modal_widow_background}>
+                    <div className={cl.modal_widow_panel}>
+                        <div className={cl.modal_widow_content}>
+
+                        </div>
+                        <div className={cl.modal_widow_control}>
+
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (currentModalWindowType === "change-password") {
+            return;
+        }
+
+        if (currentModalWindowType === "delete-account") {
+            return;
         }
     }
 
@@ -141,13 +281,26 @@ const UserEditPage = () => {
                 citySelectorListRef.current.style.display === 'block' ? 'none' : 'block';
         }
 
-        if (departmentSelectorListRef.current.style.display === 'block' && !departmentSelectorRef.current.contains(event.target)) {
-            departmentSelectorListRef.current.style.display = 'none';
+        if (currentDeliveryType === "branch" || currentDeliveryType === "post-office") {
+            if (departmentSelectorListRef.current.style.display === 'block' && !departmentSelectorRef.current.contains(event.target)) {
+                departmentSelectorListRef.current.style.display = 'none';
+            }
+
+            if (departmentSelectorRef.current.contains(event.target) && !departmentSelectorListRef.current.contains(event.target)) {
+                departmentSelectorListRef.current.style.display =
+                    departmentSelectorListRef.current.style.display === 'block' ? 'none' : 'block';
+            }
         }
 
-        if (departmentSelectorRef.current.contains(event.target) && !departmentSelectorListRef.current.contains(event.target)) {
-            departmentSelectorListRef.current.style.display =
-                departmentSelectorListRef.current.style.display === 'block' ? 'none' : 'block';
+        if (currentDeliveryType === "courier") {
+            if (streetSelectorListRef.current.style.display === 'block' && !streetSelectorRef.current.contains(event.target)) {
+                streetSelectorListRef.current.style.display = 'none';
+            }
+
+            if (streetSelectorRef.current.contains(event.target) && !streetSelectorListRef.current.contains(event.target)) {
+                streetSelectorListRef.current.style.display =
+                    streetSelectorListRef.current.style.display === 'block' ? 'none' : 'block';
+            }
         }
     }
 
@@ -158,7 +311,10 @@ const UserEditPage = () => {
                 .then(data => {
                     if (data.success) {
                         setUserInfo(data.data);
-                        setDeliveryType(data.deliveryType);
+                        setDeliveryType(data.data.deliveryType !== null ? data.data.deliveryType : undefined);
+                        setOrderStateChangedNote(data.data.orderStateChangedNotification);
+                        setGetForumResponseNote(data.data.getForumResponseNotification);
+                        setModelRatedNote(data.data.modelRatedNotification);
                     }
                 });
         }
@@ -390,42 +546,7 @@ const UserEditPage = () => {
                                             <span className={`${cl.delivery_type_text} ${cl.delivery_type_text_post_office}`}>У поштомат</span>
                                         </div>
                                     </div>
-                                    <h3 className={`${cl.info_field_header} ${cl.info_filed_delivery_header}`}>Номер відділення</h3>
-                                    <div className={`${cl.info_selector} ${cl.info_selector_department}`} ref={departmentSelectorRef}>
-                                        <span className={cl.info_selector_department_value}>Відд 1, Харків, вул. Польова, 67</span>
-                                        <img className={cl.info_selector_department_arrow_down} alt="arrow down" />
-                                        <div className={`${cl.info_selector_list} ${cl.info_selector_list_department}`} ref={departmentSelectorListRef}>
-                                            <input className={`${cl.info_selector_list_search} ${cl.info_selector_list_search_department}`} type="text" placeholder="Введіть номер або адресу" />
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 1,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Польова, 67</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 2,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп.Героїв Харкова, 54а</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 3,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Тюрінська, 124</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 4,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. Достоєвського, 5</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 5,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, пл. Ю. Кононенка, 1а</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 7,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, просп. Свободи Людвіга, 35</span>
-                                            </p>
-                                            <p className={`${cl.info_selector_list_option}`}>
-                                                Відд 8,
-                                                <span className={`${cl.info_selector_list_option_extra}`}>Харків, вул. М. Гончарівська, 28/30</span>
-                                            </p>
-                                        </div>
-                                    </div>
+                                    {RenderDeliveryMenu()}
                                 </div>
                             </div>
                             <div className={`${cl.section_content} ${cl.section_notifications_content}`} id="notifications-content">
@@ -448,9 +569,9 @@ const UserEditPage = () => {
                                 </div>
                                 <div className={`${cl.notification} ${cl.notification_change_forum_response}`}>
                                     <div
-                                        className={`${hasGotForumResponseNote ? cl.notification_checkbox_checked : cl.notification_checkbox_unchecked} 
+                                        className={`${hasGetForumResponseNote ? cl.notification_checkbox_checked : cl.notification_checkbox_unchecked} 
                                 ${cl.notification_checkbox_change_forum_response}`}
-                                        onClick={() => setGotForumResponseNote(p => !p)}>
+                                        onClick={() => setGetForumResponseNote(p => !p)}>
                                         <div className={`${cl.notification_checkbox_no} ${cl.notification_checkbox_no_change_forum_response}`}>
                                             <img className={`${cl.notification_checkbox_no_img} ${cl.notification_checkbox_no_img_change_forum_response}`} alt="no" />
                                         </div>

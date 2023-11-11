@@ -5,6 +5,9 @@
       "PasswordHash": "somePassword",
       "Email": "admin@3df.com",
       "PhoneNumber": "+3456465356",
+      "OrderStateChangedNotification": true,
+      "GetForumResponseNotification": true,
+      "ModelRatedNotification": true,
       "CanAdministrateSystem": true,
       "CanAdministrateForum": true,
       "CanModerateCatalog": true,
@@ -20,7 +23,7 @@
       "House": "58",
       "Apartment": null,
       "DepartmentNumber": null,
-      "DeliveryType": null,
+      "DeliveryType": "branch",
       "IsActivated": true
     },
     {
@@ -28,6 +31,9 @@
       "PasswordHash": "somePassword",
       "Email": "developer@3df.com",
       "PhoneNumber": null,
+      "OrderStateChangedNotification": true,
+      "GetForumResponseNotification": true,
+      "ModelRatedNotification": true,
       "CanAdministrateSystem": true,
       "CanAdministrateForum": true,
       "CanModerateCatalog": true,
@@ -43,7 +49,7 @@
       "House": null,
       "Apartment": null,
       "DepartmentNumber": null,
-      "DeliveryType": null,
+      "DeliveryType": "branch",
       "IsActivated": true
     },
     {
@@ -51,6 +57,9 @@
       "PasswordHash": "somePassword",
       "Email": "manager@3df.com",
       "PhoneNumber": null,
+      "OrderStateChangedNotification": true,
+      "GetForumResponseNotification": true,
+      "ModelRatedNotification": true,
       "CanAdministrateSystem": false,
       "CanAdministrateForum": true,
       "CanModerateCatalog": true,
@@ -66,7 +75,7 @@
       "House": null,
       "Apartment": null,
       "DepartmentNumber": null,
-      "DeliveryType": null,
+      "DeliveryType": "branch",
       "IsActivated": true
     },
     {
@@ -74,6 +83,9 @@
       "PasswordHash": "somePassword",
       "Email": "accountant@3df.com",
       "PhoneNumber": null,
+      "OrderStateChangedNotification": true,
+      "GetForumResponseNotification": true,
+      "ModelRatedNotification": true,
       "CanAdministrateSystem": false,
       "CanAdministrateForum": true,
       "CanModerateCatalog": false,
@@ -89,7 +101,7 @@
       "House": null,
       "Apartment": null,
       "DepartmentNumber": null,
-      "DeliveryType": null,
+      "DeliveryType": "branch",
       "IsActivated": true
     },
     {
@@ -97,6 +109,9 @@
       "PasswordHash": "somePassword",
       "Email": "support@3df.com",
       "PhoneNumber": null,
+      "OrderStateChangedNotification": true,
+      "GetForumResponseNotification": true,
+      "ModelRatedNotification": true,
       "CanAdministrateSystem": false,
       "CanAdministrateForum": true,
       "CanModerateCatalog": false,
@@ -112,7 +127,7 @@
       "House": null,
       "Apartment": null,
       "DepartmentNumber": null,
-      "DeliveryType": null,
+      "DeliveryType": "branch",
       "IsActivated": true
     }
   ],

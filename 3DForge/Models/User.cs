@@ -26,6 +26,12 @@ namespace Backend3DForge.Models
 		public string? DepartmentNumber { get; set; }
 		public string? DeliveryType { get; set; }
 		[Required]
+		public bool OrderStateChangedNotification { get; set; }
+        [Required]
+        public bool GetForumResponseNotification { get; set; }
+        [Required]
+        public bool ModelRatedNotification { get; set; }
+        [Required]
 		public bool Blocked { get; set; }
 		[Required]
 		public bool CanAdministrateForum { get; set; }

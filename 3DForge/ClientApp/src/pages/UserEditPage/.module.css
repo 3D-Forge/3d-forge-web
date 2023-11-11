@@ -479,6 +479,27 @@
     content: url(./img/down-arrow.png);
 }
 
+.info_selector_street {
+    font-size: 28px;
+    width: calc(100% - 104px);
+}
+
+.info_selector_street_arrow_down {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    content: url(./img/down-arrow.png);
+}
+
+.info_field_header_delivery_house {
+    margin-top: 20px;
+}
+
+.info_field_header_delivery_apartment {
+    margin-top: 20px;
+}
+
 .notification {
     position: relative;
     display: flex;

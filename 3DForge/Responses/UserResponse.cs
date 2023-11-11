@@ -40,7 +40,13 @@ namespace Backend3DForge.Responses
 			public string? DepartmentNumber { get; set; }
 			[JsonPropertyName("deliveryType")]
 			public string? DeliveryType { get; set; }
-			[JsonPropertyName("blocked")]
+            [JsonPropertyName("orderStateChangedNotification")]
+            public bool OrderStateChangedNotification { get; set; }
+            [JsonPropertyName("getForumResponseNotification")]
+            public bool GetForumResponseNotification { get; set; }
+            [JsonPropertyName("modelRatedNotification")]
+            public bool ModelRatedNotification { get; set; }
+            [JsonPropertyName("blocked")]
 			public bool Blocked { get; set; }
 			[JsonPropertyName("canAdministrateForum")]
 			public bool CanAdministrateForum { get; set; }
@@ -71,7 +77,10 @@ namespace Backend3DForge.Responses
 				Apartment = user.Apartment;
 				DepartmentNumber = user.DepartmentNumber;
 				DeliveryType = user.DeliveryType;
-				Blocked = user.Blocked;
+				OrderStateChangedNotification = user.OrderStateChangedNotification;
+				GetForumResponseNotification = user.GetForumResponseNotification;
+				ModelRatedNotification = user.ModelRatedNotification;
+                Blocked = user.Blocked;
 				CanAdministrateForum = user.CanAdministrateForum;
 				CanRetrieveDelivery = user.CanRetrieveDelivery;
 				CanModerateCatalog = user.CanModerateCatalog;
