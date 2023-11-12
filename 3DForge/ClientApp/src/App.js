@@ -10,27 +10,6 @@ import UserEditPage from './pages/UserEditPage/UserEditPage';
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 
 const App = () => {
-
-  React.useEffect(() => {
-    UserAPI.check().then((res) => {
-      if (
-        window.location.pathname !== '/'
-        && window.location.pathname !== '/register'
-        && window.location.pathname !== '/auth'
-        && !window.location.pathname.includes('/reset-password')
-        && res.status === 401) {
-        window.location.replace("/");
-      }
-
-      if (
-        (window.location.pathname === '/auth'
-        || window.location.pathname === '/register')
-        && res.status === 200) {
-        window.history.back();
-      }
-    });
-  });
-
   return (
     <BrowserRouter>
       <Routes>

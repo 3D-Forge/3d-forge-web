@@ -5,6 +5,10 @@ export class UserAPI {
         return await BaseAPI.post("user/register", { login, email, password, confirmPassword }, "application/json");
     }
 
+    static async changeEmail(password, email) {
+        return await BaseAPI.put("user/change-email", { password, email }, "application/json")
+    }
+
     static async confirmEmail(email, token) {
         return await BaseAPI.get(`user/confirm-email/${encodeURIComponent(email)}?token=${token}`)
     }

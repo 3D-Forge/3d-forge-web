@@ -33,9 +33,10 @@ const UserEditPage = () => {
     const streetSelectorRef = React.useRef();
     const streetSelectorListRef = React.useRef();
 
-    const modalWindowOldPasswordInputRef = React.useRef();
+    const modalWindowCurrentPasswordInputRef = React.useRef();
     const modalWindowNewPasswordInputRef = React.useRef();
     const modalWindowConfirmNewPasswordInputRef = React.useRef();
+    const modalWindowNewEmailInputRef = React.useRef();
 
     function ScrollToSection(sectionId) {
         let element = document.getElementById(sectionId);
@@ -118,16 +119,37 @@ const UserEditPage = () => {
 
     function ChangePasswordRequest() {
         UserAPI.resetPassword(
-            userInfo.login, 
+            userInfo.login,
             modalWindowNewPasswordInputRef.current.value,
             modalWindowConfirmNewPasswordInputRef.current.value,
-            modalWindowOldPasswordInputRef.current.value,
-            null).then(res => {
+            modalWindowCurrentPasswordInputRef.current.value,
+            null
+            ).then(res => {
                 return res.json()
             }).then(data => {
                 if (data.success === true) {
                     setModalWindowType(undefined);
                     alert("The password is changed.");
+                }
+                else if (data.success === false) {
+                    alert(data.message);
+                }
+                else {
+                    alert("Some fields are empty");
+                }
+            });
+    }
+
+    function ChangeEmailRequest() {
+        UserAPI.changeEmail(
+            modalWindowCurrentPasswordInputRef.current.value,
+            modalWindowNewEmailInputRef.current.value
+            ).then(res => {
+                return res.json()
+            }).then(data => {
+                if (data.success === true) {
+                    setModalWindowType(undefined);
+                    alert("Email is sent.");
                 }
                 else if (data.success === false) {
                     alert(data.message);
@@ -284,25 +306,25 @@ const UserEditPage = () => {
                                 <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_current_password_panel_header}`}>
                                     Поточний пароль
                                 </h3>
-                                <input className={`${cl.modal_window_input} ${cl.modal_window_current_password_input}`} 
-                                type="password"
-                                ref={modalWindowOldPasswordInputRef} />
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_current_password_input}`}
+                                    type="password"
+                                    ref={modalWindowCurrentPasswordInputRef} />
                             </div>
                             <div className={`${cl.modal_window_panel} ${cl.modal_window_new_password_panel}`}>
                                 <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_new_password_panel_header}`}>
                                     Новий пароль
                                 </h3>
-                                <input className={`${cl.modal_window_input} ${cl.modal_window_new_password_input}`} 
-                                type="password"
-                                ref={modalWindowNewPasswordInputRef} />
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_new_password_input}`}
+                                    type="password"
+                                    ref={modalWindowNewPasswordInputRef} />
                             </div>
                             <div className={`${cl.modal_window_panel} ${cl.modal_window_confirm_new_password_panel}`}>
                                 <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_confirm_new_password_panel_header}`}>
                                     Підтвердження нового паролю
                                 </h3>
                                 <input className={`${cl.modal_window_input} ${cl.modal_window_confirm_new_password_input}`}
-                                type="password"
-                                ref={modalWindowConfirmNewPasswordInputRef} />
+                                    type="password"
+                                    ref={modalWindowConfirmNewPasswordInputRef} />
                             </div>
                         </div>
                         <div className={cl.modal_window_control}>
@@ -319,7 +341,40 @@ const UserEditPage = () => {
         }
 
         if (currentModalWindowType === "change-email") {
-            return;
+            return (
+                <div className={cl.modal_window_background}>
+                    <div className={cl.modal_window}>
+                        <div className={cl.modal_window_content}>
+                            <h2 className={cl.modal_window_header}>Зміна пошти</h2>
+                            <p className={cl.modal_window_description}>Уведіть Ваш поточний пароль та нову пошту</p>
+                            <div className={`${cl.modal_window_panel} ${cl.modal_window_current_password_panel}`}>
+                                <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_current_password_panel_header}`}>
+                                    Поточний пароль
+                                </h3>
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_current_password_input}`}
+                                    type="password"
+                                    ref={modalWindowCurrentPasswordInputRef} />
+                            </div>
+                            <div className={`${cl.modal_window_panel} ${cl.modal_window_new_email_panel}`}>
+                                <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_new_email_header}`}>
+                                    Нова пошта
+                                </h3>
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_new_email_input}`}
+                                    type="email"
+                                    ref={modalWindowNewEmailInputRef} />
+                            </div>
+                        </div>
+                        <div className={cl.modal_window_control}>
+                            <div className={cl.modal_window_change_password_button} onClick={() => ChangeEmailRequest()}>
+                                <span className={cl.modal_window_change_password_button_text}>Зберегти</span>
+                            </div>
+                            <div className={cl.modal_window_cancel_button} onClick={() => setModalWindowType(undefined)}>
+                                <span className={cl.modal_window_cancel_button_text}>Скасувати</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         }
 
         if (currentModalWindowType === "delete-account") {
@@ -661,7 +716,7 @@ const UserEditPage = () => {
                                 <div className={`${cl.security_button} ${cl.change_password_button}`} onClick={() => setModalWindowType("change-password")}>
                                     <span className={`${cl.security_button_text} ${cl.change_password_button_text}`}>Змінити пароль</span>
                                 </div>
-                                <div className={`${cl.security_button} ${cl.change_email_button}`}>
+                                <div className={`${cl.security_button} ${cl.change_email_button}`} onClick={() => setModalWindowType("change-email")}>
                                     <span className={`${cl.security_button_text} ${cl.change_email_button_text}`}>Змінити пошту</span>
                                 </div>
                                 <div className={`${cl.security_button} ${cl.delete_account_button}`}>

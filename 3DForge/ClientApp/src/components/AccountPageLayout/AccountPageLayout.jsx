@@ -49,6 +49,7 @@ const AccountPageLayout = () => {
                         <div className={cl.drop_list} style={{ display: isDropMenuVisible ? 'block' : 'none' }}>
                             <div className={cl.drop_menu_triangle} />
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_orders}`}>Мої замовлення</p>
+                            <p className={`${cl.drop_list_element} ${cl.drop_list_element_models}`}>Мої моделі</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_settings}`}
                                 onClick={() => {
                                     window.location.pathname = 'user/edit';
@@ -86,6 +87,11 @@ const AccountPageLayout = () => {
             if (res.ok) {
                 setAuthorizationState(true);
             }
+
+            if (window.location.pathname !== '/' && res.status === 401) {
+                window.location.replace("/");
+            }
+
             setCheckingAuthState(false);
         });
 

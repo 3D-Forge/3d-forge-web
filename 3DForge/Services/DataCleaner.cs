@@ -72,7 +72,12 @@ namespace Backend3DForge.Services
 							DB.Users.Remove(user);
 						}
 						break;
-					case "reset-password-permission":
+					case "change-email":
+						{
+                            DB.ActivationCodes.Remove(activationCode);
+                        }
+						break;
+                    case "reset-password-permission":
 						{
                             DB.ActivationCodes.Remove(activationCode);
                         }

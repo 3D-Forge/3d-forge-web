@@ -63,8 +63,7 @@ namespace Backend3DForge.Controllers
 					{
 						{ "login", request.Login },
 						{ "link", $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" }
-					}
-					);
+					});
 			}
 			catch (Exception ex)
 			{
@@ -103,7 +102,53 @@ namespace Backend3DForge.Controllers
 			return Ok(new BaseResponse.SuccessResponse("Email is sent!"));
 		}
 
-		[HttpGet("confirm-email/{email}")]
+		[Authorize]
+		[HttpPut("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+		{
+			User user = AuthorizedUser;
+
+            if (!PasswordTool.Validate(request.Password, user.PasswordHash))
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
+            }
+
+			string token = StringTool.RandomString(256);
+
+            try
+            {
+				await emailService.SendEmailUseTemplateAsync(
+					email: request.Email,
+					templateName: "confirm_email.html",
+					parameters: new Dictionary<string, string>
+					{
+						{ "login", user.Login },
+						{ "link", $"https://{HttpContext.Request.Host}/api/user/confirm-email/{WebUtility.UrlEncode(user.Email)}?token={token}" }
+					});
+			}
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+            }
+
+			DateTime time = DateTime.Now;
+
+            await DB.ActivationCodes.AddAsync(new ActivationCode
+            {
+                UserId = user.Id,
+                User = user,
+                Code = token,
+                Action = $"change-email,{request.Email}",
+                CreatedAt = time,
+                Expires = time.AddHours(12)
+            });
+
+			await DB.SaveChangesAsync();
+
+            return Ok(new BaseResponse.SuccessResponse("Email is sent!"));
+        }
+
+        [HttpGet("confirm-email/{email}")]
 		public async Task<IActionResult> ConfirmEmail(string email, [FromQuery] string? token)
 		{
 			ActivationCode? activationCode = await DB.ActivationCodes
