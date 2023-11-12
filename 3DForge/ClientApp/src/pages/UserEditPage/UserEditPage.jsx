@@ -33,6 +33,10 @@ const UserEditPage = () => {
     const streetSelectorRef = React.useRef();
     const streetSelectorListRef = React.useRef();
 
+    const modalWindowOldPasswordInputRef = React.useRef();
+    const modalWindowNewPasswordInputRef = React.useRef();
+    const modalWindowConfirmNewPasswordInputRef = React.useRef();
+
     function ScrollToSection(sectionId) {
         let element = document.getElementById(sectionId);
 
@@ -110,6 +114,28 @@ const UserEditPage = () => {
             alert("Avatar couldn't save!");
             setSavingChangesState(false);
         }
+    }
+
+    function ChangePasswordRequest() {
+        UserAPI.resetPassword(
+            userInfo.login, 
+            modalWindowNewPasswordInputRef.current.value,
+            modalWindowConfirmNewPasswordInputRef.current.value,
+            modalWindowOldPasswordInputRef.current.value,
+            null).then(res => {
+                return res.json()
+            }).then(data => {
+                if (data.success === true) {
+                    setModalWindowType(undefined);
+                    alert("The password is changed.");
+                }
+                else if (data.success === false) {
+                    alert(data.message);
+                }
+                else {
+                    alert("Some fields are empty");
+                }
+            });
     }
 
     function RenderDeliveryMenu() {
@@ -247,22 +273,52 @@ const UserEditPage = () => {
     }
 
     function RenderModalWindow() {
-        if (currentModalWindowType === "change-email") {
+        if (currentModalWindowType === "change-password") {
             return (
-                <div className={cl.modal_widow_background}>
-                    <div className={cl.modal_widow_panel}>
-                        <div className={cl.modal_widow_content}>
-
+                <div className={cl.modal_window_background}>
+                    <div className={cl.modal_window}>
+                        <div className={cl.modal_window_content}>
+                            <h2 className={cl.modal_window_header}>Зміна паролю</h2>
+                            <p className={cl.modal_window_description}>Уведіть Ваш поточний та новий пароль</p>
+                            <div className={`${cl.modal_window_panel} ${cl.modal_window_current_password_panel}`}>
+                                <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_current_password_panel_header}`}>
+                                    Поточний пароль
+                                </h3>
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_current_password_input}`} 
+                                type="password"
+                                ref={modalWindowOldPasswordInputRef} />
+                            </div>
+                            <div className={`${cl.modal_window_panel} ${cl.modal_window_new_password_panel}`}>
+                                <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_new_password_panel_header}`}>
+                                    Новий пароль
+                                </h3>
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_new_password_input}`} 
+                                type="password"
+                                ref={modalWindowNewPasswordInputRef} />
+                            </div>
+                            <div className={`${cl.modal_window_panel} ${cl.modal_window_confirm_new_password_panel}`}>
+                                <h3 className={`${cl.modal_window_panel_header} ${cl.modal_window_confirm_new_password_panel_header}`}>
+                                    Підтвердження нового паролю
+                                </h3>
+                                <input className={`${cl.modal_window_input} ${cl.modal_window_confirm_new_password_input}`}
+                                type="password"
+                                ref={modalWindowConfirmNewPasswordInputRef} />
+                            </div>
                         </div>
-                        <div className={cl.modal_widow_control}>
-
+                        <div className={cl.modal_window_control}>
+                            <div className={cl.modal_window_change_password_button} onClick={() => ChangePasswordRequest()}>
+                                <span className={cl.modal_window_change_password_button_text}>Зберегти</span>
+                            </div>
+                            <div className={cl.modal_window_cancel_button} onClick={() => setModalWindowType(undefined)}>
+                                <span className={cl.modal_window_cancel_button_text}>Скасувати</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             );
         }
 
-        if (currentModalWindowType === "change-password") {
+        if (currentModalWindowType === "change-email") {
             return;
         }
 
@@ -602,7 +658,7 @@ const UserEditPage = () => {
                             </div>
                             <div className={`${cl.section_content} ${cl.section_security_content}`} id="security-content">
                                 <h2 className={`${cl.section_header} ${cl.section_security_header}`}>Безпека</h2>
-                                <div className={`${cl.security_button} ${cl.change_password_button}`}>
+                                <div className={`${cl.security_button} ${cl.change_password_button}`} onClick={() => setModalWindowType("change-password")}>
                                     <span className={`${cl.security_button_text} ${cl.change_password_button_text}`}>Змінити пароль</span>
                                 </div>
                                 <div className={`${cl.security_button} ${cl.change_email_button}`}>
