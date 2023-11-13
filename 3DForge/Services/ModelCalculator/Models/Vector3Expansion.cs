@@ -35,8 +35,7 @@ namespace Backend3DForge.Services.ModelCalculator.Models
                 Vector3 vertex2 = vertices.ElementAt(i);
                 Vector3 vertex3 = vertices.ElementAt(i + 1);
 
-                double triangleArea = CalculateTriangleArea(vertex1, vertex2, vertex3);
-                totalArea += triangleArea;
+                totalArea += CalculateTriangleArea(vertex1, vertex2, vertex3);
             }
 
             return totalArea;

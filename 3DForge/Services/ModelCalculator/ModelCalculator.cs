@@ -41,9 +41,9 @@ namespace Backend3DForge.Services.ModelCalculator
             STLDocument stl = STLDocument.Read(modelStream);
 
             // size in mm
-            double xSize = stl.Max(p => p.Vertices.Max(v => v.X)) - stl.Min(p => p.Vertices.Min(v => v.X));
-            double ySize = stl.Max(p => p.Vertices.Max(v => v.Y)) - stl.Min(p => p.Vertices.Min(v => v.Y));
-            double zSize = stl.Max(p => p.Vertices.Max(v => v.Z)) - stl.Min(p => p.Vertices.Min(v => v.Z));
+            float xSize = stl.Max(p => p.Vertices.Max(v => v.X)) - stl.Min(p => p.Vertices.Min(v => v.X));
+            float ySize = stl.Max(p => p.Vertices.Max(v => v.Y)) - stl.Min(p => p.Vertices.Min(v => v.Y));
+            float zSize = stl.Max(p => p.Vertices.Max(v => v.Z)) - stl.Min(p => p.Vertices.Min(v => v.Z));
             // mm^2
             double surfaceArea = stl.Sum(p => CalculateArea(p.Vertices.ToVector3()));
             // mm^3
@@ -51,11 +51,11 @@ namespace Backend3DForge.Services.ModelCalculator
 
             return new ModelCalculatorResult
             {
-                SurfaceArea = Math.Round(surfaceArea, 0),
-                Volume = Math.Round(volume, 0),
-                X = Math.Round(xSize, 2),
-                Y = Math.Round(ySize, 2),
-                Z = Math.Round(zSize, 2)
+                SurfaceArea = (float)Math.Round(surfaceArea, 0),
+                Volume = (float)volume,
+                X = (float)Math.Round(xSize, 2),
+                Y = (float)Math.Round(ySize, 2),
+                Z = (float)Math.Round(zSize, 2)
             };
         }
 
@@ -69,8 +69,7 @@ namespace Backend3DForge.Services.ModelCalculator
                 Vector3 vertex2 = vertices[i];
                 Vector3 vertex3 = vertices[i + 1];
 
-                double triangleArea = CalculateTriangleArea(vertex1, vertex2, vertex3);
-                totalArea += triangleArea;
+                totalArea += CalculateTriangleArea(vertex1, vertex2, vertex3);
             }
 
             return totalArea;

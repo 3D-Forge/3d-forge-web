@@ -27,10 +27,14 @@ namespace Backend3DForge.Models
 		public DateTime Uploaded { get; set; }
 		public DateTime? Publicized { get; set; } = null;
 		[Required]
-		public float Height { get; set; }
+		public float XSize { get; set; }
 		[Required]
-		public float Width { get; set; }
-		[Required]
+		public float YSize { get; set; }
+		[Required] 
+		public float ZSize { get; set;}
+        [Required]
+        public double Volume { get; set; } = 0;
+        [Required]
 		public float Depth { get; set; }
 		public float Rating { get; set; } = 0;
 		public double MinPrice { get; set; } = 0;

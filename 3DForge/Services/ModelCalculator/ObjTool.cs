@@ -88,11 +88,11 @@ namespace Backend3DForge.Services.ModelCalculator
 
             return new ModelCalculatorResult
             {
-                X = maxVector.X - minVector.X,
-                Y = maxVector.Y - minVector.Y,
-                Z = maxVector.Z - minVector.Z,
-                Volume = volume * 2,
-                SurfaceArea = surfaceArea
+                X = MathF.Round(maxVector.X - minVector.X),
+                Y = MathF.Round(maxVector.Y - minVector.Y),
+                Z = MathF.Round(maxVector.Z - minVector.Z),
+                Volume = (float)Math.Round(volume * 2, 2),
+                SurfaceArea = (float)Math.Round(surfaceArea, 2)
             };
         }
     }

@@ -4,6 +4,7 @@ using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.Email;
 using Backend3DForge.Services.FileStorage;
+using Backend3DForge.Services.ModelCalculator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +22,14 @@ namespace Backend3DForge.Controllers
         protected readonly IFileStorage fileStorage;
         protected readonly IMemoryCache memoryCache;
         protected readonly IEmailService emailService;
+        protected readonly IModelCalculator modelCalculator;
 
-        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService) : base(db)
+        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService, IModelCalculator modelCalculator) : base(db)
         {
             this.fileStorage = fileStorage;
             this.memoryCache = memoryCache;
             this.emailService = emailService;
+            this.modelCalculator = modelCalculator;
         }
 
         [HttpGet("categories")]
@@ -203,12 +206,20 @@ namespace Backend3DForge.Controllers
             }
 
 
+            ModelCalculatorResult modelParameters;
+            using(var fs = print.OpenReadStream())
+            {
+                modelParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(print.FileName).Replace(".", ""));
+            }
+
             var newModel = (await DB.CatalogModels.AddAsync(new CatalogModel
             {
                 Name = request.Name,
                 Description = request.Description,
-                Height = 0,
-                Width = 0,
+                XSize = modelParameters.X,
+                YSize = modelParameters.Y,
+                ZSize = modelParameters.Z,
+                Volume = modelParameters.Volume,
                 Depth = request.Depth,
                 ModelExtensionName = modelExtension.Name,
                 PrintExtensionName = printExtension.Name,
@@ -228,7 +239,7 @@ namespace Backend3DForge.Controllers
                 this.fileStorage.UploadPreviewModel(newModel, model.OpenReadStream()),
                 this.fileStorage.UploadPrintFile(newModel, print.OpenReadStream())
             });
-            return Ok(new Responses.CatalogModelResponse(newModel));
+            return Ok(new CatalogModelResponse(newModel));
         }
 
         [HttpGet("{modelId}")]

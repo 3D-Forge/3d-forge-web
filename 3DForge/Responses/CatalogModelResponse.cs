@@ -33,11 +33,19 @@ namespace Backend3DForge.Responses
 			[Required]
 			public DateTime Uploaded { get; set; }
 			[Required]
-			public float Height { get; set; }
+			public float XSize { get; set; }
 			[Required]
-			public float Width { get; set; }
+			public float YSize { get; set; }
+			[Required]
+			public float ZSize { get; set; }
 			[Required]
 			public float Depth { get; set; }
+			[Required]
+			public double MinPrice { get; set; }
+			[Required]
+			public double Rating { get; set; }
+			[Required]
+			public double Volume { get; set; }
 
 			public ICollection<ModelCategoryResponse.View> Categoryes { get; set; } = new List<ModelCategoryResponse.View>();
 			public ICollection<string> Keywords { get; set; } = new List<string>();
@@ -51,11 +59,15 @@ namespace Backend3DForge.Responses
 				this.ModelFileSize = model.ModelFileSize;
 				this.Owner = model.User.Login;
 				this.Uploaded = model.Uploaded;
-				this.Height = model.Height;
-				this.Width = model.Width;
+				this.XSize = model.XSize;
+				this.YSize = model.YSize;
+				this.ZSize = model.ZSize;
 				this.Depth = model.Depth;
+				this.MinPrice = model.MinPrice;
+				this.Rating = model.Rating;
+				this.Volume = model.Volume;
 
-				this.Categoryes.AddRange(model.ModelCategoryes.Select(p => new ModelCategoryResponse.View(p)));
+                this.Categoryes.AddRange(model.ModelCategoryes.Select(p => new ModelCategoryResponse.View(p)));
 				this.Keywords.AddRange(model.Keywords.Select(p => p.Name));
 			}
 		}

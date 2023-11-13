@@ -2,10 +2,10 @@
 {
     public class ModelCalculatorResult
     {
-        public required double X { get; set; }
-        public required double Y { get; set; }
-        public required double Z { get; set; }
-        public required double Volume { get; set; }
-        public required double SurfaceArea { get; set; }
+        public required float X { get; set; }
+        public required float Y { get; set; }
+        public required float Z { get; set; }
+        public required float Volume { get; set; }
+        public required float SurfaceArea { get; set; }
     }
 }
