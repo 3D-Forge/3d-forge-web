@@ -2,6 +2,6 @@
 {
     public interface IModelCalculator
     {
-        Task<ModelCalculatorResult> CalculateSurfaceArea(Stream modelStream, string format);
+        ModelCalculatorResult CalculateSurfaceArea(Stream modelStream, string format);
     }
 }

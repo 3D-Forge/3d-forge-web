@@ -5,7 +5,7 @@ namespace Backend3DForge.Services.ModelCalculator
 {
     public class ModelCalculator : IModelCalculator
     {
-        public async Task<ModelCalculatorResult> CalculateSurfaceArea(Stream modelStream, string format)
+        public ModelCalculatorResult CalculateSurfaceArea(Stream modelStream, string format)
         {
             if (modelStream is null)
                 throw new ArgumentNullException(nameof(modelStream));
@@ -21,7 +21,7 @@ namespace Backend3DForge.Services.ModelCalculator
                     result = CalculateStlSurfaceArea(modelStream);
                     break;
                 case "obj":
-                    result = await CalculateObjSurfaceArea(modelStream);
+                    result = CalculateObjSurfaceArea(modelStream);
                     break;
                 default:
                     throw new ArgumentException("Unsupported format", nameof(format));
@@ -30,25 +30,12 @@ namespace Backend3DForge.Services.ModelCalculator
             return result;
         }
 
-        private async Task<ModelCalculatorResult> CalculateObjSurfaceArea(Stream modelStream)
+        private ModelCalculatorResult CalculateObjSurfaceArea(Stream modelStream)
         {
-            ObjModel objModel = await ObjReader.ReadObjFile(modelStream);
-
-            var xSize = objModel.Vertices.Max(p => p.X) - objModel.Vertices.Min(p => p.X);
-            var ySize = objModel.Vertices.Max(p => p.Y) - objModel.Vertices.Min(p => p.Y);
-            var zSize = objModel.Vertices.Max(p => p.Z) - objModel.Vertices.Min(p => p.Z);
-            var surfaceArea = objModel.Faces.Sum(p => CalculateArea(p.Vertices));
-            double volume = objModel.Faces.Sum(p => SignedVolumeOfTriangle(p.Vertices)) * 2;
-
-            return new ModelCalculatorResult
-            {
-                SurfaceArea = Math.Round(surfaceArea, 0),
-                Volume = Math.Round(volume, 0),
-                X = Math.Round(xSize, 2),
-                Y = Math.Round(ySize, 2),
-                Z = Math.Round(zSize, 2)
-            };
+            ObjTool objReader = new ObjTool();
+            return objReader.CalculateFrom(modelStream);
         }
+
         public ModelCalculatorResult CalculateStlSurfaceArea(Stream modelStream)
         {
             STLDocument stl = STLDocument.Read(modelStream);
@@ -72,15 +59,15 @@ namespace Backend3DForge.Services.ModelCalculator
             };
         }
 
-        private double CalculateArea(IEnumerable<Vector3> vertices)
+        private double CalculateArea(IList<Vector3> vertices)
         {
             double totalArea = 0;
 
             for (int i = 1; i < vertices.Count() - 1; i++)
             {
-                Vector3 vertex1 = vertices.ElementAt(0);
-                Vector3 vertex2 = vertices.ElementAt(i);
-                Vector3 vertex3 = vertices.ElementAt(i + 1);
+                Vector3 vertex1 = vertices[0];
+                Vector3 vertex2 = vertices[i];
+                Vector3 vertex3 = vertices[i + 1];
 
                 double triangleArea = CalculateTriangleArea(vertex1, vertex2, vertex3);
                 totalArea += triangleArea;
@@ -88,12 +75,12 @@ namespace Backend3DForge.Services.ModelCalculator
 
             return totalArea;
         }
-        
-        private double SignedVolumeOfTriangle(IEnumerable<Vector3> vertices)
+
+        private double SignedVolumeOfTriangle(IList<Vector3> vertices)
         {
-            Vertex p1 = vertices.ElementAt(0);
-            Vertex p2 = vertices.ElementAt(1);
-            Vertex p3 = vertices.ElementAt(2);
+            Vector3 p1 = vertices[0];
+            Vector3 p2 = vertices[1];
+            Vector3 p3 = vertices[2];
 
             double v321 = p3.X * p2.Y * p1.Z;
             double v231 = p2.X * p3.Y * p1.Z;
