@@ -44,5 +44,6 @@ namespace Backend3DForge.Models
 		public ICollection<ModelCategory> ModelCategoryes { get; set; } = new List<ModelCategory>();
 		public ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();
 		public ICollection<OrderedModel> OrderedModels { get; set; } = new List<OrderedModel>();
+		public ICollection<ModelPicture> Pictures { get; set; } = new List<ModelPicture>();
 	}
 }

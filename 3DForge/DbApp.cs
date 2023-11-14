@@ -16,6 +16,7 @@ namespace Backend3DForge
 		public DbSet<ModelExtension> ModelExtensions { get; set; }
 		public DbSet<PrintExtension> PrintExtensions { get; set; }
 		public DbSet<CatalogModel> CatalogModels { get; set; }
+		public DbSet<ModelPicture> ModelPictures { get; set; }
 		public DbSet<Keyword> Keywords { get; set; }
 		public DbSet<ModelCategory> ModelCategories { get; set; }
 		public DbSet<PrintMaterial> PrintMaterials { get; set; }
@@ -62,6 +63,12 @@ namespace Backend3DForge
 			modelBuilder.Entity<ModelExtension>()
 				.HasKey(p => p.Name)
 				.HasName("PK_ModelExtension");
+
+			modelBuilder.Entity<CatalogModel>()
+				.HasMany(cm => cm.Pictures)
+				.WithOne(mp => mp.CatalogModel)
+				.HasForeignKey(mp => mp.CatalogModelId)
+				.OnDelete(DeleteBehavior.Cascade);
 
 			base.OnModelCreating(modelBuilder);
 		}

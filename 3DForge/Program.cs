@@ -66,6 +66,7 @@ namespace Backend3DForge
 				o.AvatarStoragePath = builder.Configuration["Services:FileSystem:AvatarStoragePath"];
 				o.PathToFilesToPrint = builder.Configuration["Services:FileSystem:PathToFilesToPrint"];
 				o.PathToPreviewFiles = builder.Configuration["Services:FileSystem:PathToPreviewFiles"];
+				o.PathTo3DModelsPictures = builder.Configuration["Services:FileSystem:PathTo3DModelsPictures"];
 			});
 #else
 
@@ -80,10 +81,11 @@ namespace Backend3DForge
                 o.AvatarStoragePath = builder.Configuration["Services:FileSystem:AvatarStoragePath"];
                 o.PathToFilesToPrint = builder.Configuration["Services:FileSystem:PathToFilesToPrint"];
                 o.PathToPreviewFiles = builder.Configuration["Services:FileSystem:PathToPreviewFiles"];
+				o.PathTo3DModelsPictures = builder.Configuration["Services:FileSystem:PathTo3DModelsPictures"];
             });
 #endif
 
-			var app = builder.Build();
+            var app = builder.Build();
 
 			if (!app.Environment.IsDevelopment())
 			{

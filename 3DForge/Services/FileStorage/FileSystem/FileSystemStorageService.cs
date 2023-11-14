@@ -153,5 +153,23 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
 		{
 			return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
 		}
-	}
+
+        public Task<Stream> Download3DModelsPicture(ModelPicture modelPicture)
+        {
+            return DownloadFileAsync($"{configuration.PathTo3DModelsPictures}{Path.DirectorySeparatorChar}{modelPicture.Id}.png");
+        }
+
+        public Task Upload3DModelsPicture(ModelPicture modelPicture, Stream fileStream, long fileSize = -1)
+        {
+            return UploadFileAsync(
+				filename: $"{configuration.PathTo3DModelsPictures}{Path.DirectorySeparatorChar}{modelPicture.Id}.png",
+				fileStream: fileStream,
+				fileSize: fileSize);
+        }
+
+        public Task Delete3DModelsPicture(ModelPicture modelPicture)
+        {
+            return DeleteFileAsync($"{configuration.PathTo3DModelsPictures}{Path.DirectorySeparatorChar}{modelPicture.Id}.png");
+        }
+    }
 }
