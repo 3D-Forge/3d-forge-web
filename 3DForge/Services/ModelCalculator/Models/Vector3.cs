@@ -1,6 +1,4 @@
-﻿using QuantumConcepts.Formats.StereoLithography;
-
-namespace Backend3DForge.Services.ModelCalculator.Models
+﻿namespace Backend3DForge.Services.ModelCalculator.Models
 {
     public class Vector3
     {
