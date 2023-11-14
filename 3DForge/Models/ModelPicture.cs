@@ -11,5 +11,7 @@ namespace Backend3DForge.Models
         [Required]
         public int CatalogModelId { get; set; }
         public CatalogModel CatalogModel { get; set; }
+        [Required]
+        public DateTime Uploaded { get; set; }
     }
 }

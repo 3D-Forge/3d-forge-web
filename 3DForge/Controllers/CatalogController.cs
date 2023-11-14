@@ -51,11 +51,43 @@ namespace Backend3DForge.Controllers
         public async Task<IActionResult> SearchKeywords([FromQuery(Name = "q")] string q)
         {
             q = q.ToLower();
-            var result = await DB.Keywords
-                .Where(p => p.Name.ToLower().Contains(q))
-                .Take(20)
-                .ToArrayAsync();
-            return Ok(new KeywordResponse(result));
+            IQueryable<Keyword> query = DB.Keywords;
+            if (q != null)
+                query = query.Where(p => p.Name.ToLower().Contains(q));
+            query = query.Take(20);
+            return Ok(new KeywordResponse(await query.ToArrayAsync()));
+        }
+
+        [HttpGet("authors")]
+        public async Task<IActionResult> GetAuthors([FromQuery] PageRequest request, [FromQuery(Name = "q")] string? q = null)
+        {
+            PageResponse<AuthorResponse.View>? response;
+            if (!memoryCache.TryGetValue($"GET api/catalog/authors?q={q ?? ""}&p={request.Page}&ps={request.PageSize}", out response))
+            {
+                var query = DB.Users
+                    .Include(p => p.CatalogModels)
+                    .Where(p => p.CatalogModels.Count() > 0);
+
+                if (q != null)
+                {
+                    query = query.Where(p => p.Login.Contains(q));
+                }
+
+                int totalItemsCount = await query.CountAsync();
+                int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / request.PageSize);
+                query = query.Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize);
+
+                var result = await query.Select(p => new AuthorResponse.View(p)).ToListAsync();
+                response = new PageResponse<AuthorResponse.View>(
+                result,
+                    request.Page,
+                    request.PageSize,
+                    totalPagesCount);
+
+                memoryCache.Set("GET api/catalog/authors", response, TimeSpan.FromMinutes(10));
+            }
+            return Ok(response);
         }
 
         [HttpGet("search")]
@@ -77,9 +109,10 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.ModelCategoryes)
                 .Include(p => p.Keywords)
                 .Include(p => p.ModelExtension)
-                .Include(p => p.PrintExtension);
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures);
 
-                if(request.Author is not null)
+                if (request.Author is not null)
                 {
                     query = query.Where(p => p.User.Login == request.Author);
                 }
@@ -140,19 +173,52 @@ namespace Backend3DForge.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="files">The <b>first</b> is a 3D model for preview<br/> The <b>second</b> is a 3D model for printing<br/> <b>Other</b> Files - Image Preview <i>Max: 5</i></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddNewModel([FromForm] Publish3DModelRequest request, [FromForm] IFormFileCollection files)
         {
-            if (files.Count != 2)
+            if (files.Count == 0)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Please select 2 files"));
+                return BadRequest(new BaseResponse.ErrorResponse("Please select 3D file for preview"));
+            }
+            if (files.Count == 1)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Please select 3D file for printing"));
+            }
+            if (files.Count == 2)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Please select at least one image for preview"));
+            }
+            if (files.Count > 7)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too many files"));
             }
 
             var model = files[0];
             var modelEx = Path.GetExtension(model.FileName).Replace(".", "");
             var print = files[1];
             var printEx = Path.GetExtension(print.FileName).Replace(".", "");
+
+            IList<IFormFile> previewImages = new List<IFormFile>();
+
+            for (int i = 2; i < files.Count; i++)
+            {
+                if (files[i].ContentType != "image/png")
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName} is not a png image'"));
+                }
+                if (files[i].Length > 1024 * 1024 * 10)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 5MB"));
+                }
+                previewImages.Add(files[i]);
+            }
 
             var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Name == printEx);
 
@@ -205,9 +271,8 @@ namespace Backend3DForge.Controllers
                 }
             }
 
-
             ModelCalculatorResult modelParameters;
-            using(var fs = print.OpenReadStream())
+            using (var fs = print.OpenReadStream())
             {
                 modelParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(print.FileName).Replace(".", ""));
             }
@@ -234,11 +299,27 @@ namespace Backend3DForge.Controllers
 
             await DB.SaveChangesAsync();
 
+            foreach (var image in previewImages)
+            {
+                var picture = (await DB.ModelPictures.AddAsync(new ModelPicture
+                {
+                    CatalogModelId = newModel.Id,
+                    CatalogModel = newModel,
+                    Size = image.Length,
+                    Uploaded = DateTime.UtcNow
+                })).Entity;
+
+                await DB.SaveChangesAsync();
+
+                await fileStorage.Upload3DModelsPicture(picture, image.OpenReadStream());
+            }
+
             Task.WaitAll(new[]
             {
                 this.fileStorage.UploadPreviewModel(newModel, model.OpenReadStream()),
                 this.fileStorage.UploadPrintFile(newModel, print.OpenReadStream())
             });
+
             return Ok(new CatalogModelResponse(newModel));
         }
 
@@ -255,6 +336,7 @@ namespace Backend3DForge.Controllers
                  .Include(p => p.Keywords)
                  .Include(p => p.ModelExtension)
                  .Include(p => p.PrintExtension)
+                 .Include(p => p.Pictures)
                  .SingleOrDefaultAsync(p => p.Id == modelId);
                 if (model is null)
                 {
@@ -298,6 +380,28 @@ namespace Backend3DForge.Controllers
             return new FileStreamResult(fileStream, "application/octet-stream");
         }
 
+        [HttpGet("model/picture/{pictureId}")]
+        public async Task<IActionResult> GetModelPicture([FromRoute] int pictureId)
+        {
+            var picture = await DB.ModelPictures.SingleOrDefaultAsync(p => p.Id == pictureId);
+            if (picture is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse($"Picture {pictureId} not found"));
+            }
+
+            Stream fileStream;
+            try
+            {
+                fileStream = await fileStorage.Download3DModelsPicture(picture);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message, ex));
+            }
+            HttpContext.Response.ContentLength = picture.Size;
+            return new FileStreamResult(fileStream, "image/png");
+        }
+
         [Authorize]
         [HttpGet("unaccepted")]
         public async Task<IActionResult> GetUnacceptedModels()
@@ -307,7 +411,14 @@ namespace Backend3DForge.Controllers
                 return StatusCode(403);
             }
 
-            var models = await DB.CatalogModels.Where(x => x.Publicized == null).ToListAsync();
+            var models = await DB.CatalogModels
+                .Include(p => p.User)
+                .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
+                .Where(x => x.Publicized == null).ToListAsync();
 
             return Ok(new CatalogModelResponse(models));
         }
@@ -416,9 +527,12 @@ namespace Backend3DForge.Controllers
             }
 
             var catalogModel = await DB.CatalogModels
-                .Include(p => p.Keywords)
-                .Include(p => p.ModelCategoryes)
                 .Include(p => p.User)
+                .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
                 .SingleOrDefaultAsync(p => p.Id == modelId);
 
             if (catalogModel is null)
@@ -491,8 +605,12 @@ namespace Backend3DForge.Controllers
             }
 
             var catalogModel = await DB.CatalogModels
-                .Include(p => p.Keywords)
+                .Include(p => p.User)
                 .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
                 .SingleOrDefaultAsync(p => p.Id == modelId);
 
             if (catalogModel is null)
@@ -512,7 +630,7 @@ namespace Backend3DForge.Controllers
                 this.fileStorage.UploadPreviewModel(catalogModel, model.OpenReadStream()),
                 this.fileStorage.UploadPrintFile(catalogModel, print.OpenReadStream())
             });
-            return Ok(new Responses.CatalogModelResponse(catalogModel));
+            return Ok(new CatalogModelResponse(catalogModel));
         }
 
         [Authorize]

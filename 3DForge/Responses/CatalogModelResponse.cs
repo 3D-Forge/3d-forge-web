@@ -46,8 +46,10 @@ namespace Backend3DForge.Responses
 			public double Rating { get; set; }
 			[Required]
 			public double Volume { get; set; }
+			[Required]
+			public int[] PicturesIDs { get; set; }
 
-			public ICollection<ModelCategoryResponse.View> Categoryes { get; set; } = new List<ModelCategoryResponse.View>();
+            public ICollection<ModelCategoryResponse.View> Categoryes { get; set; } = new List<ModelCategoryResponse.View>();
 			public ICollection<string> Keywords { get; set; } = new List<string>();
 
 			public View(CatalogModel model)
@@ -66,6 +68,8 @@ namespace Backend3DForge.Responses
 				this.MinPrice = model.MinPrice;
 				this.Rating = model.Rating;
 				this.Volume = model.Volume;
+
+				this.PicturesIDs = model.Pictures.Select(p => p.Id).ToArray();
 
                 this.Categoryes.AddRange(model.ModelCategoryes.Select(p => new ModelCategoryResponse.View(p)));
 				this.Keywords.AddRange(model.Keywords.Select(p => p.Name));

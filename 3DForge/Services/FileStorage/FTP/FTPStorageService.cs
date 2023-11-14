@@ -16,6 +16,7 @@ namespace Backend3DForge.Services.FileStorage.FTP
 			this.MkDirAsync(this.configuration.AvatarStoragePath).Wait();
 			this.MkDirAsync(this.configuration.PathToPreviewFiles).Wait();
 			this.MkDirAsync(this.configuration.PathToFilesToPrint).Wait();
+			this.MkDirAsync(this.configuration.PathTo3DModelsPictures).Wait();
 			this.logger = logger;
 		}
 
