@@ -1,5 +1,8 @@
 ﻿namespace Backend3DForge.Services.ModelCalculator
 {
+    /// <summary>
+    /// All values are in millimeters
+    /// </summary>
     public class ModelCalculatorResult
     {
         public required float X { get; set; }
