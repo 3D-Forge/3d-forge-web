@@ -88,7 +88,11 @@ const AccountPageLayout = () => {
                 setAuthorizationState(true);
             }
 
-            if (window.location.pathname !== '/' && res.status === 401) {
+            const isCurrentPageAllowed =
+                window.location.pathname === '/'
+                || window.location.pathname.includes('/catalog');
+
+            if (!isCurrentPageAllowed && res.status === 401) {
                 window.location.replace("/");
             }
 
@@ -119,7 +123,7 @@ const AccountPageLayout = () => {
                     <div className={`${cl.page} ${cl.forum_page}`}>
                         <span className={`${cl.page_text} ${cl.forum_page_text}`}>Форум</span>
                     </div>
-                    <div className={`${cl.page} ${cl.catalog_page}`}>
+                    <div className={`${cl.page} ${cl.catalog_page}`} onClick={() => { window.location.pathname = '/catalog' }}>
                         <span className={`${cl.page_text} ${cl.forum_page_text}`}>Каталог</span>
                     </div>
                 </div>
