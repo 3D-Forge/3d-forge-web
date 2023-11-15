@@ -173,5 +173,127 @@
     "iges",
     "fcstd",
     "bim"
+  ],
+  "printTypes": [
+    "FDM",
+    "CFRP",
+    "SLA",
+    "SLS",
+    "DMLS",
+    "Binder Jetting",
+    "Lost-Wax Casting",
+    "MJF",
+    "PolyJet Printing",
+    "EBM"
+  ],
+  "printMaterials": [
+    {
+      "Name": "ABS",
+      "PrintTypeName": "FDM",
+      "Density": 1.04,
+      "Cost": 0.0112
+    },
+    {
+      "Name": "PLA",
+      "PrintTypeName": "FDM",
+      "Density": 1.25,
+      "Cost": 0.0125
+    },
+    {
+      "Name": "3k CFRP",
+      "PrintTypeName": "CFRP",
+      "Density": 1.79,
+      "Cost": 0.0179
+    },
+    {
+      "Name": "Plexiglass",
+      "PrintTypeName": "SLA",
+      "Density": 1.18,
+      "Cost": 0.0132
+    },
+    {
+      "Name": "Alumide",
+      "PrintTypeName": "SLS",
+      "Density": 1.36,
+      "Cost": 0.0184
+    },
+    {
+      "Name": "Aluminum",
+      "PrintTypeName": "DMLS",
+      "Density": 2.68,
+      "Cost": 0.0268
+    },
+    {
+      "Name": "Brass",
+      "PrintTypeName": "Binder Jetting",
+      "Density": 8.6,
+      "Cost": 0.086
+    },
+    {
+      "Name": "Bronze",
+      "PrintTypeName": "Binder Jetting",
+      "Density": 9.0,
+      "Cost": 0.09
+    },
+    {
+      "Name": "Copper",
+      "PrintTypeName": "Binder Jetting",
+      "Density": 9.0,
+      "Cost": 0.09
+    },
+    {
+      "Name": "Gold_14K",
+      "PrintTypeName": "Lost-Wax Casting",
+      "Density": 13.6,
+      "Cost": 0.136
+    },
+    {
+      "Name": "Gold_18K",
+      "PrintTypeName": "Lost-Wax Casting",
+      "Density": 15.6,
+      "Cost": 0.156
+    },
+    {
+      "Name": "Polyamide_MJF",
+      "PrintTypeName": "MJF",
+      "Density": 1.01,
+      "Cost": 0.0101
+    },
+    {
+      "Name": "Polyamide_SLS",
+      "PrintTypeName": "SLS",
+      "Density": 0.95,
+      "Cost": 0.0095
+    },
+    {
+      "Name": "Rubber",
+      "PrintTypeName": "PolyJet Printing",
+      "Density": 1.2,
+      "Cost": 0.0144
+    },
+    {
+      "Name": "Silver",
+      "PrintTypeName": "Lost-Wax Casting",
+      "Density": 10.26,
+      "Cost": 0.1026
+    },
+    {
+      "Name": "Steel",
+      "PrintTypeName": "DMLS",
+      "Density": 7.86,
+      "Cost": 0.0786
+    },
+    {
+      "Name": "Titanium",
+      "PrintTypeName": "EBM",
+      "Density": 4.41,
+      "Cost": 0.0441
+    },
+    {
+      "Name": "Resin",
+      "PrintTypeName": "SLA",
+      "Density": 1.2,
+      "Cost": 0.0144
+    }
   ]
 }

@@ -60,15 +60,30 @@ namespace Backend3DForge
 			modelBuilder.Entity<PrintExtension>()
 				.HasKey(p => p.Name)
 				.HasName("PK_PrintExtension");
+
 			modelBuilder.Entity<ModelExtension>()
 				.HasKey(p => p.Name)
 				.HasName("PK_ModelExtension");
+
+			modelBuilder.Entity<OrderedModel>()
+				.HasOne(o => o.PrintType)
+				.WithMany(p => p.OrderedModels)
+				.HasForeignKey(o => o.PrintTypeName)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			modelBuilder.Entity<CatalogModel>()
 				.HasMany(cm => cm.Pictures)
 				.WithOne(mp => mp.CatalogModel)
 				.HasForeignKey(mp => mp.CatalogModelId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<PrintType>()
+				.HasKey(p => p.Name)
+				.HasName("PK_PrintType");
+
+			modelBuilder.Entity<PrintMaterial>()
+				.HasKey(p => p.Name)
+				.HasName("PK_PrintMaterial");
 
 			base.OnModelCreating(modelBuilder);
 		}

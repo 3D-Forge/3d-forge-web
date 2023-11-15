@@ -289,6 +289,9 @@ namespace Backend3DForge.Controllers
                 }
             }
 
+            var cheapestMaterialCost = await DB.PrintMaterials
+                .MinAsync(x => x.Cost);
+
             var newModel = (await DB.CatalogModels.AddAsync(new CatalogModel
             {
                 Name = request.Name,
@@ -303,8 +306,9 @@ namespace Backend3DForge.Controllers
                 ModelFileSize = model.Length,
                 PrintFileSize = print.Length,
                 User = AuthorizedUser,
-                Uploaded = DateTime.UtcNow
-            })).Entity;
+                Uploaded = DateTime.UtcNow,
+                MinPrice = cheapestMaterialCost * modelParameters.Volume * 1000f,
+			})).Entity;
 
             newModel.Keywords.AddRange(keywords);
             newModel.ModelCategoryes.AddRange(categories);

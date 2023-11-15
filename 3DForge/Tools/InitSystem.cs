@@ -37,11 +37,11 @@ namespace Backend3DForge.Tools
 				dataConfig: config,
 				dataKey: "users",
 				getEntityDbSet: (db) => db.Users,
-				createNewEntity: (recodr) =>
+				createNewEntity: (record) =>
 				{
-					recodr.RegistrationDate = DateTime.UtcNow;
-					recodr.PasswordHash = PasswordTool.Hash(recodr.PasswordHash);
-					return recodr;
+					record.RegistrationDate = DateTime.UtcNow;
+					record.PasswordHash = PasswordTool.Hash(record.PasswordHash);
+					return record;
 				},
 				validate: (existingEntity, entity) => existingEntity.Login == entity.Login || existingEntity.Email == entity.Email
 			);
@@ -71,6 +71,24 @@ namespace Backend3DForge.Tools
 				getEntityDbSet: (db) => db.ModelExtensions,
 				createNewEntity: (record) => new(record),
 				validate: (existingEntity, entity) => existingEntity.Name == entity
+			);
+
+			InitializeTableWithData<PrintType, string>(
+				dbContext: db,
+				dataConfig: config,
+				dataKey: "printTypes",
+				getEntityDbSet: (db) => db.PrintTypes,
+				createNewEntity: (record) => new (record),
+				validate: (existingEntity, entity) => existingEntity.Name == entity
+			);
+
+			InitializeTableWithData<PrintMaterial, PrintMaterial>(
+				dbContext: db,
+				dataConfig: config,
+				dataKey: "printMaterials",
+				getEntityDbSet: (db) => db.PrintMaterials,
+				createNewEntity: (record) => record,
+				validate: (existingEntity, entity) => existingEntity.Name == entity.Name
 			);
 		}
 
