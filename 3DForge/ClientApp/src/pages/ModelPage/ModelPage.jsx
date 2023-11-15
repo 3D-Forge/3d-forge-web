@@ -17,7 +17,6 @@ const ModelPage = () => {
             CatalogAPI.getModel(1).then(res => {
                 console.log(res.status);
             })
-            
         }
     });
     return (
