@@ -66,6 +66,7 @@ namespace Backend3DForge.Controllers
             {
                 var query = DB.Users
                     .Include(p => p.CatalogModels)
+                    .OrderBy(p => p.Login)
                     .Where(p => p.CatalogModels.Count() > 0);
 
                 if (q != null)
@@ -85,7 +86,7 @@ namespace Backend3DForge.Controllers
                     request.PageSize,
                     totalPagesCount);
 
-                memoryCache.Set("GET api/catalog/authors", response, TimeSpan.FromMinutes(10));
+                memoryCache.Set("GET api/catalog/authors", response, TimeSpan.FromSeconds(45));
             }
             return Ok(response);
         }
@@ -215,7 +216,7 @@ namespace Backend3DForge.Controllers
                 }
                 if (files[i].Length > 1024 * 1024 * 10)
                 {
-                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 5MB"));
+                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 10MB"));
                 }
                 previewImages.Add(files[i]);
             }
