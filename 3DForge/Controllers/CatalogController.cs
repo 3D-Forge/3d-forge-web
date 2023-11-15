@@ -233,6 +233,24 @@ namespace Backend3DForge.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
             }
 
+            ModelCalculatorResult modelParameters;
+            try
+            {
+                using (var fs = print.OpenReadStream())
+                {
+                    modelParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(print.FileName).Replace(".", ""));
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+            }
+
+            if (modelParameters.X == 0 || modelParameters.Y == 0 || modelParameters.Z == 0 || modelParameters.SurfaceArea == 0 || modelParameters.Volume == 0)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
+            }
+
             HashSet<Keyword> keywords = new HashSet<Keyword>();
 
             if (request.Keywords is not null)
@@ -269,12 +287,6 @@ namespace Backend3DForge.Controllers
                 {
                     categories.Add(categoryObj);
                 }
-            }
-
-            ModelCalculatorResult modelParameters;
-            using (var fs = print.OpenReadStream())
-            {
-                modelParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(print.FileName).Replace(".", ""));
             }
 
             var newModel = (await DB.CatalogModels.AddAsync(new CatalogModel
