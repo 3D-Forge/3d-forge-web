@@ -543,6 +543,11 @@ namespace Backend3DForge.Controllers
 				return BadRequest(new BaseResponse.ErrorResponse("Accepted only .png images"));
 			}
 
+			if (userAvatarFile.Length > 1024 * 1024 * 10)
+			{
+                return BadRequest(new BaseResponse.ErrorResponse($"File is too large. Max size: 10MB"));
+            }
+
 			await fileStorage.DeleteAvatarAsync(user);
 			await fileStorage.UploadAvatarAsync(user, userAvatarFile.OpenReadStream(), userAvatarFile.Length);
 
