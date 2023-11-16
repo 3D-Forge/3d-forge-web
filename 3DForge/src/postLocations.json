@@ -1,0 +1,55 @@
+/*
+{
+  "Countries": [
+    {
+      "Counrty": "",
+      "RegionList": [
+        {
+          "Region": "",
+          "Cities": [
+            {
+              "City": "",
+              "Departments": [
+                "",
+              ],
+              "PostMachines": [
+                "",
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}*/
+
+
+{
+  "Countries": [
+    {
+      "Counrty": "Ukraine",
+      "Regions": [
+        {
+          "Region": "Kharkiv region",
+          "Cities": [
+            {
+              "City": "Kharkiv",
+              "Departments": [
+                "1",
+                "2",
+                "3"
+              ],
+              "PostMachines": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
