@@ -23,13 +23,18 @@ namespace Backend3DForge.Controllers
         protected readonly IMemoryCache memoryCache;
         protected readonly IEmailService emailService;
         protected readonly IModelCalculator modelCalculator;
+        protected readonly IConfiguration configuration;
 
-        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService, IModelCalculator modelCalculator) : base(db)
+        private float MinCost => configuration.GetValue<float>("MinCost");
+        private float ValueAdded => configuration.GetValue<float>("ValueAdded");
+
+        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService, IModelCalculator modelCalculator, IConfiguration configuration) : base(db)
         {
             this.fileStorage = fileStorage;
             this.memoryCache = memoryCache;
             this.emailService = emailService;
             this.modelCalculator = modelCalculator;
+            this.configuration = configuration;
         }
 
         [HttpGet("categories")]
@@ -206,6 +211,16 @@ namespace Backend3DForge.Controllers
             var print = files[1];
             var printEx = Path.GetExtension(print.FileName).Replace(".", "");
 
+            if(model.Length > 1024 * 1024 * 50)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Model file is too large. Max size: 50MB"));
+            }
+
+            if (print.Length > 1024 * 1024 * 50)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Print file is too large. Max size: 50MB"));
+            }
+
             IList<IFormFile> previewImages = new List<IFormFile>();
 
             for (int i = 2; i < files.Count; i++)
@@ -293,6 +308,19 @@ namespace Backend3DForge.Controllers
             var cheapestMaterialCost = await DB.PrintMaterials
                 .MinAsync(x => x.Cost);
 
+            var price = cheapestMaterialCost * (modelParameters.Volume / 1000f);
+
+            price = price * (1 + (request.Depth / 100f));
+
+            if (price < MinCost)
+            {
+                price = MinCost;
+            }
+            else
+            {
+                price += ValueAdded;
+            }
+
             var newModel = (await DB.CatalogModels.AddAsync(new CatalogModel
             {
                 Name = request.Name,
@@ -308,7 +336,7 @@ namespace Backend3DForge.Controllers
                 PrintFileSize = print.Length,
                 User = AuthorizedUser,
                 Uploaded = DateTime.UtcNow,
-                MinPrice = cheapestMaterialCost * modelParameters.Volume * 1000f,
+                MinPrice = price,
 			})).Entity;
 
             newModel.Keywords.AddRange(keywords);
