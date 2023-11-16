@@ -1,4 +1,5 @@
 ﻿using Backend3DForge.Services.ModelCalculator.Models;
+using System.Globalization;
 
 namespace Backend3DForge.Services.ModelCalculator
 {
@@ -32,9 +33,9 @@ namespace Backend3DForge.Services.ModelCalculator
                         switch (parts[0])
                         {
                             case "v":
-                                float x = float.Parse(parts[1]);
-                                float y = float.Parse(parts[2]);
-                                float z = float.Parse(parts[3]);
+                                float x = float.Parse(parts[1], CultureInfo.InvariantCulture.NumberFormat);
+                                float y = float.Parse(parts[2], CultureInfo.InvariantCulture.NumberFormat);
+                                float z = float.Parse(parts[3], CultureInfo.InvariantCulture.NumberFormat);
                                 vectors.Add(new Vector3(x, y, z));
                                 if (x > maxVector.X)
                                 {
