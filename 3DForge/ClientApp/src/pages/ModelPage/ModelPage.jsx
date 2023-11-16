@@ -14,17 +14,19 @@ const ModelPage = () => {
 
     React.useEffect(async () => {
         if (modelInfo === undefined) {
-            CatalogAPI.getModel(1).then(res => {
+            try {
+                const response = await CatalogAPI.getModel(id);
+                console.log(response.status);
 
-                CatalogAPI.getModel(id).then(res => {
-                    console.log(res.status);
-                    return res.json();
-                }).then(resModel => {
-                    console.log(resModel);
-                    setModelInfo(resModel.data);
-                })
+                const resModel = await response.json();
+                console.log(resModel);
+                setModelInfo(resModel.data);
+            } catch (error) {
+                console.error('Помилка отримання моделі:', error);
             }
-    });
+        }
+    }, [modelInfo, id]); // Додав [modelInfo, id] як залежності для useEffect, якщо це є необхідним
+    
     return (
         <div className={cl.index}>
             <div className={cl.div_2}>
