@@ -12,12 +12,18 @@ const ModelPage = () => {
     const [modelInfo, setModelInfo] = React.useState(undefined);
     
 
-    React.useEffect(() => {
+    React.useEffect(async () => {
         if (modelInfo === undefined) {
             CatalogAPI.getModel(1).then(res => {
-                console.log(res.status);
-            })
-        }
+
+                CatalogAPI.getModel(id).then(res => {
+                    console.log(res.status);
+                    return res.json();
+                }).then(resModel => {
+                    console.log(resModel);
+                    setModelInfo(resModel.data);
+                })
+            }
     });
     return (
         <div className={cl.index}>
@@ -36,7 +42,7 @@ const ModelPage = () => {
                         <img
                             className={cl.image_removebg}
                             alt="Image removebg"
-                            src="https://cdn.animaapp.com/projects/6537996634ad3d584d8c9f1f/releases/65477cb487304b74da313e8b/img/image-removebg-3.png"
+                            src={`/api/catalog/model/picture/${modelInfo?.picturesIDs[0]}`}
                         />
                         <div className={cl.group_2}>
                             <div className={cl.text_wrapper_13}>СУПЕР КРУТА МАШИНКА МАКВІН</div>
