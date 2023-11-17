@@ -11,15 +11,7 @@ namespace Backend3DForge.Controllers
 		{
 			get
 			{
-				var strId = HttpContext.User.Claims
-					.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier)?.Value;
-
-				if (!int.TryParse(strId, out int id))
-				{
-					throw new InvalidOperationException("This property accessible only for authorized users.");
-				}
-
-				User? user = DB.Users.SingleOrDefault(p => p.Id == id);
+				User? user = DB.Users.SingleOrDefault(p => p.Id == AuthorizedUserId);
 
 				if (user is null)
 				{
@@ -30,7 +22,23 @@ namespace Backend3DForge.Controllers
 			}
 		}
 
-		public BaseController(DbApp db)
+        protected int AuthorizedUserId
+        {
+            get
+            {
+                var strId = HttpContext.User.Claims
+                    .FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (!int.TryParse(strId, out int id))
+                {
+                    throw new InvalidOperationException("This property accessible only for authorized users.");
+                }
+
+                return id;
+            }
+        }
+
+        public BaseController(DbApp db)
 		{
 			DB = db;
 		}

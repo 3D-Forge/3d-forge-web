@@ -2,7 +2,7 @@
 
 namespace Backend3DForge.Models
 {
-	public class CatalogModelResponse
+	public class CatalogModelFeedback
 	{
 		[Key]
 		public int Id { get; set; }

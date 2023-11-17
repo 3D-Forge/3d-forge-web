@@ -28,7 +28,7 @@ namespace Backend3DForge
 		public DbSet<Cart> Carts { get; set; }
 		public DbSet<ForumThread> ForumThreads { get; set; }
 		public DbSet<Post> Posts { get; set; }
-		public DbSet<CatalogModelResponse> CatalogModelResponses { get; set; }
+		public DbSet<CatalogModelFeedback> CatalogModelFeedbacks { get; set; }
 		public DbSet<BannedWord> BannedWords { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace Backend3DForge
 				.HasForeignKey(p => p.UserId)
 				.OnDelete(DeleteBehavior.NoAction);
 
-			modelBuilder.Entity<CatalogModelResponse>()
+			modelBuilder.Entity<CatalogModelFeedback>()
 				.HasOne(cmr => cmr.Order)
 				.WithMany()
 				.HasForeignKey(cmr => cmr.OrderId)

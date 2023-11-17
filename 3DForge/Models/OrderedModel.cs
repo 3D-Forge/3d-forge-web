@@ -31,7 +31,7 @@ namespace Backend3DForge.Models
 		[Required]
 		public string PrintMaterialName { get; set; }
 		public PrintMaterial PrintMaterial { get; set; }
-		public ICollection<CatalogModelResponse> CatalogModelResponses { get; set; } = new List<CatalogModelResponse>();
+		public ICollection<CatalogModelFeedback> CatalogModelResponses { get; set; } = new List<CatalogModelFeedback>();
 		public ICollection<Cart> Carts { get; set; } = new List<Cart>();
 	}
 }
