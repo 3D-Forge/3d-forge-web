@@ -44,7 +44,11 @@ namespace Backend3DForge.Controllers
 
             if (!memoryCache.TryGetValue("GET api/catalog/categories", out response))
             {
-                var categories = await DB.ModelCategories.Include(p => p.CatalogCategoryModels).ToArrayAsync();
+                var categories = await DB.ModelCategories
+                    .Include(p => p.CatalogCategoryModels)
+                    .OrderBy(p => p.ModelCategoryName)
+                    .ToArrayAsync();
+
                 response = new ModelCategoryResponse(categories);
                 memoryCache.Set("GET api/catalog/categories", response, TimeSpan.FromMinutes(30));
             }
