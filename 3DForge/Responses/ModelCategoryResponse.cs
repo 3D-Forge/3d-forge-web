@@ -18,12 +18,14 @@ namespace Backend3DForge.Responses
 		{
 			public int Id { get; set; }
 			public string Name { get; set; }
+			public int Count { get; set; }
 
 
 			public View(ModelCategory model)
 			{
 				this.Id = model.Id;
 				this.Name = model.ModelCategoryName;
+				this.Count = model.CatalogCategoryModels.Count();
 			}
 		}
 	}
