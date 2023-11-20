@@ -10,23 +10,71 @@ import { useParams } from "react-router-dom";
 const ModelPage = () => {
     const { id } = useParams();
     const [modelInfo, setModelInfo] = React.useState(undefined);
-    
+    const [styleType, setStyleType] = React.useState('default');
 
-    React.useEffect(async () => {
-        if (modelInfo === undefined) {
-            try {
-                const response = await CatalogAPI.getModel(id);
-                console.log(response.status);
 
-                const resModel = await response.json();
-                console.log(resModel);
-                setModelInfo(resModel.data);
-            } catch (error) {
-                console.error('Помилка отримання моделі:', error);
-            }
+    function getStyleClass(rate) {
+        if (rate >= 0 && rate < 0.5) {
+            console.log("cond1")
+            return cl.group_0_5_star;
+        } else if (rate >= 0.5 && rate < 1) {
+            return cl.group_1_star;
+        } else if (rate >= 1 && rate < 1.5) {
+            return cl.group_1_5_star;
+        } else if (rate >= 1.5 && rate < 2) {
+            return cl.group_2_star;
+        } else if (rate >= 2 && rate < 2.5) {
+            return cl.group_2_5_star;
+        } else if (rate >= 2.5 && rate < 3) {
+            return cl.group_3_star;
+        } else if (rate >= 3 && rate < 3.5) {
+            return cl.group_3_5_star;
+        } else if (rate >= 3.5 && rate < 4) {
+            return cl.group_4_star;
+        } else if (rate >= 4 && rate < 4.5) {
+            return cl.group_4_5_star;
+        } else if (rate >= 4.5 && rate <= 5) {
+            return cl.group_5_star;
+        } else {
+            console.log("default " + rate)
+            return cl.group_12;
         }
-    }, [modelInfo, id]); // Додав [modelInfo, id] як залежності для useEffect, якщо це є необхідним
-    
+    }
+    React.useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            if (modelInfo === undefined && isMounted) {
+                try {
+                    const response = await CatalogAPI.getModel(id);
+                    console.log(response.status);
+
+                    if (response.ok) {
+                        const resModel = await response.json();
+                        console.log(resModel);
+
+                        if (isMounted) {
+                            setModelInfo(resModel.data);
+                            setStyleType(getStyleClass(resModel.data.rating));
+                        }
+                    }
+
+                    else {
+                        console.error('Помилка отримання моделі:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Помилка отримання моделі:', error);
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [modelInfo, id]);
+
     return (
         <div className={cl.index}>
             <div className={cl.div_2}>
@@ -47,12 +95,12 @@ const ModelPage = () => {
                             src={`/api/catalog/model/picture/${modelInfo?.picturesIDs[0]}`}
                         />
                         <div className={cl.group_2}>
-                            <div className={cl.text_wrapper_13}>СУПЕР КРУТА МАШИНКА МАКВІН</div>
-                            <div className={cl.text_wrapper_14}>Код: 123123</div>
+                            <div className={cl.text_wrapper_13}>{modelInfo?.name}</div>
+                            <div className={cl.text_wrapper_14}>Код товару: {modelInfo?.id}</div>
                         </div>
                         <div className={cl.group_3}>
                             <div className={cl.overlap_group_3}>
-                                <div className={cl.text_wrapper_15}>720 ₴</div>
+                                <div className={cl.text_wrapper_15}>{modelInfo?.depth} ₴</div>
                                 <div className={cl.frame}>
                                     <img
                                         className={cl.img_bag}
@@ -119,11 +167,11 @@ const ModelPage = () => {
                                     src="https://cdn.animaapp.com/projects/6537996634ad3d584d8c9f1f/releases/65477cb487304b74da313e8b/img/down-arrow-backup-2-svgrepo-com-3.svg"
                                 />
                             </div>
+
                         </div>
                         <img
-                            className={cl.group_12}
+                            className={getStyleClass(modelInfo?.rating)}
                             alt="Stars"
-                            src="https://cdn.animaapp.com/projects/6537996634ad3d584d8c9f1f/releases/65477cb487304b74da313e8b/img/group_52@2x.png"
                         />
                         <div className={cl.group_13}>
                             <div className={cl.overlap_4}>
@@ -162,8 +210,7 @@ const ModelPage = () => {
                     <div className={cl.overlap_5}>
                         <div className={cl.text_wrapper_31}>Опис</div>
                         <p className={cl.text_wrapper_32}>
-                            Дуже все файно, мама кубик маквін подарувала, я з ним сплю та миюсь. Не уявляю своє життя без нього. Татко
-                            пропив квартиру, а я залишилась без нагляду батьків. Кчау.
+                            {modelInfo?.description}
                         </p>
                     </div>
                 </div>
@@ -176,11 +223,11 @@ const ModelPage = () => {
                         <div className={cl.text_wrapper_37}>59г</div>
                         <div className={cl.text_wrapper_38}>Пластик</div>
                         <div className={cl.text_wrapper_39}>Ширина</div>
-                        <div className={cl.text_wrapper_40}>4см</div>
+                        <div className={cl.text_wrapper_40}>{modelInfo?.xSize}см</div>
                         <div className={cl.text_wrapper_41}>Довжина</div>
-                        <div className={cl.text_wrapper_42}>4см</div>
+                        <div className={cl.text_wrapper_42}>{modelInfo?.ySize}см</div>
                         <div className={cl.text_wrapper_43}>Товщина</div>
-                        <div className={cl.text_wrapper_44}>4см</div>
+                        <div className={cl.text_wrapper_44}>{modelInfo?.zSize}см</div>
                         <div className={cl.text_wrapper_31}>Характеристики</div>
                         <div className={cl.text_wrapper_45}>ФІЗИЧНІ ПАРАМЕТРИ</div>
                         <div className={cl.text_wrapper_46}>РОЗМІРИ</div>
@@ -229,7 +276,6 @@ const ModelPage = () => {
                                         <img
                                             className={cl.image_star}
                                             alt="Group1"
-                                            src="https://cdn.animaapp.com/projects/6537996634ad3d584d8c9f1f/releases/65477cb487304b74da313e8b/img/group_52-1@2x.png"
                                         />
                                         <div className={cl.text_wrapper_49}>14.12.1476</div>
                                     </div>
@@ -316,7 +362,7 @@ const ModelPage = () => {
                                 <button className={cl.frame_wrapper}>
                                     <div className={cl.frame_2}>
                                         <div className={cl.text_wrapper_16}>Залишити відгук</div>
-                                      
+
                                     </div>
                                 </button>
                             </div>

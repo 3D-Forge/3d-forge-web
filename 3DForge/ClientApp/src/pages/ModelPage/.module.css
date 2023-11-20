@@ -5,7 +5,23 @@
     justify-content: center;
     width: 100%;
 }
+.button_group {
+    position: absolute;
+    left: 100px;
+    top: 800px;
+    display: flex; /* Зробіть контейнер гнучким (flex) */
+    width:550px;
+}
 
+.categories_buttons {
+    margin-right: 100px;
+    background: #FFC300;
+    height: 60px;
+    width: 150px;
+    font-size: 48px;
+    border-radius: 10px; /* Додайте закругленість */
+    font-family: "Montserrat", Helvetica; /* Замініть 'Your Cool Font' на обраний вами шрифт */
+}
 .div_2 {
     background: linear-gradient( 180deg, rgb(123.72, 38.05, 191.04) 0%, rgb(186, 103, 211) 99.99%, rgb(111.92, 48, 181) 100% );
     background-color: rgba(255, 255, 255, 1);
@@ -378,11 +394,11 @@
 }
 
 .image_removebg {
-    height: 591px;
+    height: 501px;
     left: 75px;
     position: absolute;
     top: 60px;
-    width: 576px;
+    width: 501px;
 }
 
 .group-2 {
@@ -413,7 +429,7 @@
     font-size: 24px;
     font-weight: 500;
     height: 26px;
-    left: 0;
+    left: 700px;
     letter-spacing: 0;
     line-height: normal;
     position: absolute;
@@ -813,9 +829,93 @@
     position: absolute;
     top: 224px;
     width: 156px;
-    content: url(img/star.png)
+    content: url(img/0_5_star.png)
+}
+.group_0_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/0_5_star.png)
 }
 
+.group_1_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/1star.png)
+}
+.group_1_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/1_5star.png)
+}
+
+.group_2_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/2star.png)
+}
+.group_2_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/2_5star.png)
+}
+
+.group_3_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/3star.png)
+}
+.group_3_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/3_5star.png)
+}
+
+.group_4_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/4star.png)
+}
+.group_4_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/4_5star.png)
+}
+
+.group_5_star {
+    height: 26px;
+    left: 1069px;
+    position: absolute;
+    top: 224px;
+    width: 156px;
+    content: url(img/5_star.png)
+}
 .group_13 {
     height: 58px;
     left: 710px;
@@ -1352,7 +1452,6 @@
     width: 132px;
 }
 .image_star {
-    content: url(img/star.png);
     height: 22px;
     left: 150px;
     position: absolute;
@@ -1807,7 +1906,7 @@
     position: absolute;
     top: 68px;
     width: 247px;
-    content:url(img/star.png)
+    content:url(img/5_star.png)
 }
 
 .frame_wrapper {
