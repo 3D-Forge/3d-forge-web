@@ -10,6 +10,13 @@ namespace Backend3DForge.Models
 		[RegexStringValidator("^[\\w\\d_]+$")]
 		public string Name { get; set; }
 
-		public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();
+		public Keyword() { }
+
+        public Keyword(string name)
+        { 
+			this.Name = name;
+		}
+
+        public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();
 	}
 }

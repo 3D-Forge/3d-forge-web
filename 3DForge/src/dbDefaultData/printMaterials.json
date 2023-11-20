@@ -1,0 +1,110 @@
+﻿[
+  {
+    "Name": "ABS",
+    "PrintTypeName": "FDM",
+    "Density": 1.04,
+    "Cost": 0.405888
+  },
+  {
+    "Name": "PLA",
+    "PrintTypeName": "FDM",
+    "Density": 1.25,
+    "Cost": 0.45300000000000007
+  },
+  {
+    "Name": "3k CFRP",
+    "PrintTypeName": "CFRP",
+    "Density": 1.79,
+    "Cost": 0.648696
+  },
+  {
+    "Name": "Plexiglass",
+    "PrintTypeName": "SLA",
+    "Density": 1.18,
+    "Cost": 0.478368
+  },
+  {
+    "Name": "Alumide",
+    "PrintTypeName": "SLS",
+    "Density": 1.36,
+    "Cost": 0.6668160000000001
+  },
+  {
+    "Name": "Aluminum",
+    "PrintTypeName": "DMLS",
+    "Density": 2.68,
+    "Cost": 0.9712320000000001
+  },
+  {
+    "Name": "Brass",
+    "PrintTypeName": "Binder Jetting",
+    "Density": 8.6,
+    "Cost": 3.11664
+  },
+  {
+    "Name": "Bronze",
+    "PrintTypeName": "Binder Jetting",
+    "Density": 9,
+    "Cost": 3.2616
+  },
+  {
+    "Name": "Copper",
+    "PrintTypeName": "Binder Jetting",
+    "Density": 9,
+    "Cost": 3.2616
+  },
+  {
+    "Name": "Gold_14K",
+    "PrintTypeName": "Lost-Wax Casting",
+    "Density": 13.6,
+    "Cost": 4.928640000000001
+  },
+  {
+    "Name": "Gold_18K",
+    "PrintTypeName": "Lost-Wax Casting",
+    "Density": 15.6,
+    "Cost": 5.653440000000001
+  },
+  {
+    "Name": "Polyamide_MJF",
+    "PrintTypeName": "MJF",
+    "Density": 1.01,
+    "Cost": 0.366024
+  },
+  {
+    "Name": "Polyamide_SLS",
+    "PrintTypeName": "SLS",
+    "Density": 0.95,
+    "Cost": 0.34428000000000003
+  },
+  {
+    "Name": "Rubber",
+    "PrintTypeName": "PolyJet Printing",
+    "Density": 1.2,
+    "Cost": 0.521856
+  },
+  {
+    "Name": "Silver",
+    "PrintTypeName": "Lost-Wax Casting",
+    "Density": 10.26,
+    "Cost": 3.718224
+  },
+  {
+    "Name": "Steel",
+    "PrintTypeName": "DMLS",
+    "Density": 7.86,
+    "Cost": 2.8484640000000003
+  },
+  {
+    "Name": "Titanium",
+    "PrintTypeName": "EBM",
+    "Density": 4.41,
+    "Cost": 1.598184
+  },
+  {
+    "Name": "Resin",
+    "PrintTypeName": "SLA",
+    "Density": 1.2,
+    "Cost": 0.521856
+  }
+]

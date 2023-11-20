@@ -1,0 +1,394 @@
+﻿[
+  {
+    "Name": "Cute_triceratops",
+    "Description": "triceratops that go brrr",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "text",
+      "Dino"
+    ],
+    "Categories": [
+      10
+    ]
+  },
+  {
+    "Name": "Boat",
+    "Description": "\"Our ocean is know more than we are...\"",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Water"
+    ],
+    "Categories": [
+      1,
+      5
+    ]
+  },
+  {
+    "Name": "Furniture bracket",
+    "Description": "Can be used for... things",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Furniture"
+    ],
+    "Categories": [
+      5
+    ]
+  },
+  {
+    "Name": "Battery Holder",
+    "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Holder"
+    ],
+    "Categories": [
+      2,
+      6
+    ]
+  },
+  {
+    "Name": "Landscape",
+    "Description": "Fantastic something to do impressive visual thing!",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Nature"
+    ],
+    "Categories": [
+      14
+    ]
+  },
+  {
+    "Name": "Cute_triceratops",
+    "Description": "triceratops that go brrr",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "text",
+      "Dino"
+    ],
+    "Categories": [
+      10
+    ]
+  },
+  {
+    "Name": "Boat",
+    "Description": "\"Our ocean is know more than we are...\"",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Water"
+    ],
+    "Categories": [
+      1,
+      5
+    ]
+  },
+  {
+    "Name": "Furniture bracket",
+    "Description": "Can be used for... things",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Furniture"
+    ],
+    "Categories": [
+      5
+    ]
+  },
+  {
+    "Name": "Battery Holder",
+    "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Holder"
+    ],
+    "Categories": [
+      2,
+      6
+    ]
+  },
+  {
+    "Name": "Landscape",
+    "Description": "Fantastic something to do impressive visual thing!",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Nature"
+    ],
+    "Categories": [
+      14
+    ]
+  },
+  {
+    "Name": "Cute_triceratops",
+    "Description": "triceratops that go brrr",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "text",
+      "Dino"
+    ],
+    "Categories": [
+      10
+    ]
+  },
+  {
+    "Name": "Boat",
+    "Description": "\"Our ocean is know more than we are...\"",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Water"
+    ],
+    "Categories": [
+      1,
+      5
+    ]
+  },
+  {
+    "Name": "Furniture bracket",
+    "Description": "Can be used for... things",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Furniture"
+    ],
+    "Categories": [
+      5
+    ]
+  },
+  {
+    "Name": "Battery Holder",
+    "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Holder"
+    ],
+    "Categories": [
+      2,
+      6
+    ]
+  },
+  {
+    "Name": "Landscape",
+    "Description": "Fantastic something to do impressive visual thing!",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Nature"
+    ],
+    "Categories": [
+      14
+    ]
+  },
+  {
+    "Name": "Cute_triceratops",
+    "Description": "triceratops that go brrr",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "text",
+      "Dino"
+    ],
+    "Categories": [
+      10
+    ]
+  },
+  {
+    "Name": "Boat",
+    "Description": "\"Our ocean is know more than we are...\"",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Water"
+    ],
+    "Categories": [
+      1,
+      5
+    ]
+  },
+  {
+    "Name": "Furniture bracket",
+    "Description": "Can be used for... things",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Furniture"
+    ],
+    "Categories": [
+      5
+    ]
+  },
+  {
+    "Name": "Battery Holder",
+    "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Holder"
+    ],
+    "Categories": [
+      2,
+      6
+    ]
+  },
+  {
+    "Name": "Landscape",
+    "Description": "Fantastic something to do impressive visual thing!",
+    "UserLogin": "admin",
+    "XSize": 5,
+    "YSize": 6,
+    "ZSize": 7,
+    "Volume": 542,
+    "Depth": 53,
+    "Rating": 0,
+    "MinPrice": 150,
+    "Keywords": [
+      "Test",
+      "Nature"
+    ],
+    "Categories": [
+      14
+    ]
+  }
+]
