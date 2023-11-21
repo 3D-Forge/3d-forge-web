@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Backend3DForge.Controllers
 {
@@ -444,6 +445,10 @@ namespace Backend3DForge.Controllers
 			}
 			if (user.PhoneNumber != (request.PhoneNumber ?? user.PhoneNumber))
 			{
+				if(!string.IsNullOrEmpty(request.PhoneNumber) && !Regex.IsMatch(request.PhoneNumber, "^[\\+]?[0-9]{3}[0-9]{3}[0-9]{4,6}$"))
+				{
+					return BadRequest(new BaseResponse.ErrorResponse("Invalid phone number"));
+				}
 				user.PhoneNumber = request.PhoneNumber;
 				different = true;
 			}

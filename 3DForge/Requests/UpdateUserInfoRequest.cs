@@ -7,7 +7,6 @@ namespace Backend3DForge.Requests
     {
         [StringLength(32, MinimumLength = 4, ErrorMessage = "Login is too short or long")]
         public string? Login { get; set; }
-        [Phone]
         public string? PhoneNumber { get; set; }
         public string? Firstname { get; set; }
         public string? Midname { get; set; }
