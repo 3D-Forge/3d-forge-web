@@ -9,6 +9,8 @@ using Backend3DForge.Services.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Backend3DForge.Services.ModelCalculator;
+using Backend3DForge.Services.BackgroundWorker;
+using Backend3DForge.Services.TempStorage;
 
 namespace Backend3DForge
 {
@@ -24,7 +26,19 @@ namespace Backend3DForge
 
 			builder.Services.AddMemoryCache();
 
-			builder.Services.AddSwaggerGen(p =>
+			builder.Services.AddTempStorage(options =>
+			{
+				options.ExpirationTime = TimeSpan.FromMinutes(30);
+				options.TempStoragePath = "temp";
+            });
+
+			builder.Services.AddBackgroundWorker((options) =>
+			{
+				options.MaxTaskQueueSize = 1000;
+				options.MaxConcurrentTasks = 5;
+			});
+
+            builder.Services.AddSwaggerGen(p =>
 			{
 				p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
 				{
