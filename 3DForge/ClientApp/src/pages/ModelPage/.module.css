@@ -27,7 +27,7 @@
     background-color: rgba(255, 255, 255, 1);
     height: 4939px;
     position: relative;
-    width: 1920px;
+    width: 100%;
 }
 
 .view {
@@ -35,7 +35,7 @@
     display: inline-flex;
     gap: 17px;
     left: 100px;
-    position: absolute;
+    position: relative;
     top: 66px;
 }
 
@@ -132,7 +132,7 @@
     height: 3px;
     left: 4px;
     position: absolute;
-    top: 58px;
+    top: 158px;
     width: 146px;
 }
 
@@ -1049,7 +1049,7 @@
     left: 50px;
     position: absolute;
     top: 1563px;
-    width: 1427px;
+    width: 100%;
 }
 
 .overlap_5 {

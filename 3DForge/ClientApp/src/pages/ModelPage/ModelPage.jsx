@@ -15,7 +15,7 @@ const ModelPage = () => {
 
     function getStyleClass(rate) {
         if (rate >= 0 && rate < 0.5) {
-            console.log("cond1")
+            //console.log("cond1")
             return cl.group_0_5_star;
         } else if (rate >= 0.5 && rate < 1) {
             return cl.group_1_star;
@@ -36,29 +36,25 @@ const ModelPage = () => {
         } else if (rate >= 4.5 && rate <= 5) {
             return cl.group_5_star;
         } else {
-            console.log("default " + rate)
+           // console.log("default " + rate)
             return cl.group_12;
         }
     }
     React.useEffect(() => {
         let isMounted = true;
-
         const fetchData = async () => {
             if (modelInfo === undefined && isMounted) {
                 try {
                     const response = await CatalogAPI.getModel(id);
                     console.log(response.status);
-
                     if (response.ok) {
                         const resModel = await response.json();
                         console.log(resModel);
-
                         if (isMounted) {
                             setModelInfo(resModel.data);
                             setStyleType(getStyleClass(resModel.data.rating));
                         }
                     }
-
                     else {
                         console.error('Помилка отримання моделі:', response.statusText);
                     }
