@@ -132,8 +132,14 @@ namespace Backend3DForge.Services.BackgroundWorker
                             });
                         }
                     }
-                    pauseEvent.Reset();
-                    //Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+                    if (this.queue.Count == 0)
+                    {
+                        pauseEvent.Reset();
+                    }
+                    else
+                    {
+                        Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+                    }
                 }
             });
         }

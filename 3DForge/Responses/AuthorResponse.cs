@@ -17,10 +17,12 @@ namespace Backend3DForge.Responses
         public class View
         {
             public string Login { get; set; }
+            public int Count { get; set; }
 
             public View(User user)
             {
                 this.Login = user.Login;
+                this.Count = user.CatalogModels.Count;
             }
         }
     }
