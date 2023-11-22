@@ -47,6 +47,8 @@ const ModelPage = () => {
                 try {
                     const response = await CatalogAPI.getModel(id);
                     console.log(response.status);
+                    console.log(response.status); 
+                    
                     if (response.ok) {
                         const resModel = await response.json();
                         console.log(resModel);
@@ -101,7 +103,6 @@ const ModelPage = () => {
                                     <img
                                         className={cl.img_bag}
                                         alt="Cart large"
-
                                     />
                                     <div className={cl.text_wrapper_16}>Додати модель до кошика</div>
                                 </div>
