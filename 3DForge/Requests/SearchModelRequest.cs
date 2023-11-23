@@ -27,7 +27,7 @@ namespace Backend3DForge.Requests
         public float? MaxPrice { get; set; }
 
         [FromQuery(Name = "rating")]
-        public float[]? Rating { get; set; }
+        public int[]? Rating { get; set; }
 
         [FromQuery(Name = "author")]
         public string? Author { get; set; }

@@ -104,9 +104,22 @@ namespace Backend3DForge.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] SearchModelRequest request)
         {
-            request.Query = (request?.Query ?? "").ToLower();
+            request.Query = (request.Query ?? "").ToLower();
 
             PageResponse<CatalogModelResponse.View>? response;
+
+            if (request.Keywords is not null)
+            {
+                request.Keywords = request.Keywords.Select(p => p.ToLower()).Order().ToArray();
+            }
+            if (request.Categories is not null)
+            {
+                request.Categories = request.Categories.Order().ToArray();
+            }
+            if (request.Rating is not null)
+            {
+                request.Rating = request.Rating.Order().ToArray();
+            }
 
             string cacheKey = $"GET api/catalog/search?q={request.Query ?? ""}&p={request.Page}&ps={request.PageSize}" +
                               $"{(request.Keywords is null ? "" : $"&k={string.Join(',', request.Keywords)}")}" +
@@ -142,7 +155,7 @@ namespace Backend3DForge.Controllers
                     {
                         return BadRequest(new BaseResponse.ErrorResponse("The field Rating must contain values from 0 to 5."));
                     }
-                    query = query.Where(p => request.Rating.Contains(p.Rating));
+                    query = query.Where(p => request.Rating.Contains((int)p.Rating));
                 }
 
                 if (request.MinPrice is not null)
