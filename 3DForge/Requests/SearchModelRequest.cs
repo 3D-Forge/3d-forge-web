@@ -22,9 +22,9 @@ namespace Backend3DForge.Requests
         public string SortDirection { get; set; } = "asc";
 
         [FromQuery(Name = "min_price")]
-        public decimal? MinPrice { get; set; }
+        public float? MinPrice { get; set; }
         [FromQuery(Name = "max_price")]
-        public decimal? MaxPrice { get; set; }
+        public float? MaxPrice { get; set; }
 
         [FromQuery(Name = "min_rating")]
         public float? MinRating { get; set; }

@@ -110,6 +110,8 @@ namespace Backend3DForge.Controllers
             string cacheKey = $"GET api/catalog/search?q={request.Query ?? ""}&p={request.Page}&ps={request.PageSize}" +
                               $"{(request.Keywords is null ? "" : $"&k={string.Join(',', request.Keywords)}")}" +
                               $"{(request.Categories is null ? "" : $"&c={string.Join(',', request.Categories)}")}" +
+                              $"&mp={request.MinPrice ?? -1}&mxp={request.MaxPrice ?? double.MaxValue}" +
+                              $"&mr={request.MinRating ?? -1}&mxr={request.MaxRating ?? double.MaxValue}" +
                               $"&sp={request.SortParameter}&sd={request.SortDirection}";
 
             if (!memoryCache.TryGetValue(cacheKey, out response))
@@ -139,6 +141,15 @@ namespace Backend3DForge.Controllers
                 if (request.MaxRating is not null)
                 {
                     query = query.Where(p => p.Rating <= request.MaxRating);
+                }
+
+                if (request.MinPrice is not null)
+                {
+                    query = query.Where(p => p.MinPrice >= request.MinPrice);
+                }
+                if (request.MaxPrice is not null)
+                {
+                    query = query.Where(p => p.MinPrice <= request.MaxPrice);
                 }
 
                 if (request.Categories is not null && request.Categories.Length > 0)
