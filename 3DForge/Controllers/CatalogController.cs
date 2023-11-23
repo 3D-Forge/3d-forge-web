@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NuGet.Packaging;
+using System.Linq;
 using CatalogModelResponse = Backend3DForge.Responses.CatalogModelResponse;
 
 namespace Backend3DForge.Controllers
@@ -111,8 +112,9 @@ namespace Backend3DForge.Controllers
                               $"{(request.Keywords is null ? "" : $"&k={string.Join(',', request.Keywords)}")}" +
                               $"{(request.Categories is null ? "" : $"&c={string.Join(',', request.Categories)}")}" +
                               $"&mp={request.MinPrice ?? -1}&mxp={request.MaxPrice ?? double.MaxValue}" +
-                              $"&mr={request.MinRating ?? -1}&mxr={request.MaxRating ?? double.MaxValue}" +
-                              $"&sp={request.SortParameter}&sd={request.SortDirection}";
+                              $"{(request.Rating is null ? "" : $"&r={string.Join(',', request.Rating)}")}" +
+                              $"&sp={request.SortParameter}&sd={request.SortDirection}" +
+                              $"{(request.Author is null ? "" : $"&a={request.Author}")}";
 
             if (!memoryCache.TryGetValue(cacheKey, out response))
             {
@@ -129,18 +131,18 @@ namespace Backend3DForge.Controllers
                     query = query.Where(p => p.User.Login == request.Author);
                 }
 
-                if (request.Query is not null)
+                if (request.Query is not null && request.Query != string.Empty)
                 {
-                    query = query.Where(p => p.Name.ToLower().Contains(request.Query.ToLower()) || p.Description.ToLower().Contains(request.Query.ToLower()));
+                    query = query.Where(p => p.Name.ToLower().Contains(request.Query) || p.Description.ToLower().Contains(request.Query));
                 }
 
-                if (request.MinRating is not null)
+                if (request.Rating is not null && request.Rating.Length > 0)
                 {
-                    query = query.Where(p => p.Rating >= request.MinRating);
-                }
-                if (request.MaxRating is not null)
-                {
-                    query = query.Where(p => p.Rating <= request.MaxRating);
+                    if(request.Rating.Max() > 5 || request.Rating.Min() < 0)
+                    {
+                        return BadRequest(new BaseResponse.ErrorResponse("The field Rating must contain values from 0 to 5."));
+                    }
+                    query = query.Where(p => request.Rating.Contains(p.Rating));
                 }
 
                 if (request.MinPrice is not null)
