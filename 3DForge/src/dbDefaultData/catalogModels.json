@@ -22,7 +22,7 @@
   {
     "Name": "Boat",
     "Description": "\"Our ocean is know more than we are...\"",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -42,7 +42,7 @@
   {
     "Name": "Furniture bracket",
     "Description": "Can be used for... things",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -61,7 +61,7 @@
   {
     "Name": "Battery Holder",
     "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
-    "UserLogin": "admin",
+    "UserLogin": "manager",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -120,7 +120,7 @@
   {
     "Name": "Boat",
     "Description": "\"Our ocean is know more than we are...\"",
-    "UserLogin": "admin",
+    "UserLogin": "manager",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -140,7 +140,7 @@
   {
     "Name": "Furniture bracket",
     "Description": "Can be used for... things",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -159,7 +159,7 @@
   {
     "Name": "Battery Holder",
     "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
-    "UserLogin": "admin",
+    "UserLogin": "manager",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -179,7 +179,7 @@
   {
     "Name": "Landscape",
     "Description": "Fantastic something to do impressive visual thing!",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -238,7 +238,7 @@
   {
     "Name": "Furniture bracket",
     "Description": "Can be used for... things",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -257,7 +257,7 @@
   {
     "Name": "Battery Holder",
     "Description": "Very cozy to excessive spending the non-recyclable, toxic, one-time batteries",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,
@@ -277,7 +277,7 @@
   {
     "Name": "Landscape",
     "Description": "Fantastic something to do impressive visual thing!",
-    "UserLogin": "admin",
+    "UserLogin": "developer",
     "XSize": 5,
     "YSize": 6,
     "ZSize": 7,

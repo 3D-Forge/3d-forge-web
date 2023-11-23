@@ -49,7 +49,7 @@ const AccountPageLayout = () => {
                         <div className={cl.drop_list} style={{ display: isDropMenuVisible ? 'block' : 'none' }}>
                             <div className={cl.drop_menu_triangle} />
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_orders}`}>Мої замовлення</p>
-                            <p className={`${cl.drop_list_element} ${cl.drop_list_element_models}`}>Мої моделі</p>
+                            <p className={`${cl.drop_list_element} ${cl.drop_list_element_models}`}>Мої публікації</p>
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_settings}`}
                                 onClick={() => {
                                     window.location.pathname = 'user/edit';
@@ -158,20 +158,13 @@ const AccountPageLayout = () => {
                     <p className={`${cl.info_footer_text} ${cl.contacts_emails}`}>
                         3d.forgehub@gmail.com
                     </p>
-                    <div className={cl.contact_icon_list}>
-                        <img className={`${cl.contact_icon} ${cl.contact_icon_instagram}`} alt="instagram" />
-                        <img className={`${cl.contact_icon} ${cl.contact_icon_facebook}`} alt="facebook" />
-                        <img className={`${cl.contact_icon} ${cl.contact_icon_google_plus}`} alt="google plus" />
-                    </div>
                 </div>
                 <div className={cl.line_separator} />
-                <div className={`${cl.info_footer_container} ${cl.subscribe}`}>
-                    <h3 className={`${cl.info_footer_header} ${cl.subscribe_header}`}>Підпишіться на розсилку</h3>
-                    <div className={cl.subscribe_button}>
-                        <img className={cl.subscribe_button_img} alt="email" />
-                        <span className={cl.subscribe_button_text}>Введіть Ваш Email</span>
-                    </div>
-                    <p className={`${cl.info_footer_text} ${cl.subscribe_text}`}>Підписатися</p>
+                <div className={`${cl.info_footer_container} ${cl.find_us}`}>
+                    <h3 className={`${cl.info_footer_header} ${cl.find_us_header}`}>Знайдіть нас</h3>
+                    <p className={`${cl.info_footer_text} ${cl.find_us_text}`}>
+                        Проспект Науки, 14, Харків, Харківська область, Україна, 61166
+                    </p>
                 </div>
             </footer>
         </>

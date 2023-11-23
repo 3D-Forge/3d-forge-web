@@ -65,7 +65,7 @@
 }
 
 .closed_filter {
-    height: 100px;
+    height: 38px;
 }
 
 .filter_header {
@@ -165,8 +165,18 @@
     padding-right: 30px;
 }
 
+.category_checkbox_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .category_checkbox {
     scale: 2;
+}
+
+.category_checkbox:checked {
+    background-color: #7C26BF;
 }
 
 .category_name {
@@ -190,10 +200,43 @@
     margin-top: 20px;
 }
 
-.publisher_filter {
+.author_filter {
     position: relative;
     background-color: white;
     border-radius: 8px;
+    overflow: hidden;
+}
+
+.author {
+    position: relative;
+    display: flex;
+    margin-top: 20px;
+    padding-right: 30px;
+}
+
+.author_checkbox {
+    scale: 1.95;
+}
+
+.author_name {
+    font-size: 24px;
+    margin-left: 15px;
+}
+
+.items_with_author_count {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #A9A9A9;
+}
+
+.author_list_is_unloaded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .model_section {
@@ -332,6 +375,21 @@
     padding-left: 5%;
 }
 
+.model_list_is_empty {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.model_list_is_empty_text {
+    color: white;
+    letter-spacing: 1px;
+    font-size: 30px;
+    text-align: center;
+}
+
 .model_list {
     position: relative;
     display: grid;
@@ -353,7 +411,8 @@
     position: relative;
     background-color: white;
     border-radius: 8px;
-    padding-block: 10px;
+    padding-top: 10px;
+    padding-bottom: 80px;
     padding-inline: 15px;
 }
 
@@ -376,6 +435,7 @@
 
 .model_name {
     font-size: 28px;
+    margin-bottom: 5px;
 }
 
 .model_description {
@@ -386,6 +446,9 @@
 }
 
 .model_footer {
+    position: absolute;
+    bottom: 10px;
+    width: calc(100% - 5% - 11px);
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
