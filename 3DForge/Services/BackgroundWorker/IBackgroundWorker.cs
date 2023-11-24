@@ -8,6 +8,6 @@
 
         public IBackgroundTask CreateTask(Func<object, object> action, object parameter);
 
-        Task SubscribeToTaskInformation(string id, Stream stream);
+        Task SubscribeToTaskInformation(string id, HttpResponse response);
     }
 }
