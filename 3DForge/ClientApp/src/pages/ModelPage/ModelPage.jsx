@@ -78,10 +78,11 @@ const ModelPage = () => {
             <div className={cl.div_2}>
                 <div className={cl.view_5}>
                     <div className={cl.navbar}>
-                        <div className={cl.text_wrapper_12}>ВСЕ ПРО ТОВАР</div>
-                        <div className={cl.text_wrapper_12}>ОПИС</div>
-                        <div className={cl.text_wrapper_12}>ХАРАКТЕРИСТИКИ</div>
-                        <div className={cl.text_wrapper_12}>ВІДГУКИ</div>
+                        <a href="#All" className={cl.text_wrapper_12}>ВСЕ ПРО ТОВАР</a>
+                        <a href="#description" class={cl.text_wrapper_12}>ОПИС</a>
+                        <a href="#characteristics"
+                            className={cl.text_wrapper_12}>ХАРАКТЕРИСТИКИ</a>
+                        <a href="#feedbacks" className={cl.text_wrapper_12}>ВІДГУКИ</a>
                     </div>
                     <div className={cl.rectangle_2} />
                 </div>
@@ -93,7 +94,7 @@ const ModelPage = () => {
                             src={`/api/catalog/model/picture/${modelInfo?.picturesIDs[0]}`}
                         />
                         <div className={cl.group_2}>
-                            <div className={cl.text_wrapper_13}>{modelInfo?.name}</div>
+                            <div id="All"className={cl.text_wrapper_13}>{modelInfo?.name}</div>
                             <div className={cl.text_wrapper_14}>Код товару: {modelInfo?.id}</div>
                         </div>
                         <div className={cl.group_3}>
@@ -116,6 +117,19 @@ const ModelPage = () => {
                             <p className={cl.text_wrapper_20}>
                                 Готівкою при отриманні товару, Накладений платіж, Visa та MasterCard, Переказ на рахунок ФОП та ТОВ
                             </p>
+                        </div>
+                        <div className={cl.keywords_group} style={{ maxWidth: '550px' }}>
+                            {modelInfo?.keywords.map((keyword, index) => (
+                                <button class={cl.keywords_buttons} 
+                                    key={index}>{keyword}</button>
+                            ))}
+                        </div>
+                        <div className={cl.categories_group}>
+                            {modelInfo?.categoryes.map((category, index) => (
+                                <button className={cl.categories_buttons} key={index}>
+                                    {category.name}
+                                </button>
+                            ))}
                         </div>
                         <img
                             className={cl.line_3}
@@ -205,7 +219,7 @@ const ModelPage = () => {
                 </div>
                 <div className={cl.view_14}>
                     <div className={cl.overlap_5}>
-                        <div className={cl.text_wrapper_31}>Опис</div>
+                        <div id="description"  className={cl.text_wrapper_31}>Опис</div>
                         <p className={cl.text_wrapper_32}>
                             {modelInfo?.description}
                         </p>
@@ -225,7 +239,7 @@ const ModelPage = () => {
                         <div className={cl.text_wrapper_42}>{modelInfo?.ySize}см</div>
                         <div className={cl.text_wrapper_43}>Товщина</div>
                         <div className={cl.text_wrapper_44}>{modelInfo?.zSize}см</div>
-                        <div className={cl.text_wrapper_31}>Характеристики</div>
+                        <div id="characteristics"className={cl.text_wrapper_31}>Характеристики</div>
                         <div className={cl.text_wrapper_45}>ФІЗИЧНІ ПАРАМЕТРИ</div>
                         <div className={cl.text_wrapper_46}>РОЗМІРИ</div>
                     </div>
@@ -238,7 +252,7 @@ const ModelPage = () => {
                     />
                     <div className={cl.view_16}>
                         <div className={cl.overlap_8}>
-                            <div className={cl.text_wrapper_31}>Відгуки</div>
+                            <div id="feedbacks" className={cl.text_wrapper_31}>Відгуки</div>
                             <div className={cl.group_18}>
                                 <div className={cl.overlap_9}>
                                     <div className={cl.overlap_9}>
