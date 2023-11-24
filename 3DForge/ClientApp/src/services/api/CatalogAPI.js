@@ -17,6 +17,7 @@ export class CatalogAPI {
         sortParameter,
         sortDirection,
         categories,
+        ratings,
         author = null,
         pageNumber = 1,
         pageSize = 15
@@ -31,12 +32,16 @@ export class CatalogAPI {
         const a = author ? `&author=${author}` : '';
 
         let cl = '';
+        let rl = '';
 
         categories?.forEach(el => {
             cl += `&categories=${el}`;
         });
+        ratings?.forEach(el => {
+            rl += `&rating=${el}`;
+        })
 
-        return await BaseAPI.get(`catalog/search${p}${ps}${q}${minP}${maxP}${sp}${sd}${a}${cl}`);
+        return await BaseAPI.get(`catalog/search${p}${ps}${q}${minP}${maxP}${sp}${sd}${a}${cl}${rl}`);
     }
 
     static async getModel(id) {

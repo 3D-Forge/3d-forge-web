@@ -239,6 +239,41 @@
     margin-top: 20px;
 }
 
+.rating_value_filter {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.rating_value {
+    position: relative;
+    display: flex;
+    margin-top: 20px;
+    padding-right: 30px;
+}
+
+.rating_value_checkbox_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating_value_checkbox {
+    scale: 2;
+}
+
+.model_rating_value {
+    margin-left: 20px;
+}
+
+.model_rating_value_star {
+    content: url(./img/sort-by-rating.png);
+}
+
+.model_rating_value_star:not(:first-child) {
+    margin-left: 7px;
+}
+
 .model_section {
     position: relative;
 }

@@ -17,17 +17,19 @@ const CatalogPage = () => {
 
     const [isCategoryListVisible, setCategoryListVisibility] = React.useState(true);
     const [isAuthorListVisible, setAuthorListVisibility] = React.useState(true);
+    const [isRatingListVisible, setRatingListVisibility] = React.useState(true);
 
     const [categorySearch, setCategorySearch] = React.useState('');
     const [authorSearch, setAuthorSearch] = React.useState('');
     const [sortMode, setSortMode] = React.useState({ value: 'name', asc: true });
 
-    const [categoriesForFilter, setCategoryArrayForFilter] = React.useState([]);
+    const [categoriesForFilter, setCategoriesForFilter] = React.useState([]);
     const [authorForFilter, setAuthorForFilter] = React.useState(undefined);
 
     const minPriceInputRef = React.useRef();
     const maxPriceInputRef = React.useRef();
     const modelSearchInputRef = React.useRef();
+    const allAuthorsRadioRef = React.useRef();
 
     async function LoadModelList(
         sortParameter = sortMode.value,
@@ -37,6 +39,10 @@ const CatalogPage = () => {
     ) {
         setModelListLoading(true);
 
+        let ratings = Array.from(document.getElementsByClassName(cl.rating_value_checkbox))
+            .filter(el => el.checked)
+            .map(el => el.value);
+
         setModelList((await (await CatalogAPI.search(
             modelSearchInputRef.current.value,
             minPriceInputRef.current.value,
@@ -44,6 +50,7 @@ const CatalogPage = () => {
             sortParameter,
             sortDirection ? 'asc' : 'desc',
             categoryIDs,
+            ratings,
             author
         )).json()).data.items);
 
@@ -120,14 +127,18 @@ const CatalogPage = () => {
             result.push(
                 <div className={cl.category} style={{ display: print ? 'flex' : 'none' }} key={el.id}>
                     <div className={cl.category_checkbox_cont}>
-                        <input className={cl.category_checkbox} value={el.id} type="checkbox" onChange={(e) => {
-                            let categoryIDs = e.target.checked
-                                ? [...categoriesForFilter, e.target.value]
-                                : categoriesForFilter.filter(el => { return e.target.value !== el });
+                        <input
+                            className={cl.category_checkbox}
+                            value={el.id}
+                            type="checkbox"
+                            onChange={(e) => {
+                                let categoryIDs = e.target.checked
+                                    ? [...categoriesForFilter, e.target.value]
+                                    : categoriesForFilter.filter(el => { return e.target.value !== el });
 
-                            setCategoryArrayForFilter(categoryIDs);
-                            LoadModelList(sortMode.value, sortMode.asc, categoryIDs);
-                        }} />
+                                setCategoriesForFilter(categoryIDs);
+                                LoadModelList(sortMode.value, sortMode.asc, categoryIDs);
+                            }} />
                     </div>
                     <span className={cl.category_name}>{el.name}</span>
                     <span className={cl.items_with_category_count}>{el.count}</span>
@@ -149,6 +160,7 @@ const CatalogPage = () => {
                     name="author"
                     value={undefined}
                     defaultChecked={!authorForFilter}
+                    ref={allAuthorsRadioRef}
                     onChange={() => {
                         setAuthorForFilter(undefined);
                         LoadModelList(sortMode.value, sortMode.asc, categoriesForFilter, null);
@@ -179,6 +191,38 @@ const CatalogPage = () => {
         return result;
     }
 
+    function RenderRatingList() {
+        let result = [];
+
+        for (let i = 5; i >= 1; i--) {
+            result.push(
+                <div className={cl.rating_value} key={i}>
+                    <div className={cl.rating_value_checkbox_cont}>
+                        <input
+                            className={cl.rating_value_checkbox}
+                            value={i}
+                            type="checkbox"
+                            onChange={() => LoadModelList()} />
+                    </div>
+                    <div className={cl.model_rating_value}>
+                        <img className={cl.model_rating_value_star} alt="rating star"
+                            style={{ filter: i >= 1 ? 'none' : 'grayscale(100%) brightness(250%)' }} />
+                        <img className={cl.model_rating_value_star} alt="rating star"
+                            style={{ filter: i >= 2 ? 'none' : 'grayscale(100%) brightness(250%)' }} />
+                        <img className={cl.model_rating_value_star} alt="rating star"
+                            style={{ filter: i >= 3 ? 'none' : 'grayscale(100%) brightness(250%)' }} />
+                        <img className={cl.model_rating_value_star} alt="rating star"
+                            style={{ filter: i >= 4 ? 'none' : 'grayscale(100%) brightness(250%)' }} />
+                        <img className={cl.model_rating_value_star} alt="rating star"
+                            style={{ filter: i >= 5 ? 'none' : 'grayscale(100%) brightness(250%)' }} />
+                    </div>
+                </div>
+            );
+        }
+
+        return result;
+    }
+
     React.useEffect(() => {
         if (modelList === undefined) {
             LoadModelList(sortMode.value, true);
@@ -197,7 +241,28 @@ const CatalogPage = () => {
         <div className={cl.main}>
             <div className={cl.content}>
                 <div className={cl.filter_section}>
-                    <div className={cl.reload_filters_button}>
+                    <div className={cl.reload_filters_button} onClick={() => {
+                        setCategoriesForFilter([]);
+                        setAuthorForFilter(null);
+
+                        modelSearchInputRef.current.value = '';
+                        setSortMode({ value: 'name', asc: true });
+                        minPriceInputRef.current.value = 0;
+                        maxPriceInputRef.current.value = 10000;
+                        allAuthorsRadioRef.current.checked = true;
+
+                        let categories = document.getElementsByClassName(cl.category_checkbox);
+                        let ratings = document.getElementsByClassName(cl.rating_value_checkbox);
+
+                        for (let i = 0; i < categories.length; i++) {
+                            categories[i].checked = false;
+                        }
+                        for (let i = 0; i < ratings.length; i++) {
+                            ratings[i].checked = false;
+                        }
+
+                        LoadModelList('name', true, [], null);
+                    }}>
                         <img className={cl.reload_filters_button_img} alt="reload filters" />
                         <span className={cl.reload_filters_button_text}>Скинути фільтри</span>
                     </div>
@@ -255,6 +320,18 @@ const CatalogPage = () => {
                                 :
                                 RenderAuthorList()
                             }
+                        </div>
+                    </div>
+                    <div className={`${cl.filter} ${cl.rating_value_filter} ${isRatingListVisible ? '' : cl.closed_filter}`}>
+                        <h2 className={`${cl.filter_header} ${cl.rating_value_filter_header}`}>Рейтинг</h2>
+                        <img
+                            className={`
+                            ${cl.filter_list_hider}
+                            ${isRatingListVisible ? cl.filter_list_hider_opened : cl.filter_list_hider_closed} 
+                            ${cl.rating_value_filter_list_hider}`} alt="hide"
+                            onClick={() => setRatingListVisibility(!isRatingListVisible)} />
+                        <div className={`${cl.filter_list} ${cl.rating_value_list}`}>
+                            {RenderRatingList()}
                         </div>
                     </div>
                 </div>
