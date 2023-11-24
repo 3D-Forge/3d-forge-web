@@ -185,6 +185,9 @@ const ModelPage = () => {
                             alt="Stars"
                         />
                         <div className={cl.group_13}>
+
+                            <img className={cl.box_image}></img>
+                            <img className={cl.edit_image}></img>
                             <div className={cl.overlap_4}>
                                 <div className={cl.text_wrapper_27}>У наявності</div>
                                 <div className={cl.view_13} />
