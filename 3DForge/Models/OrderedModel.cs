@@ -14,13 +14,19 @@ namespace Backend3DForge.Models
 		public string PrintExtensionName { get; set; }
 		public PrintExtension PrintExtension { get; set; }
 		[Required]
-		public float PricePerPiece { get; set; }
+		public double PricePerPiece { get; set; }
 		[Required]
 		public int Pieces { get; set; }
 		[Required]
-		public float Height { get; set; }
+		public float XSize { get; set; }
 		[Required]
-		public float Width { get; set; }
+		public float YSize { get; set; }
+		[Required]
+		public float ZSize { get; set; }
+		[Required]
+		public double Volume { get; set; } = 0;
+		[Required]
+		public double Scale { get; set; } = 1;
 		[Required]
 		public float Depth { get; set; }
 		[Required]
@@ -31,7 +37,10 @@ namespace Backend3DForge.Models
 		[Required]
 		public string PrintMaterialName { get; set; }
 		public PrintMaterial PrintMaterial { get; set; }
+		[Required]
+		public int CartId { get; set; }
+		public Cart Cart { get; set; }
+
 		public ICollection<CatalogModelFeedback> CatalogModelResponses { get; set; } = new List<CatalogModelFeedback>();
-		public ICollection<Cart> Carts { get; set; } = new List<Cart>();
 	}
 }
