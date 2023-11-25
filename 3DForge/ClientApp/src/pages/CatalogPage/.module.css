@@ -530,3 +530,33 @@
     margin-left: 5%;
     font-size: 24px;
 }
+
+.page_navigator_cont {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page_navigator {
+    display: flex;
+}
+
+.page_navigator_obj {
+    cursor: pointer;
+    color: white;
+    font-size: 30px;
+    padding-block: 2px;
+    padding-inline: 4px;
+    margin-inline: 6px;
+    border-radius: 5px;
+}
+
+.page_navigator_obj:hover {
+    color: rgb(255, 208, 0);
+}
+
+.current_page_navigator_obj {
+    background-color: #5126bf;
+}

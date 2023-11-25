@@ -26,6 +26,8 @@ const CatalogPage = () => {
     const [categoriesForFilter, setCategoriesForFilter] = React.useState([]);
     const [authorForFilter, setAuthorForFilter] = React.useState(undefined);
 
+    const [modelListPageInfo, setModelListPageInfo] = React.useState({ count: undefined, current: 1 });
+
     const minPriceInputRef = React.useRef();
     const maxPriceInputRef = React.useRef();
     const modelSearchInputRef = React.useRef();
@@ -35,7 +37,8 @@ const CatalogPage = () => {
         sortParameter = sortMode.value,
         sortDirection = sortMode.asc,
         categoryIDs = categoriesForFilter,
-        author = authorForFilter
+        author = authorForFilter,
+        pageNumber = 1
     ) {
         setModelListLoading(true);
 
@@ -43,7 +46,7 @@ const CatalogPage = () => {
             .filter(el => el.checked)
             .map(el => el.value);
 
-        setModelList((await (await CatalogAPI.search(
+        let json = await (await CatalogAPI.search(
             modelSearchInputRef.current.value,
             minPriceInputRef.current.value,
             maxPriceInputRef.current.value,
@@ -51,8 +54,12 @@ const CatalogPage = () => {
             sortDirection ? 'asc' : 'desc',
             categoryIDs,
             ratings,
-            author
-        )).json()).data.items);
+            author,
+            pageNumber
+        )).json();
+
+        setModelList(json.data.items);
+        setModelListPageInfo({ count: json.data.pageCount, current: json.data.pageIndex });
 
         setModelListLoading(false);
     }
@@ -223,6 +230,115 @@ const CatalogPage = () => {
         return result;
     }
 
+    function RenderPageNavigator() {
+        if (modelListPageInfo.count <= 1) {
+            return;
+        }
+
+        const loadPage = (idx) => {
+            if (idx !== modelListPageInfo.current) {
+                window.scroll({ top: 0 });
+                LoadModelList(undefined, undefined, undefined, undefined, idx);
+            }
+        };
+
+        let result = [];
+        let left = [];
+        let right = [];
+        let start, end;
+
+        if (modelListPageInfo.current > 1) {
+            left.push(
+                <span className={cl.page_navigator_obj} key="arrow-left"
+                    onClick={() => loadPage(modelListPageInfo.current - 1)}>&#60;</span>
+            );
+
+            if ((modelListPageInfo.current - 4) > 1) {
+                left.push(
+                    <span className={`${cl.page_navigator_obj}`} key="1" onClick={() => loadPage(1)}>1</span>
+                );
+
+                left.push(
+                    <span className={`${cl.page_navigator_obj}`} key="dots-left"
+                        onClick={() => {
+                            const idxLink = (modelListPageInfo.current - 10) > 1
+                                ? modelListPageInfo.current - 10
+                                : 2;
+
+                            loadPage(idxLink);
+                        }}>...</span>
+                );
+
+                start = modelListPageInfo.current - 2;
+            }
+            else {
+                start = 1;
+            }
+        }
+        else {
+            start = 1;
+        }
+
+        if (modelListPageInfo.current < modelListPageInfo.count) {
+            right.unshift(
+                <span className={cl.page_navigator_obj} key="arrow-right"
+                    onClick={() => loadPage(modelListPageInfo.current + 1)}>&#62;</span>
+            );
+
+            if ((modelListPageInfo.current + 4) < modelListPageInfo.count) {
+                right.unshift(
+                    <span className={`${cl.page_navigator_obj}`} key={modelListPageInfo.count}
+                        onClick={() => loadPage(modelListPageInfo.count)}>{modelListPageInfo.count}</span>
+                );
+
+                right.unshift(
+                    <span className={`${cl.page_navigator_obj}`} key="dots-right"
+                        onClick={() => {
+                            const idxLink = (modelListPageInfo.current + 10) < modelListPageInfo.count
+                                ? modelListPageInfo.current + 10
+                                : modelListPageInfo.count - 1;
+
+                            loadPage(idxLink);
+                        }}>...</span>
+                );
+
+                end = modelListPageInfo.current + 2;
+            }
+            else {
+                end = modelListPageInfo.count;
+            }
+        }
+        else {
+            end = modelListPageInfo.count;
+        }
+
+        if ((end - start) < 4) {
+            while ((end - start) < 4 && end < modelListPageInfo.count) {
+                end++;
+            }
+        }
+
+        if ((end - start) < 4) {
+            while ((end - start) < 4 && start > 1) {
+                start--;
+            }
+        }
+
+        for (let i = start; i <= end; i++) {
+            result.push(
+                <span
+                    className={`${cl.page_navigator_obj} ${modelListPageInfo.current === i ? cl.current_page_navigator_obj : ''}`}
+                    key={i}
+                    onClick={() => loadPage(i)}>{i}</span>
+            );
+        }
+
+        result.unshift(left);
+        result.push(right);
+
+        return result;
+    }
+
     React.useEffect(() => {
         if (modelList === undefined) {
             LoadModelList(sortMode.value, true);
@@ -261,7 +377,7 @@ const CatalogPage = () => {
                             ratings[i].checked = false;
                         }
 
-                        LoadModelList('name', true, [], null);
+                        LoadModelList('name', true, [], null, 1);
                     }}>
                         <img className={cl.reload_filters_button_img} alt="reload filters" />
                         <span className={cl.reload_filters_button_text}>Скинути фільтри</span>
@@ -394,9 +510,16 @@ const CatalogPage = () => {
                             <LoadingAnimation size="100px" loadingCurveWidth="20px" />
                         </div>
                         :
-                        <div className={cl.model_list}>
-                            {RenderModelList()}
-                        </div>
+                        <>
+                            <div className={cl.model_list}>
+                                {RenderModelList()}
+                            </div>
+                            <div className={cl.page_navigator_cont}>
+                                <div className={cl.page_navigator}>
+                                    {RenderPageNavigator()}
+                                </div>
+                            </div>
+                        </>
                     }
                 </div>
             </div>
