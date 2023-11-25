@@ -71,11 +71,23 @@ namespace Backend3DForge
 				.HasForeignKey(o => o.PrintTypeName)
 				.OnDelete(DeleteBehavior.Restrict);
 
+			modelBuilder.Entity<OrderedModel>()
+				.HasOne(o => o.CatalogModel)
+				.WithMany()
+				.HasForeignKey(o => o.CatalogModelId)
+				.OnDelete(DeleteBehavior.Restrict);
+
 			modelBuilder.Entity<CatalogModel>()
 				.HasMany(cm => cm.Pictures)
 				.WithOne(mp => mp.CatalogModel)
 				.HasForeignKey(mp => mp.CatalogModelId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<CatalogModel>()
+				.HasOne(c => c.User)
+				.WithMany()
+				.HasForeignKey(c => c.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
 
 			modelBuilder.Entity<PrintType>()
 				.HasKey(p => p.Name)

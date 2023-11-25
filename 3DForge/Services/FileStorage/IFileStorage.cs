@@ -12,6 +12,10 @@ namespace Backend3DForge.Services.FileStorage
 		public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1);
 		public Task DeletePrintFile(CatalogModel catalogModel);
 
+		public Task<Stream> DownloadPrintFile(OrderedModel catalogModel);
+		public Task UploadPrintFile(OrderedModel catalogModel, Stream fileStream, long fileSize = -1);
+		public Task DeletePrintFile(OrderedModel catalogModel);
+
 		public Task<Stream> DownloadAvatarAsync(User user);
 		public Task UploadAvatarAsync(User user, Stream fileStream, long fileSize = -1);
 		public Task DeleteAvatarAsync(User user);

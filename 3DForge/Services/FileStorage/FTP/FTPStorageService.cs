@@ -15,6 +15,7 @@ namespace Backend3DForge.Services.FileStorage.FTP
 
 			this.MkDirAsync(this.configuration.AvatarStoragePath).Wait();
 			this.MkDirAsync(this.configuration.PathToPreviewFiles).Wait();
+			this.MkDirAsync(this.configuration.PathToOrderedModels).Wait();
 			this.MkDirAsync(this.configuration.PathToFilesToPrint).Wait();
 			this.MkDirAsync(this.configuration.PathTo3DModelsPictures).Wait();
 			this.logger = logger;
@@ -253,5 +254,23 @@ namespace Backend3DForge.Services.FileStorage.FTP
         {
             return DeleteFileAsync($"{configuration.PathTo3DModelsPictures}{Path.DirectorySeparatorChar}{modelPicture.Id}.png");
         }
-    }
+
+		public Task<Stream> DownloadPrintFile(OrderedModel orderedModel)
+		{
+			return DownloadFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionName}");
+		}
+
+		public Task UploadPrintFile(OrderedModel orderedModel, Stream fileStream, long fileSize = -1)
+		{
+			return UploadFileAsync(
+					filename: $"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionName}",
+					fileStream: fileStream,
+					fileSize: fileSize);
+		}
+
+		public Task DeletePrintFile(OrderedModel catalogModel)
+		{
+			return DeleteFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+		}
+	}
 }

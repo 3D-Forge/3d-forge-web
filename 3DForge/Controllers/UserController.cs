@@ -412,12 +412,13 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
+		[CanAdministrateSystem]
 		[HttpPut("update/info")]
 		public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request, [FromQuery(Name = "login")] string? userLogin = null)
 		{
 			var user = AuthorizedUser;
 
-			if (userLogin is not null && AuthorizedUser.CanAdministrateSystem)
+			if (userLogin is not null)
 			{
 				user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
 				if (user == null)
@@ -529,12 +530,13 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
+		[CanAdministrateSystem]
 		[HttpPut("update/avatar")]
 		public async Task<IActionResult> UpdateUserAvatar(IFormFile userAvatarFile, [FromQuery(Name = "login")] string? userLogin = null)
 		{
 			var user = AuthorizedUser;
 
-			if (userLogin is not null && AuthorizedUser.CanAdministrateSystem)
+			if (userLogin is not null)
 			{
 				user = await DB.Users.FirstOrDefaultAsync(p => p.Login == userLogin);
 				if (user == null)

@@ -5,7 +5,6 @@ namespace Backend3DForge.Requests
 {
     public class SearchModelRequest : PageRequest
     {
-
         [FromQuery(Name = "q")]
         public string? Query { get; set; }
 
