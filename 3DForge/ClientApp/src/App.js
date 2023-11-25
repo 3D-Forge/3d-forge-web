@@ -9,7 +9,7 @@ import UserEditPage from './pages/UserEditPage/UserEditPage';
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import ModelPage from './pages/ModelPage/ModelPage';
 import CatalogPage from './pages/CatalogPage/CatalogPage';
-
+import ModelUploadPage from './pages/ModelUploadPage/ModelUploadPage'
 
 const App = () => {
   return (
@@ -20,8 +20,8 @@ const App = () => {
           <Route path='user/info' element={<UserInfoPage />} />
           <Route path='user/edit' element={<UserEditPage />} />
           <Route path='catalog' element={<CatalogPage />} />
-          <Route path='catalog/:id' element={<ModelPage />} />
-        </Route>
+                  <Route path='catalog/:id' element={<ModelPage />} />
+                  <Route path="upload-element" element={<ModelUploadPage/>}/></Route>
         <Route path='auth' element={<AuthorizationPage />} />
         <Route path='register' element={<RegistrationPage />} />
         <Route path='reset-password' element={<ResetPasswordPage />} />

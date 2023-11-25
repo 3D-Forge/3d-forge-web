@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure;
+using Microsoft.Extensions.Options;
 using NuGet.Packaging;
 using System.IO;
 using System.Text;
@@ -45,52 +46,52 @@ namespace Backend3DForge.Services.BackgroundWorker
             return backgroundTask;
         }
 
-        public async Task SubscribeToTaskInformation(string id, Stream stream)
+        public async Task SubscribeToTaskInformation(string id, HttpResponse response)
         {
+            response.StatusCode = 200;
+            response.Headers.Add("Content-Type", "text/event-stream");
+            response.Headers.Add("Cache-Control", "no-cache");
+            response.Headers.Add("Connection", "keep-alive");
 
-            using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+            var task = queue.SingleOrDefault(p => p.Id == id);
+            if (task == null)
             {
-                var task = queue.SingleOrDefault(p => p.Id == id);
+                task = this.runningTasks.SingleOrDefault(p => p.Id == id);
                 if (task == null)
                 {
-                    task = this.runningTasks.SingleOrDefault(p => p.Id == id);
+                    task = this.finishedTasks.SingleOrDefault(p => p.Id == id);
                     if (task == null)
                     {
-                        task = this.finishedTasks.SingleOrDefault(p => p.Id == id);
-                        if (task == null)
-                        {
-                            throw new KeyNotFoundException(id);
-                        }
-                        await streamWriter.WriteAsync($"{{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":-1}}\r\r");
-                        await streamWriter.WriteAsync(JsonSerializer.Serialize(task.Result) + "\r\r");
-                        return;
+                        throw new KeyNotFoundException(id);
                     }
-                }
-
-                streamWriter.AutoFlush = true;
-                int posInQueue = 0;
-                try
-                {
-                    while (task.Status < TaskStatus.Canceled)
-                    {
-                        if (posInQueue >= 0)
-                        {
-                            // I think this line isn't optimized. Actions must be used
-                            posInQueue = queue.IndexOf(task);
-                        }
-                        // {id}|{Enum.GetName(task.Status)}|{posInQueue} to JSON
-                        await streamWriter.WriteAsync($"{{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":{posInQueue}}}\r\r");
-                        await Task.Delay(TimeSpan.FromSeconds(1));
-                    }
-
-                    await streamWriter.WriteAsync($"{{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":{posInQueue}}}\r\r");
-                    await streamWriter.WriteAsync(JsonSerializer.Serialize(task.Result) + "\r\r");
-                }
-                catch (Exception ex)
-                {
+                    await response.WriteAsync($"data: {{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":-1,\"queueSize\":{queue.Count()},\"result\":{JsonSerializer.Serialize(task.Result)}}}\r\r");
                     return;
                 }
             }
+
+            int posInQueue = 0;
+            try
+            {
+                while (task.Status < TaskStatus.Canceled)
+                {
+                    if (posInQueue >= 0)
+                    {
+                        // I think this line isn't optimized. Actions must be used
+                        posInQueue = queue.IndexOf(task);
+                    }
+                    // {id}|{Enum.GetName(task.Status)}|{posInQueue} to JSON
+                    await response.WriteAsync($"data: {{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":{posInQueue},\"queueSize\":{queue.Count()}}}\r\r");
+                    Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+                }
+
+                await response.WriteAsync($"data: {{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":{posInQueue},\"queueSize\":{queue.Count()},\"result\":{JsonSerializer.Serialize(task.Result)}}}\r\r");
+                await response.Body.FlushAsync();
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
         }
 
         protected Task WorkingFlow()
