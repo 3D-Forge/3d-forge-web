@@ -434,7 +434,12 @@ const CatalogPage = () => {
                                     <LoadingAnimation size="50px" loadingCurveWidth="10px" />
                                 </div>
                                 :
-                                RenderAuthorList()
+                                <>
+                                    {RenderAuthorList()}
+                                    <div className={cl.show_more_authors}>
+                                        <span className={cl.show_more_authors_text}>Показати ще</span>
+                                    </div>
+                                </>
                             }
                         </div>
                     </div>
