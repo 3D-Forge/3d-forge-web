@@ -502,7 +502,7 @@ const CatalogPage = () => {
                         </div>
                         <div className={cl.add_model_button}>
                             <img className={cl.add_model_button_img} alt="add model" />
-                            <span className={cl.add_model_button_text}>Додати модель</span>
+                            <span className={cl.add_model_button_text} onClick={() => { window.location.pathname = `upload-element` }}>Додати модель</span>
                         </div>
                     </div>
                     {isModelListLoading ?
