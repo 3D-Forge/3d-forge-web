@@ -7,8 +7,6 @@ namespace Backend3DForge.Models
 		[Key]
 		public int Id { get; set; }
 		[Required]
-		public int OrderRecord { get; set; }
-		[Required]
 		public DateTime CreatedAt { get; set; }
 		[Required]
 		public int UserId { get; set; }

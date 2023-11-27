@@ -23,6 +23,8 @@
 			public string PrintTypeName { get; set; }
 			public string PrintMaterialName { get; set; }
 
+			public double TotalPrice => PricePerPiece * Pieces;
+
 			public OrderedModel(Models.OrderedModel model)
 			{
 				Id = model.Id;

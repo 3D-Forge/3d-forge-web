@@ -10,7 +10,7 @@ namespace Backend3DForge.Models
 		public int OrderId { get; set; }
 		public Order Order { get; set; }
 		[Required]
-		public int OrderStatusId { get; set; }
+		public string OrderStatusName { get; set; }
 		public OrderStatus OrderStatus { get; set; }
 		[Required]
 		public DateTime CreatedAt { get; set; }
