@@ -25,7 +25,7 @@ namespace Backend3DForge.Responses
 			{
 				this.Id = model.Id;
 				this.Name = model.ModelCategoryName;
-				this.Count = model.CatalogCategoryModels.Count();
+				this.Count = model.CatalogCategoryModels.Count(p => p.Publicized != null);
 			}
 		}
 	}

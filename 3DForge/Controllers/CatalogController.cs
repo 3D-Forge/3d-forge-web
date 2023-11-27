@@ -51,7 +51,7 @@ namespace Backend3DForge.Controllers
                     .ToArrayAsync();
 
                 response = new ModelCategoryResponse(categories);
-                memoryCache.Set("GET api/catalog/categories", response, TimeSpan.FromMinutes(30));
+                memoryCache.Set("GET api/catalog/categories", response, TimeSpan.FromSeconds(30));
             }
 
             return Ok(response);
@@ -77,7 +77,7 @@ namespace Backend3DForge.Controllers
                 var query = DB.Users
                     .Include(p => p.CatalogModels)
                     .OrderBy(p => p.Login)
-                    .Where(p => p.CatalogModels.Count() > 0);
+                    .Where(p => p.CatalogModels.Count(p => p.Publicized != null) > 0);
 
                 if (q != null)
                 {
@@ -137,7 +137,8 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.Keywords)
                 .Include(p => p.ModelExtension)
                 .Include(p => p.PrintExtension)
-                .Include(p => p.Pictures);
+                .Include(p => p.Pictures)
+                .Where(p => p.Publicized != null);
 
                 if (request.Author is not null)
                 {
@@ -151,7 +152,7 @@ namespace Backend3DForge.Controllers
 
                 if (request.Rating is not null && request.Rating.Length > 0)
                 {
-                    if(request.Rating.Max() > 5 || request.Rating.Min() < 0)
+                    if (request.Rating.Max() > 5 || request.Rating.Min() < 0)
                     {
                         return BadRequest(new BaseResponse.ErrorResponse("The field Rating must contain values from 0 to 5."));
                     }
@@ -209,6 +210,35 @@ namespace Backend3DForge.Controllers
             return Ok(response);
         }
 
+        [Authorize]
+        [HttpGet("own-models")]
+        public async Task<IActionResult> GetOwnModels([FromQuery] PageRequest request)
+        {
+            IQueryable<CatalogModel> query = DB.CatalogModels
+            .Include(p => p.User)
+            .Include(p => p.ModelCategoryes)
+            .Include(p => p.Keywords)
+            .Include(p => p.ModelExtension)
+            .Include(p => p.PrintExtension)
+            .Include(p => p.Pictures)
+            .Where(p => p.UserId == AuthorizedUserId);
+
+            int totalItemsCount = await query.CountAsync();
+            int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / request.PageSize);
+
+            query = query.Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize);
+
+            var result = await query.Select(p => new CatalogModelResponse.View(p)).ToListAsync();
+            PageResponse<CatalogModelResponse.View> response = new PageResponse<CatalogModelResponse.View>(
+                    result,
+                    request.Page,
+                    request.PageSize,
+                    totalPagesCount);
+
+            return Ok(response);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -241,7 +271,7 @@ namespace Backend3DForge.Controllers
             var print = files[1];
             var printEx = Path.GetExtension(print.FileName).Replace(".", "");
 
-            if(model.Length > 1024 * 1024 * 50)
+            if (model.Length > 1024 * 1024 * 50)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Model file is too large. Max size: 50MB"));
             }
@@ -367,7 +397,7 @@ namespace Backend3DForge.Controllers
                 User = AuthorizedUser,
                 Uploaded = DateTime.UtcNow,
                 MinPrice = price,
-			})).Entity;
+            })).Entity;
 
             newModel.Keywords.AddRange(keywords);
             newModel.ModelCategoryes.AddRange(categories);
