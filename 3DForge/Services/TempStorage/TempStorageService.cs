@@ -39,6 +39,13 @@ namespace Backend3DForge.Services.TempStorage
             return new FileStream(Path.Combine(this.configuration.FullPath, fileName), FileMode.Open, FileAccess.Read);
         }
 
+        public async Task<string> UploadFileAsync(Stream stream)
+        {
+            var key = Guid.NewGuid().ToString() + DateTime.UtcNow.Ticks.ToString() + ".tmp";
+            await UploadFileAsync(key, stream);
+            return key;
+        }
+
         public async Task UploadFileAsync(string fileName, Stream stream)
         {
             if(File.Exists(Path.Combine(this.configuration.FullPath, fileName)))

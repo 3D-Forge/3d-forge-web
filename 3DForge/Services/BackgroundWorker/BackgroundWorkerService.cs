@@ -37,9 +37,9 @@ namespace Backend3DForge.Services.BackgroundWorker
 
         public int FinishedTasksCount => finishedTasks.Count;
 
-        public IBackgroundTask CreateTask(Func<object, object> action, object parameter)
+        public IBackgroundTask CreateTask(Func<object[], object> action, object[] args)
         {
-            BackgroundTask backgroundTask = new BackgroundTask(Guid.NewGuid().ToString(), action, parameter);
+            BackgroundTask backgroundTask = new BackgroundTask(Guid.NewGuid().ToString(), action, args);
 
             queue.Add(backgroundTask);
             pauseEvent.Set();
@@ -48,11 +48,6 @@ namespace Backend3DForge.Services.BackgroundWorker
 
         public async Task SubscribeToTaskInformation(string id, HttpResponse response)
         {
-            response.StatusCode = 200;
-            response.Headers.Add("Content-Type", "text/event-stream");
-            response.Headers.Add("Cache-Control", "no-cache");
-            response.Headers.Add("Connection", "keep-alive");
-
             var task = queue.SingleOrDefault(p => p.Id == id);
             if (task == null)
             {
@@ -62,12 +57,21 @@ namespace Backend3DForge.Services.BackgroundWorker
                     task = this.finishedTasks.SingleOrDefault(p => p.Id == id);
                     if (task == null)
                     {
+                        response.StatusCode = 404;
                         throw new KeyNotFoundException(id);
                     }
+                    response.StatusCode = 200;
+                    response.Headers.Add("Content-Type", "text/event-stream");
+                    response.Headers.Add("Cache-Control", "no-cache");
+                    response.Headers.Add("Connection", "keep-alive");
                     await response.WriteAsync($"data: {{\"id\":\"{id}\",\"status\":\"{Enum.GetName(task.Status)}\",\"posInQueue\":-1,\"queueSize\":{queue.Count()},\"result\":{JsonSerializer.Serialize(task.Result)}}}\r\r");
                     return;
                 }
             }
+            response.StatusCode = 200;
+            response.Headers.Add("Content-Type", "text/event-stream");
+            response.Headers.Add("Cache-Control", "no-cache");
+            response.Headers.Add("Connection", "keep-alive");
 
             int posInQueue = 0;
             try

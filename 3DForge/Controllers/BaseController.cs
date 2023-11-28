@@ -1,6 +1,10 @@
-﻿using Backend3DForge.Models;
+﻿using Azure;
+using Backend3DForge.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Buffers;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace Backend3DForge.Controllers
 {
@@ -37,6 +41,17 @@ namespace Backend3DForge.Controllers
                 return id;
             }
         }
+        protected void BadRequestVoid(object value)
+		{
+			Response.StatusCode = 400;
+			if (value is not null)
+			{
+                Response.ContentType = "application/json";
+                var str = JsonSerializer.Serialize(value);
+				var bytes = Encoding.UTF8.GetBytes(str);
+                Response.BodyWriter.Write(bytes);
+			}
+		}
 
         public BaseController(DbApp db)
 		{

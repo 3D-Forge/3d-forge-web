@@ -6,7 +6,7 @@
         int RunningTasksCount { get; }
         int FinishedTasksCount { get; }
 
-        public IBackgroundTask CreateTask(Func<object, object> action, object parameter);
+        public IBackgroundTask CreateTask(Func<object[], object> action, object[] parameters);
 
         Task SubscribeToTaskInformation(string id, HttpResponse response);
     }

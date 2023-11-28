@@ -2,9 +2,11 @@
 using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
+using Backend3DForge.Services.BackgroundWorker;
 using Backend3DForge.Services.Email;
 using Backend3DForge.Services.FileStorage;
 using Backend3DForge.Services.ModelCalculator;
+using Backend3DForge.Services.TempStorage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,17 +27,29 @@ namespace Backend3DForge.Controllers
         protected readonly IEmailService emailService;
         protected readonly IModelCalculator modelCalculator;
         protected readonly IConfiguration configuration;
+        protected readonly IBackgroundWorker backgroundWorker;
+        protected readonly ITempStorage tempStorage;
 
         private float MinCost => configuration.GetValue<float>("MinCost");
         private float ValueAdded => configuration.GetValue<float>("ValueAdded");
 
-        public CatalogController(DbApp db, IFileStorage fileStorage, IMemoryCache memoryCache, IEmailService emailService, IModelCalculator modelCalculator, IConfiguration configuration) : base(db)
+        public CatalogController(
+            DbApp db,
+            IFileStorage fileStorage,
+            IMemoryCache memoryCache,
+            IEmailService emailService,
+            IModelCalculator modelCalculator,
+            IConfiguration configuration,
+            IBackgroundWorker backgroundWorker,
+            ITempStorage tempStorage) : base(db)
         {
             this.fileStorage = fileStorage;
             this.memoryCache = memoryCache;
             this.emailService = emailService;
             this.modelCalculator = modelCalculator;
             this.configuration = configuration;
+            this.backgroundWorker = backgroundWorker;
+            this.tempStorage = tempStorage;
         }
 
         [HttpGet("categories")]
@@ -247,23 +261,27 @@ namespace Backend3DForge.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> AddNewModel([FromForm] Publish3DModelRequest request, [FromForm] IFormFileCollection files)
+        public async Task AddNewModel([FromForm] Publish3DModelRequest request, [FromForm] IFormFileCollection files)
         {
             if (files.Count == 0)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Please select 3D file for preview"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Please select 3D file for preview"));
+                return;
             }
             if (files.Count == 1)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Please select 3D file for printing"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Please select 3D file for printing"));
+                return;
             }
             if (files.Count == 2)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Please select at least one image for preview"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Please select at least one image for preview"));
+                return;
             }
             if (files.Count > 7)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Too many files"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Too many files"));
+                return;
             }
 
             var model = files[0];
@@ -273,12 +291,14 @@ namespace Backend3DForge.Controllers
 
             if (model.Length > 1024 * 1024 * 50)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Model file is too large. Max size: 50MB"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Model file is too large. Max size: 50MB"));
+                return;
             }
 
             if (print.Length > 1024 * 1024 * 50)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Print file is too large. Max size: 50MB"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Print file is too large. Max size: 50MB"));
+                return;
             }
 
             IList<IFormFile> previewImages = new List<IFormFile>();
@@ -287,11 +307,13 @@ namespace Backend3DForge.Controllers
             {
                 if (files[i].ContentType != "image/png")
                 {
-                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName} is not a png image'"));
+                    BadRequestVoid(new BaseResponse.ErrorResponse($"File '{files[i].FileName} is not a png image'"));
+                    return;
                 }
                 if (files[i].Length > 1024 * 1024 * 10)
                 {
-                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 10MB"));
+                    BadRequestVoid(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 10MB"));
+                    return;
                 }
                 previewImages.Add(files[i]);
             }
@@ -300,132 +322,179 @@ namespace Backend3DForge.Controllers
 
             if (printExtension is null)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Invalid file format for printing"));
+                return;
             }
 
             var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Name == modelEx);
             if (modelExtension is null)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
+                BadRequestVoid(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
+                return;
             }
 
-            ModelCalculatorResult modelParameters;
-            try
-            {
-                using (var fs = print.OpenReadStream())
-                {
-                    modelParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(print.FileName).Replace(".", ""));
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
-            }
+            //save file to disk
 
-            if (modelParameters.X == 0 || modelParameters.Y == 0 || modelParameters.Z == 0 || modelParameters.SurfaceArea == 0 || modelParameters.Volume == 0)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
-            }
+            var printFileId = await this.tempStorage.UploadFileAsync(print.OpenReadStream());
+            var modelFileId = await this.tempStorage.UploadFileAsync(model.OpenReadStream());
 
-            HashSet<Keyword> keywords = new HashSet<Keyword>();
-
-            if (request.Keywords is not null)
-            {
-                foreach (var keyword in request.Keywords)
-                {
-                    Keyword? keywordObj = await DB.Keywords.SingleOrDefaultAsync(k => k.Name == keyword);
-                    if (keywordObj is null)
-                    {
-                        keywords.Add((await DB.Keywords.AddAsync(new Keyword
-                        {
-                            Name = keyword
-                        })).Entity);
-                    }
-                    else
-                    {
-                        keywords.Add(keywordObj);
-                    }
-                }
-            }
-
-            await DB.SaveChangesAsync();
-
-            HashSet<ModelCategory> categories = new HashSet<ModelCategory>();
-
-            foreach (var category in request.Categories)
-            {
-                ModelCategory? categoryObj = await DB.ModelCategories.SingleOrDefaultAsync(c => c.Id == category);
-                if (categoryObj is null)
-                {
-                    return BadRequest(new BaseResponse.ErrorResponse($"'{category}' not found"));
-                }
-                else
-                {
-                    categories.Add(categoryObj);
-                }
-            }
-
-            var cheapestMaterialCost = await DB.PrintMaterials
-                .MinAsync(x => x.Cost);
-
-            var price = cheapestMaterialCost * (modelParameters.Volume / 1000f);
-
-            price = price * (1 + (request.Depth / 100f));
-
-            if (price < MinCost)
-            {
-                price = MinCost;
-            }
-            else
-            {
-                price += ValueAdded;
-            }
-
-            var newModel = (await DB.CatalogModels.AddAsync(new CatalogModel
-            {
-                Name = request.Name,
-                Description = request.Description,
-                XSize = modelParameters.X,
-                YSize = modelParameters.Y,
-                ZSize = modelParameters.Z,
-                Volume = modelParameters.Volume,
-                Depth = request.Depth,
-                ModelExtensionName = modelExtension.Name,
-                PrintExtensionName = printExtension.Name,
-                ModelFileSize = model.Length,
-                PrintFileSize = print.Length,
-                User = AuthorizedUser,
-                Uploaded = DateTime.UtcNow,
-                MinPrice = price,
-            })).Entity;
-
-            newModel.Keywords.AddRange(keywords);
-            newModel.ModelCategoryes.AddRange(categories);
-
-            await DB.SaveChangesAsync();
+            var previewImagesIds = new List<string>();
 
             foreach (var image in previewImages)
             {
-                var picture = (await DB.ModelPictures.AddAsync(new ModelPicture
-                {
-                    CatalogModelId = newModel.Id,
-                    CatalogModel = newModel,
-                    Size = image.Length,
-                    Uploaded = DateTime.UtcNow
-                })).Entity;
-
-                await DB.SaveChangesAsync();
-
-                await fileStorage.Upload3DModelsPicture(picture, image.OpenReadStream());
+                previewImagesIds.Add(await this.tempStorage.UploadFileAsync(image.OpenReadStream()));
             }
 
-            Task.WaitAll(new[]
+            // create background task
+
+            var taskInfo = backgroundWorker.CreateTask((args) =>
             {
-                this.fileStorage.UploadPreviewModel(newModel, model.OpenReadStream()),
-                this.fileStorage.UploadPrintFile(newModel, print.OpenReadStream())
+                DbApp db = args[0] as DbApp ?? throw new ArgumentNullException();
+                ITempStorage tempStorage = args[1] as ITempStorage ?? throw new ArgumentNullException();
+                string[] printFileInfo = args[2] as string[] ?? throw new ArgumentNullException();
+                string[] modelFileInfo = args[3] as string[] ?? throw new ArgumentNullException();
+                Publish3DModelRequest request = args[4] as Publish3DModelRequest ?? throw new ArgumentNullException();
+                List<string> previewImagesIds = args[5] as List<string> ?? throw new ArgumentNullException();
+
+                ModelCalculatorResult modelParameters;
+                try
+                {
+                    using (var fs = tempStorage.DownloadFileAsync(printFileInfo[1]))
+                    {
+                        modelParameters = modelCalculator.CalculateSurfaceArea(fs, printFileInfo[0]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new BaseResponse.ErrorResponse(ex.Message);
+                }
+
+                if (modelParameters.X == 0 || modelParameters.Y == 0 || modelParameters.Z == 0 || modelParameters.SurfaceArea == 0 || modelParameters.Volume == 0)
+                {
+                    return new BaseResponse.ErrorResponse("Invalid 3D model file format");
+                }
+
+                HashSet<Keyword> keywords = new HashSet<Keyword>();
+
+                if (request.Keywords is not null)
+                {
+                    foreach (var keyword in request.Keywords)
+                    {
+                        Keyword? keywordObj = db.Keywords.SingleOrDefault(k => k.Name == keyword);
+                        if (keywordObj is null)
+                        {
+                            keywords.Add(db.Keywords.Add(new Keyword
+                            {
+                                Name = keyword
+                            }).Entity);
+                        }
+                        else
+                        {
+                            keywords.Add(keywordObj);
+                        }
+                    }
+                }
+
+                db.SaveChanges();
+
+                HashSet<ModelCategory> categories = new HashSet<ModelCategory>();
+
+                foreach (var category in request.Categories)
+                {
+                    ModelCategory? categoryObj = db.ModelCategories.SingleOrDefault(c => c.Id == category);
+                    if (categoryObj is null)
+                    {
+                        return new BaseResponse.ErrorResponse($"'{category}' not found");
+                    }
+                    else
+                    {
+                        categories.Add(categoryObj);
+                    }
+                }
+
+                var cheapestMaterialCost = db.PrintMaterials.Min(x => x.Cost);
+
+                var price = cheapestMaterialCost * (modelParameters.Volume / 1000f);
+
+                price = price * (1 + (request.Depth / 100f));
+
+                if (price < MinCost)
+                {
+                    price = MinCost;
+                }
+                else
+                {
+                    price += ValueAdded;
+                }
+
+                var newModel = db.CatalogModels.Add(new CatalogModel
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    XSize = modelParameters.X,
+                    YSize = modelParameters.Y,
+                    ZSize = modelParameters.Z,
+                    Volume = modelParameters.Volume,
+                    Depth = request.Depth,
+                    ModelExtensionName = modelExtension.Name,
+                    PrintExtensionName = printExtension.Name,
+                    ModelFileSize = model.Length,
+                    PrintFileSize = print.Length,
+                    User = AuthorizedUser,
+                    Uploaded = DateTime.UtcNow,
+                    MinPrice = price,
+                }).Entity;
+
+                newModel.Keywords.AddRange(keywords);
+                newModel.ModelCategoryes.AddRange(categories);
+
+                db.SaveChanges();
+
+                foreach (var imageId in previewImagesIds)
+                {
+                    using (var fs = tempStorage.DownloadFileAsync(imageId))
+                    {
+                        var picture = db.ModelPictures.Add(new ModelPicture
+                        {
+                            CatalogModelId = newModel.Id,
+                            CatalogModel = newModel,
+                            Size = fs.Length,
+                            Uploaded = DateTime.UtcNow
+                        }).Entity;
+
+                        db.SaveChanges();
+
+                        fileStorage.Upload3DModelsPicture(picture, fs);
+                    }
+                }
+                using (var fs = tempStorage.DownloadFileAsync(printFileInfo[1]))
+                {
+                    this.fileStorage.UploadPrintFile(newModel, fs);
+                }
+
+                using (var fs = tempStorage.DownloadFileAsync(modelFileInfo[1]))
+                {
+                    this.fileStorage.UploadPreviewModel(newModel, fs);
+                }
+
+                return new CatalogModelResponse(newModel);
+            }, new object[]
+            {
+                DB, tempStorage,
+                new string[]
+                {
+                    printEx,
+                    printFileId
+                },
+                new string[]
+                {
+                    modelEx,
+                    modelFileId
+                },
+                request, previewImagesIds
             });
 
-            return Ok(new CatalogModelResponse(newModel));
+            await backgroundWorker.SubscribeToTaskInformation(taskInfo.Id, Response);
         }
 
         [HttpGet("{modelId}")]
