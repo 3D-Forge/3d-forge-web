@@ -2,20 +2,16 @@
 import cl from "./.module.css";
 import { CatalogAPI } from '../../services/api/CatalogAPI';
 import { useParams } from "react-router-dom";
-
-
-
-
+import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 
 const ModelPage = () => {
     const { id } = useParams();
     const [modelInfo, setModelInfo] = React.useState(undefined);
+    const [modelPicture, setModelPicture] = React.useState(undefined);
     const [styleType, setStyleType] = React.useState('default');
-
 
     function getStyleClass(rate) {
         if (rate >= 0 && rate < 0.5) {
-            //console.log("cond1")
             return cl.group_0_5_star;
         } else if (rate >= 0.5 && rate < 1) {
             return cl.group_1_star;
@@ -36,26 +32,24 @@ const ModelPage = () => {
         } else if (rate >= 4.5 && rate <= 5) {
             return cl.group_5_star;
         } else {
-           // console.log("default " + rate)
             return cl.group_12;
         }
     }
+
     React.useEffect(() => {
         let isMounted = true;
         const fetchData = async () => {
             if (modelInfo === undefined && isMounted) {
                 try {
                     const response = await CatalogAPI.getModel(id);
-                    console.log(response.status);
-                    console.log(response.status); 
-                    
+
                     if (response.ok) {
                         const resModel = await response.json();
-                        console.log(resModel);
                         if (isMounted) {
                             setModelInfo(resModel.data);
                             setStyleType(getStyleClass(resModel.data.rating));
                         }
+                        setModelPicture(URL.createObjectURL(await (await CatalogAPI.getModelPicture(resModel.data.picturesIDs[0])).blob()));
                     }
                     else {
                         console.error('Помилка отримання моделі:', response.statusText);
@@ -73,28 +67,57 @@ const ModelPage = () => {
         };
     }, [modelInfo, id]);
 
+    if (modelInfo === undefined) {
+        return (
+            <div className={cl.unloaded_page}>
+                <LoadingAnimation size="100px" loadingCurveWidth="20px" />
+            </div>
+        );
+    }
+
     return (
         <div className={cl.index}>
             <div className={cl.div_2}>
                 <div className={cl.view_5}>
                     <div className={cl.navbar}>
-                        <a href="#All" className={cl.text_wrapper_12}>ВСЕ ПРО ТОВАР</a>
-                        <a href="#description" class={cl.text_wrapper_12}>ОПИС</a>
-                        <a href="#characteristics"
-                            className={cl.text_wrapper_12}>ХАРАКТЕРИСТИКИ</a>
-                        <a href="#feedbacks" className={cl.text_wrapper_12}>ВІДГУКИ</a>
+                        <span className={cl.text_wrapper_12}
+                            onClick={() => {
+                                document.getElementById('general-model-info').scrollIntoView({ behavior: "smooth" });
+                            }}>
+                            ВСЕ ПРО ТОВАР
+                        </span>
+                        <span className={cl.text_wrapper_12}
+                            onClick={() => {
+                                document.getElementById('model-description').scrollIntoView({ behavior: "smooth" });
+                            }}>
+                            ОПИС</span>
+                        <span className={cl.text_wrapper_12}
+                            onClick={() => {
+                                document.getElementById('model-stats').scrollIntoView({ behavior: "smooth" });
+                            }}>
+                            ХАРАКТЕРИСТИКИ</span>
+                        <span className={cl.text_wrapper_12}
+                            onClick={() => {
+                                document.getElementById('feedback').scrollIntoView({ behavior: "smooth" });
+                            }}>
+                            ВІДГУКИ</span>
                     </div>
-                    <div className={cl.rectangle_2} />
                 </div>
                 <div className={cl.overlap_3}>
-                    <div className={cl.view_6}>
-                        <img
-                            className={cl.image_removebg}
-                            alt="Image removebg"
-                            src={`/api/catalog/model/picture/${modelInfo?.picturesIDs[0]}`}
-                        />
+                    <div className={cl.view_6} id='general-model-info'>
+                        {modelPicture !== undefined ?
+                            <img
+                                className={cl.image_removebg}
+                                alt="Image removebg"
+                                src={modelPicture}
+                            />
+                            :
+                            <div className={cl.unloaded_model_picture}>
+                                <LoadingAnimation size="100px" loadingCurveWidth="20px" />
+                            </div>
+                        }
                         <div className={cl.group_2}>
-                            <div id="All"className={cl.text_wrapper_13}>{modelInfo?.name}</div>
+                            <div id="All" className={cl.text_wrapper_13}>{modelInfo?.name}</div>
                             <div className={cl.text_wrapper_14}>Код товару: {modelInfo?.id}</div>
                         </div>
                         <div className={cl.group_3}>
@@ -120,12 +143,12 @@ const ModelPage = () => {
                         </div>
                         <div className={cl.keywords_group} style={{ maxWidth: '550px' }}>
                             {modelInfo?.keywords.map((keyword, index) => (
-                                <button class={cl.keywords_buttons} 
+                                <button className={cl.keywords_buttons}
                                     key={index}>{keyword}</button>
                             ))}
                         </div>
                         <div className={cl.categories_group}>
-                            {modelInfo?.categoryes.map((category, index) => (
+                            {modelInfo?.categories.map((category, index) => (
                                 <button className={cl.categories_buttons} key={index}>
                                     {category.name}
                                 </button>
@@ -221,15 +244,15 @@ const ModelPage = () => {
                     />
                 </div>
                 <div className={cl.view_14}>
-                    <div className={cl.overlap_5}>
-                        <div id="description"  className={cl.text_wrapper_31}>Опис</div>
+                    <div className={cl.overlap_5} id='model-description'>
+                        <div id="description" className={cl.text_wrapper_31}>Опис</div>
                         <p className={cl.text_wrapper_32}>
                             {modelInfo?.description}
                         </p>
                     </div>
                 </div>
                 <div className={cl.view_15}>
-                    <div className={cl.overlap_6}>
+                    <div className={cl.overlap_6} id='model-stats'>
                         <div className={cl.text_wrapper_33}>Колір</div>
                         <div className={cl.text_wrapper_34}>Вага</div>
                         <div className={cl.text_wrapper_35}>Матеріал</div>
@@ -242,7 +265,7 @@ const ModelPage = () => {
                         <div className={cl.text_wrapper_42}>{modelInfo?.ySize}см</div>
                         <div className={cl.text_wrapper_43}>Товщина</div>
                         <div className={cl.text_wrapper_44}>{modelInfo?.zSize}см</div>
-                        <div id="characteristics"className={cl.text_wrapper_31}>Характеристики</div>
+                        <div id="characteristics" className={cl.text_wrapper_31}>Характеристики</div>
                         <div className={cl.text_wrapper_45}>ФІЗИЧНІ ПАРАМЕТРИ</div>
                         <div className={cl.text_wrapper_46}>РОЗМІРИ</div>
                     </div>
@@ -254,7 +277,7 @@ const ModelPage = () => {
                         src="https://cdn.animaapp.com/projects/6537996634ad3d584d8c9f1f/releases/65477cb487304b74da313e8b/img/avatar-svgrepo-com-2.svg"
                     />
                     <div className={cl.view_16}>
-                        <div className={cl.overlap_8}>
+                        <div className={cl.overlap_8} id='feedback'>
                             <div id="feedbacks" className={cl.text_wrapper_31}>Відгуки</div>
                             <div className={cl.group_18}>
                                 <div className={cl.overlap_9}>
@@ -388,4 +411,3 @@ const ModelPage = () => {
     );
 }
 export default ModelPage;
-

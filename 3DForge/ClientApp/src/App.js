@@ -9,7 +9,6 @@ import UserEditPage from './pages/UserEditPage/UserEditPage';
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import ModelPage from './pages/ModelPage/ModelPage';
 import CatalogPage from './pages/CatalogPage/CatalogPage';
-import ModelUploadPage from './pages/ModelUploadPage/ModelUploadPage'
 import AdminPage from './pages/AdminPage/AdminPage';
 
 const App = () => {
@@ -23,7 +22,6 @@ const App = () => {
           <Route path='user/edit' element={<UserEditPage />} />
           <Route path='catalog' element={<CatalogPage />} />
           <Route path='catalog/:id' element={<ModelPage />} />
-          <Route path="upload-element" element={<ModelUploadPage />} />
         </Route>
         <Route path='auth' element={<AuthorizationPage />} />
         <Route path='register' element={<RegistrationPage />} />

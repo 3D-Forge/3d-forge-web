@@ -4,10 +4,11 @@ export class CatalogAPI {
         return await BaseAPI.get('catalog/categories');
     }
 
-    static async getAuthors(pageNumber = 1, pageSize = 10) {
+    static async getAuthors(query, pageNumber = 1, pageSize = 10) {
         const p = pageNumber ? `?page=${pageNumber}` : '?page=1';
         const ps = pageSize ? `&page_size=${pageSize}` : '&page_size=10';
-        return await BaseAPI.get(`catalog/authors${p}${ps}`);
+        const q = query ? `&q=${query}` : '';
+        return await BaseAPI.get(`catalog/authors${p}${ps}${q}`);
     }
 
     static async search(

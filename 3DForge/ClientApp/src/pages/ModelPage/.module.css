@@ -1,5 +1,12 @@
-﻿.index {
-    background-color: rgba(255, 255, 255, 1);
+﻿.unloaded_page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 150px;
+}
+
+.index {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -46,8 +53,6 @@
     margin-bottom: 10px; /* Додає пробіл між рядками */
 }
 .div_2 {
-    background: linear-gradient( 180deg, rgb(123.72, 38.05, 191.04) 0%, rgb(186, 103, 211) 99.99%, rgb(111.92, 48, 181) 100% );
-    background-color: rgba(255, 255, 255, 1);
     height: 4439px;
     position: relative;
     width: 100%;
@@ -383,18 +388,10 @@
     font-weight: 600;
     letter-spacing: 0;
     line-height: normal;
-    margin-top: -1px;
+    margin-top: 2px;
     position: relative;
     width: fit-content;
-}
-
-.rectangle_2 {
-    background-color: #7b26bf;
-    height: 5px;
-    left: 107px;
-    position: absolute;
-    top: 76px;
-    width: 246px;
+    text-decoration: underline;
 }
 
 .overlap_3 {
@@ -421,6 +418,17 @@
     left: 75px;
     position: absolute;
     top: 60px;
+    width: 501px;
+}
+
+.unloaded_model_picture {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 75px;
+    top: 60px;
+    height: 501px;
     width: 501px;
 }
 
@@ -1089,7 +1097,7 @@
     left: 50px;
     position: relative;
     top: 133px;
-    width: 100%;
+    width: 1423px;
 }
 
 .overlap_5 {
@@ -1132,7 +1140,7 @@
     left: 50px;
     position: relative;
     top: 163px;
-    width: 1753px;
+    width: 1423px;
 }
 
 .overlap_6 {

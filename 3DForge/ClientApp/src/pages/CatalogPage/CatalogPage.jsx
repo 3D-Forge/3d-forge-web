@@ -4,12 +4,15 @@ import { CatalogAPI } from '../../services/api/CatalogAPI';
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 import sortAcsImg from './img/sort-by-asc.png';
 import sortDecsImg from './img/sort-by-desc.png';
+import { useNavigate } from "react-router-dom";
 
 const CatalogPage = () => {
 
+    const navigate = useNavigate();
+
     const [modelList, setModelList] = React.useState(undefined);
     const [categoryList, setCategoryList] = React.useState(undefined);
-    const [authorList, setAuthorList] = React.useState(undefined);
+    const [authorList, setAuthorList] = React.useState({ list: undefined, loadedPageCount: 0, generalPageCount: 0 });
 
     const [isModelListLoading, setModelListLoading] = React.useState(false);
     const [isCategoryListLoading, setCategoryListLoading] = React.useState(false);
@@ -20,7 +23,6 @@ const CatalogPage = () => {
     const [isRatingListVisible, setRatingListVisibility] = React.useState(true);
 
     const [categorySearch, setCategorySearch] = React.useState('');
-    const [authorSearch, setAuthorSearch] = React.useState('');
     const [sortMode, setSortMode] = React.useState({ value: 'name', asc: true });
 
     const [categoriesForFilter, setCategoriesForFilter] = React.useState([]);
@@ -28,9 +30,12 @@ const CatalogPage = () => {
 
     const [modelListPageInfo, setModelListPageInfo] = React.useState({ count: undefined, current: 1 });
 
+    const [isUploadModelMenuVisible, setUploadModelMenuVisibility] = React.useState(false);
+
     const minPriceInputRef = React.useRef();
     const maxPriceInputRef = React.useRef();
     const modelSearchInputRef = React.useRef();
+    const authorSearchInputRef = React.useRef();
     const allAuthorsRadioRef = React.useRef();
 
     async function LoadModelList(
@@ -70,9 +75,30 @@ const CatalogPage = () => {
         setCategoryListLoading(false);
     }
 
-    async function LoadAuthorList() {
+    async function LoadAuthorList(addPage) {
         setAuthorListLoading(true);
-        setAuthorList((await (await CatalogAPI.getAuthors()).json()).data.items);
+
+        let json = await (await CatalogAPI.getAuthors(
+            authorSearchInputRef.current.value,
+            addPage ? authorList.loadedPageCount + 1 : 1
+        )).json();
+
+        setAuthorList(p => {
+            let newP = { ...p };
+
+            if (addPage) {
+                newP.list.push(...json.data.items);
+                newP.loadedPageCount += json.data.pageCount > p.loadedPageCount ? 1 : 0;
+            }
+            else {
+                newP.list = json.data.items;
+                newP.loadedPageCount = 1;
+            }
+
+            newP.generalPageCount = json.data.pageCount;
+            return newP;
+        });
+
         setAuthorListLoading(false);
     }
 
@@ -176,15 +202,15 @@ const CatalogPage = () => {
             </div>
         );
 
-        authorList?.forEach(el => {
-            const print = el.login.toLowerCase().includes(authorSearch.toLowerCase());
+        authorList.list?.forEach(el => {
             result.push(
-                <div className={cl.author} style={{ display: print ? 'flex' : 'none' }} key={el.login}>
+                <div className={cl.author} key={el.login}>
                     <input
                         className={cl.author_checkbox}
                         type="radio"
                         name="author"
                         value={el.login}
+                        defaultChecked={authorForFilter === el.login}
                         onChange={(e) => {
                             setAuthorForFilter(e.target.value);
                             LoadModelList(sortMode.value, sortMode.asc, categoriesForFilter, e.target.value);
@@ -228,6 +254,20 @@ const CatalogPage = () => {
         }
 
         return result;
+    }
+
+    function RenderUploadModelMenu() {
+        if (!isUploadModelMenuVisible) {
+            return;
+        }
+
+        return (
+            <div className={cl.model_upload_window_background}>
+                <div className={cl.model_upload_window}>
+
+                </div>
+            </div>
+        );
     }
 
     function RenderPageNavigator() {
@@ -339,6 +379,12 @@ const CatalogPage = () => {
         return result;
     }
 
+    function WindowKeyPressEvent(event) {
+        if (event.key === "Enter" && (document.activeElement === modelSearchInputRef.current)) {
+            LoadModelList();
+        }
+    }
+
     React.useEffect(() => {
         if (modelList === undefined) {
             LoadModelList(sortMode.value, true);
@@ -348,9 +394,15 @@ const CatalogPage = () => {
             LoadCategoryList();
         }
 
-        if (authorList === undefined) {
-            LoadAuthorList();
+        if (authorList.list === undefined) {
+            LoadAuthorList(false);
         }
+
+        window.addEventListener("keypress", WindowKeyPressEvent);
+
+        return () => {
+            window.removeEventListener("keypress", WindowKeyPressEvent);
+        };
     });
 
     return (
@@ -417,7 +469,7 @@ const CatalogPage = () => {
                         </div>
                     </div>
                     <div className={`${cl.filter} ${cl.author_filter} ${isAuthorListVisible ? '' : cl.closed_filter}`}>
-                        <h2 className={`${cl.filter_header} ${cl.author_filter_header}`}>Публікатори</h2>
+                        <h2 className={`${cl.filter_header} ${cl.author_filter_header}`}>Автори</h2>
                         <img
                             className={`
                             ${cl.filter_list_hider}
@@ -426,20 +478,22 @@ const CatalogPage = () => {
                             onClick={() => setAuthorListVisibility(!isAuthorListVisible)} />
                         <input className={`${cl.filter_input} ${cl.author_filter_input}`}
                             type="text"
-                            placeholder="Пошук публікатора"
-                            onChange={(e) => setAuthorSearch(e.target.value)} />
+                            placeholder="Пошук авторів"
+                            ref={authorSearchInputRef}
+                            onChange={() => LoadAuthorList(false)} />
                         <div className={`${cl.filter_list} ${cl.author_list}`}>
+                            {RenderAuthorList()}
                             {isAuthorListLoading ?
                                 <div className={cl.author_list_is_unloaded}>
                                     <LoadingAnimation size="50px" loadingCurveWidth="10px" />
                                 </div>
-                                :
-                                <>
-                                    {RenderAuthorList()}
-                                    <div className={cl.show_more_authors}>
-                                        <span className={cl.show_more_authors_text}>Показати ще</span>
-                                    </div>
-                                </>
+                                : <></>
+                            }
+                            {authorList.loadedPageCount < authorList.generalPageCount && !isAuthorListLoading ?
+                                <div className={cl.show_more_authors} onClick={() => LoadAuthorList(true)}>
+                                    <span className={cl.show_more_authors_text}>Показати ще</span>
+                                </div>
+                                : <></>
                             }
                         </div>
                     </div>
@@ -458,8 +512,12 @@ const CatalogPage = () => {
                 </div>
                 <div className={cl.model_section}>
                     <h1 className={cl.catalog_header}>КАТАЛОГ</h1>
-                    <input className={cl.search} type="text" placeholder="Пошук моделі" ref={modelSearchInputRef}
-                        onChange={() => LoadModelList()} />
+                    <div className={cl.search_model_cont}>
+                        <div className={cl.search_model_img_cont} onClick={() => LoadModelList()}>
+                            <img className={cl.search_model_img} alt="search" />
+                        </div>
+                        <input className={cl.search_model} type="text" placeholder="Пошук моделі" ref={modelSearchInputRef} />
+                    </div>
                     <div className={cl.sort_and_add}>
                         <div className={cl.sort}>
                             <div className={`${cl.sort_mode_cont} ${cl.sort_by_name_cont}`}>
@@ -505,9 +563,9 @@ const CatalogPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className={cl.add_model_button}>
+                        <div className={cl.add_model_button} onClick={() => setUploadModelMenuVisibility(true)}>
                             <img className={cl.add_model_button_img} alt="add model" />
-                            <span className={cl.add_model_button_text} onClick={() => { window.location.pathname = `upload-element` }}>Додати модель</span>
+                            <span className={cl.add_model_button_text}>Додати модель</span>
                         </div>
                     </div>
                     {isModelListLoading ?
@@ -528,6 +586,7 @@ const CatalogPage = () => {
                     }
                 </div>
             </div>
+            {RenderUploadModelMenu()}
         </div>
     );
 }
