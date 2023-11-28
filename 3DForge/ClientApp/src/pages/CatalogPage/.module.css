@@ -239,6 +239,29 @@
     margin-top: 20px;
 }
 
+.show_more_authors {
+    position: relative;
+    margin-top: 15px;
+    height: 30px;
+}
+
+.show_more_authors_text {
+    cursor: pointer;
+    position: absolute;
+    left: -10px;
+    color: #AE35D9;
+    font-size: 25px;
+    font-weight: bold;
+    padding-inline: 5px;
+    padding-block: 3px;
+    border-radius: 5px;
+}
+
+.show_more_authors_text:hover {
+    background-color: #AE35D9;
+    color: white;
+}
+
 .rating_value_filter {
     background-color: white;
     border-radius: 8px;

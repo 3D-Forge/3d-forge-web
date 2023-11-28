@@ -11,6 +11,7 @@ const AccountPageLayout = () => {
     const [isAuthorized, setAuthorizationState] = React.useState(false);
     const [isCheckingAuthState, setCheckingAuthState] = React.useState(true);
     const [isDropMenuVisible, setDropMenuVisibility] = React.useState(false);
+    const [canAdministrateSystem, setAdministrateSystemRight] = React.useState(false);
     const [userAvatar, setUserAvatar] = React.useState(undefined);
 
     const dropMenuRef = React.useRef();
@@ -53,8 +54,15 @@ const AccountPageLayout = () => {
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_settings}`}
                                 onClick={() => {
                                     window.location.pathname = 'user/edit';
-                                    setDropMenuVisibility(false)
+                                    setDropMenuVisibility(false);
                                 }}>Налаштування</p>
+                            {canAdministrateSystem ?
+                                <p className={`${cl.drop_list_element} ${cl.drop_list_element_admin}`}
+                                    onClick={() => {
+                                        window.location.pathname = 'admin';
+                                    }}>Адмінстрування</p>
+                                : <></>
+                            }
                             <p className={`${cl.drop_list_element} ${cl.drop_list_element_logout}`}
                                 onClick={() => LogoutRequest()}>Вихід</p>
                         </div>
@@ -83,17 +91,22 @@ const AccountPageLayout = () => {
     }
 
     React.useEffect(() => {
-        UserAPI.check().then(res => {
-            if (res.ok) {
+        UserAPI.check().then(res => res.json()).then(json => {
+            if (json.success) {
                 setAuthorizationState(true);
+                setAdministrateSystemRight(json.message === "administrator" ? true : false);
             }
 
             const isCurrentPageAllowed =
                 window.location.pathname === '/'
                 || window.location.pathname.includes('/catalog');
 
-            if (!isCurrentPageAllowed && res.status === 401) {
-                window.location.replace("/");
+            if (!isCurrentPageAllowed && !json.success) {
+                window.history.back();
+            }
+
+            if (json.message !== "administrator" && window.location.pathname === '/admin') {
+                window.history.back();
             }
 
             setCheckingAuthState(false);

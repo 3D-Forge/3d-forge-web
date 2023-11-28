@@ -26,6 +26,21 @@ const UserInfoPage = () => {
         });
     }
 
+    function CopyTextContent(event) {
+        event.preventDefault();
+
+        if (event.target.textContent) {
+            navigator.clipboard.writeText(event.target.textContent);
+
+            let msg = document.getElementsByClassName(cl.copy_text_message)[0];
+            msg.style.opacity = '1';
+
+            setTimeout(() => {
+                msg.style.opacity = '0';
+            }, 1000);
+        }
+    }
+
     React.useEffect(() => {
         if (userInfo === undefined) {
             UserAPI.getSelfInfo()
@@ -57,6 +72,10 @@ const UserInfoPage = () => {
                         }
                         <div className={cl.login_email_country_city}>
                             <p className={cl.login}>{userInfo?.login ?? '-'}</p>
+                            {userInfo.canAdministrateSystem
+                                ? <p className={cl.is_administrator}>Адміністратор</p>
+                                : <></>
+                            }
                             <p className={cl.email}>{userInfo?.email ?? '-'}</p>
                             <p className={cl.country_and_city}>{GetCountryAndCity()}</p>
                         </div>
@@ -70,31 +89,41 @@ const UserInfoPage = () => {
                         <div className={`${cl.section} ${cl.general_info}`}>
                             <div className={`${cl.info_field} ${cl.info_field_last_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_last_name}`}>Прізвище</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_last_name}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_last_name}`}
+                                    title={userInfo?.lastName}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_last_name}`}>{userInfo?.lastName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_first_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_first_name}`}>Ім’я</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_first_name}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_first_name}`}
+                                    title={userInfo?.firstName}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_first_name}`}>{userInfo?.firstName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_middle_name}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_middle_name}`}>По-батькові</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_middle_name}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_middle_name}`}
+                                    title={userInfo?.midName}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_middle_name}`}>{userInfo?.midName}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_email}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_email}`}>Пошта</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_email}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_email}`}
+                                    title={userInfo?.email}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_email}`}>{userInfo?.email}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_phone_number}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_phone_number}`}>Номер телефону</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_phone_number}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_phone_number}`}
+                                    title={userInfo?.phoneNumber}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_phone_number}`}>{userInfo?.phoneNumber}</span>
                                 </div>
                             </div>
@@ -103,31 +132,41 @@ const UserInfoPage = () => {
                         <div className={`${cl.section} ${cl.address}`}>
                             <div className={`${cl.info_field} ${cl.info_field_street}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_street}`}>Вулиця</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_street}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_street}`}
+                                    title={userInfo?.street}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_street}`}>{userInfo?.street}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_region}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_region}`}>Область</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_region}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_region}`}
+                                    title={userInfo?.region}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_region}`}>{userInfo?.region}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_city}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_city}`}>Місто</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_city}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_city}`}
+                                    title={userInfo?.city}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_city}`}>{userInfo?.city}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_house_number}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_house_number}`}>Номер будинку</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_house_number}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_house_number}`}
+                                    title={userInfo?.house}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_house_number}`}>{userInfo?.house}</span>
                                 </div>
                             </div>
                             <div className={`${cl.info_field} ${cl.info_field_apartment}`}>
                                 <h3 className={`${cl.info_field_header} ${cl.info_field_header_apartment}`}>Квартира</h3>
-                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_apartment}`}>
+                                <div className={`${cl.info_field_cell} ${cl.info_field_cell_apartment}`}
+                                    title={userInfo?.apartment}
+                                    onClick={CopyTextContent}>
                                     <span className={`${cl.info_field_value} ${cl.info_field_value_apartment}`}>{userInfo?.apartment}</span>
                                 </div>
                             </div>
@@ -136,6 +175,9 @@ const UserInfoPage = () => {
                 </div>
                 : <LoadingAnimation size="100px" loadingCurveWidth="20px" />
             }
+            <div className={cl.copy_text_message}>
+                <span className={cl.copy_text_message_text}>Скопійовано</span>
+            </div>
         </div>
     );
 }
