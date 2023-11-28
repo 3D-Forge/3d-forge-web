@@ -60,10 +60,9 @@ namespace Backend3DForge.Controllers
         [HttpGet("keywords")]
         public async Task<IActionResult> SearchKeywords([FromQuery(Name = "q")] string q)
         {
-            q = q.ToLower();
             IQueryable<Keyword> query = DB.Keywords;
-            if (q != null)
-                query = query.Where(p => p.Name.ToLower().Contains(q));
+            q = q.ToLower();
+            query = query.Where(p => p.Name.ToLower().Contains(q));
             query = query.Take(20);
             return Ok(new KeywordResponse(await query.ToArrayAsync()));
         }
@@ -72,7 +71,8 @@ namespace Backend3DForge.Controllers
         public async Task<IActionResult> GetAuthors([FromQuery] PageRequest request, [FromQuery(Name = "q")] string? q = null)
         {
             PageResponse<AuthorResponse.View>? response;
-            if (!memoryCache.TryGetValue($"GET api/catalog/authors?q={q ?? ""}&p={request.Page}&ps={request.PageSize}", out response))
+            string key = $"GET api/catalog/authors?q={q ?? ""}&p={request.Page}&ps={request.PageSize}";
+            if (!memoryCache.TryGetValue(key, out response))
             {
                 var query = DB.Users
                     .Include(p => p.CatalogModels)
@@ -96,7 +96,7 @@ namespace Backend3DForge.Controllers
                     request.PageSize,
                     totalPagesCount);
 
-                memoryCache.Set("GET api/catalog/authors", response, TimeSpan.FromSeconds(45));
+                memoryCache.Set(key, response, TimeSpan.FromSeconds(45));
             }
             return Ok(response);
         }

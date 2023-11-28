@@ -53,7 +53,19 @@ namespace Backend3DForge
 				.HasIndex(u => u.Email)
 				.IsUnique();
 
-			modelBuilder.Entity<Keyword>()
+            modelBuilder.Entity<User>()
+				.HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+				.HasMany(u => u.CatalogModels)
+				.WithOne(o => o.User)
+				.HasForeignKey(o => o.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Keyword>()
 				.HasKey(p => p.Name)
 				.HasName("PK_Keyword");
 
@@ -83,13 +95,7 @@ namespace Backend3DForge
 				.HasForeignKey(mp => mp.CatalogModelId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<CatalogModel>()
-				.HasOne(c => c.User)
-				.WithMany()
-				.HasForeignKey(c => c.UserId)
-				.OnDelete(DeleteBehavior.Restrict);
-
-			modelBuilder.Entity<PrintType>()
+            modelBuilder.Entity<PrintType>()
 				.HasKey(p => p.Name)
 				.HasName("PK_PrintType");
 
