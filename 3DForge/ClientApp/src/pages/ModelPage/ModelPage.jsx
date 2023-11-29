@@ -158,15 +158,11 @@ const ModelPage = () => {
                             </p>
                         </div>
                         <div className={cl.keywords_group} style={{ maxWidth: '550px' }}>
-                            {modelInfo?.keywords.map((keyword, index) => (
-                                <button className={cl.keywords_buttons}
                             {modelInfo?.keywords?.map((keyword, index) => (
-                                <button class={cl.keywords_buttons} 
-                                    key={index}>{keyword}</button>
+                                <button className={cl.keywords_buttons} key={index}>{keyword}</button>
                             ))}
                         </div>
                         <div className={cl.categories_group}>
-                            {modelInfo?.categories.map((category, index) => (
                             {modelInfo?.categories?.map((category, index) => (
                                 <button className={cl.categories_buttons} key={index}>
                                     {category.name}
