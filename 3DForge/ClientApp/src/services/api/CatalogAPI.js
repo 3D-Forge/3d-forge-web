@@ -52,4 +52,7 @@ export class CatalogAPI {
     static async getModelPicture(id) {
         return await BaseAPI.get(`catalog/model/picture/${id}`);
     }
+    static async GetUnacceptedModels() {
+        return await BaseAPI.get('catalog/unaccepted');
+    }
 }

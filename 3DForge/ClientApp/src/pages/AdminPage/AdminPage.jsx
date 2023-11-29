@@ -1,28 +1,61 @@
 import React from "react";
 import cl from './.module.css';
-
+import { CatalogAPI } from "../../services/api/CatalogAPI";
 const AdminPage = () => {
 
     const [currentSection, setCurrentSection] = React.useState(undefined);
+    const [modelsInfo, setModelsInfo] = React.useState(undefined);
+    React.useEffect(() => {
+        let isMounted = true;
+        const fetchData = async () => {
+            try {
+                const response = await CatalogAPI.GetUnacceptedModels();
+                console.log(response.status);
+                if (response.ok) {
+                    const resModel = await response.json();
+                    console.log(resModel);
+                    setModelsInfo(resModel.data);
+                
+                }
+                else {
+                    console.error('Помилка отримання моделі:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Помилка отримання моделі:', error);
+            }
 
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    });
     function RenderCatalogSection() {
-        return (
-            <div className={cl.uploaded_model_panel}>
-                <div className={cl.uploaded_model_list_header}>
-                    <div className={`${cl.uploaded_model_list_header_column} ${cl.uploaded_model_list_header_column_login}`}>
-                        <div className={`${cl.uploaded_model_list_header_column_content} ${cl.uploaded_model_list_header_column_content_login}`}>
-                            <img className={`${cl.uploaded_model_list_header_column_sort} ${cl.uploaded_model_list_header_column_sort_login}`} />
-                            <span className={`${cl.uploaded_model_list_header_column_text} ${cl.uploaded_model_list_header_column_text_login}`}>
-                                Користувач
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className={cl.uploaded_model_list}>
+        if (Array.isArray(modelsInfo)) {
+            return (
+                <div className={cl.models_group}>
 
+                    <p className={cl.Owner}> Автор </p>
+                    <p className={cl.Name}> Модель </p>
+                    <p className={cl.Depth}>Ціна</p>
+                    <p className={cl.Uploaded}>Дата завантаження</p>
+                    {modelsInfo.map((model) => (
+                        <div key={model.id} className={cl.model_item}>
+                            {/* Render your content for each model */}
+                            <p className={cl.model_Owner}> {model.owner}</p>
+                            <p className={cl.model_Name}> {model.name}</p>
+                            <p className={cl.model_Depth}> {model.depth}₴</p>
+                            <p className={cl.model_Uploaded}> {model.uploaded}</p>
+                        </div>
+                    ))}
                 </div>
-            </div>
-        );
+            );
+        } else {
+            // Handle the case where modelsInfo is not an array
+            return <p>modelsInfo is not an array.</p>;
+        }
     }
 
     function RenderSections() {

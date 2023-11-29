@@ -3,13 +3,17 @@ import cl from "./.module.css";
 import { CatalogAPI } from '../../services/api/CatalogAPI';
 import { useParams } from "react-router-dom";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
+import { UserAPI } from '../../services/api/UserAPI';
+
+
+
 
 const ModelPage = () => {
     const { id } = useParams();
     const [modelInfo, setModelInfo] = React.useState(undefined);
     const [modelPicture, setModelPicture] = React.useState(undefined);
     const [styleType, setStyleType] = React.useState('default');
-
+    const [userInfo,setUserInfo] = React.useState(undefined);
     function getStyleClass(rate) {
         if (rate >= 0 && rate < 0.5) {
             return cl.group_0_5_star;
@@ -43,11 +47,11 @@ const ModelPage = () => {
                 try {
                     const response = await CatalogAPI.getModel(id);
 
+                    console.log(response.status);
                     if (response.ok) {
                         const resModel = await response.json();
                         if (isMounted) {
                             setModelInfo(resModel.data);
-                            setStyleType(getStyleClass(resModel.data.rating));
                         }
                         setModelPicture(URL.createObjectURL(await (await CatalogAPI.getModelPicture(resModel.data.picturesIDs[0])).blob()));
                     }
@@ -56,6 +60,18 @@ const ModelPage = () => {
                     }
                 } catch (error) {
                     console.error('Помилка отримання моделі:', error);
+                }
+            }
+            if (userInfo === undefined) {
+                try {
+                    const response = await UserAPI.getSelfInfo();
+                    if (response.ok) {
+                        const resModel = await response.json();
+                        console.log(resModel);
+                    }
+                }
+                catch (error) {
+                    console.error('Помилка отримання інформації про користувача:', error);
                 }
             }
         };
@@ -144,11 +160,14 @@ const ModelPage = () => {
                         <div className={cl.keywords_group} style={{ maxWidth: '550px' }}>
                             {modelInfo?.keywords.map((keyword, index) => (
                                 <button className={cl.keywords_buttons}
+                            {modelInfo?.keywords?.map((keyword, index) => (
+                                <button class={cl.keywords_buttons} 
                                     key={index}>{keyword}</button>
                             ))}
                         </div>
                         <div className={cl.categories_group}>
                             {modelInfo?.categories.map((category, index) => (
+                            {modelInfo?.categories?.map((category, index) => (
                                 <button className={cl.categories_buttons} key={index}>
                                     {category.name}
                                 </button>
