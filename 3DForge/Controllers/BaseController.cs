@@ -53,6 +53,18 @@ namespace Backend3DForge.Controllers
 			}
 		}
 
+        protected void OkVoid(object value)
+        {
+            Response.StatusCode = 200;
+            if (value is not null)
+            {
+                Response.ContentType = "application/json";
+                var str = JsonSerializer.Serialize(value);
+                var bytes = Encoding.UTF8.GetBytes(str);
+                Response.BodyWriter.Write(bytes);
+            }
+        }
+
         public BaseController(DbApp db)
 		{
 			DB = db;
