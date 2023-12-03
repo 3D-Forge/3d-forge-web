@@ -14,12 +14,12 @@ namespace Backend3DForge.Responses
 			[Key]
 			public int Id { get; set; }
 			[Required]
-			public OrderedModelResponse.OrderedModel[] OrderedModelIDs { get; set; }
+			public OrderedModelResponse.View[] OrderedModelIDs { get; set; }
 
 			public Cart(Models.Cart cart)
 			{
 				Id = cart.Id;
-				OrderedModelIDs = cart.OrderedModels.Select(x => new OrderedModelResponse.OrderedModel(x)).ToArray();
+				OrderedModelIDs = cart.OrderedModels.Select(x => new OrderedModelResponse.View(x)).ToArray();
 			}
 		}
 	}

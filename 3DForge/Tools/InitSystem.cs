@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Packaging;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Backend3DForge.Tools
@@ -192,7 +193,15 @@ namespace Backend3DForge.Tools
                 }
             );
 
-        }
+            InitializeTableWithData<OrderStatus, string>(
+                dbContext: db,
+                dataKey: "orderedStatuses",
+                getEntityDbSet: (db) => db.OrderStatuses,
+                createNewEntity: (record, index) => new(record),
+				validate: (existingEntity, entity) => false
+				);
+
+		}
 
         /// <summary>
         /// Initializes a database table with data based on provided configuration.

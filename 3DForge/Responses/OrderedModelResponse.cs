@@ -4,12 +4,13 @@
 	{
 		public OrderedModelResponse(Models.OrderedModel model) : base(true, null, null)
 		{
-			Data = new OrderedModel(model);
+			Data = new View(model);
 		}
 
-		public class OrderedModel
+		public class View
 		{
 			public int Id { get; set; }
+			public int? CatalogModelId { get; set; }
 			public string PrintExtensionName { get; set; }
 			public double PricePerPiece { get; set; }
 			public int Pieces { get; set; }
@@ -25,9 +26,10 @@
 
 			public double TotalPrice => PricePerPiece * Pieces;
 
-			public OrderedModel(Models.OrderedModel model)
+			public View(Models.OrderedModel model)
 			{
 				Id = model.Id;
+				CatalogModelId = model.CatalogModelId;
 				PrintExtensionName = model.PrintExtensionName;
 				PricePerPiece = model.PricePerPiece;
 				Pieces = model.Pieces;

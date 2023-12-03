@@ -14,7 +14,7 @@ namespace Backend3DForge.Responses
             Data = orders.Select(p => new View(p));
         }
 
-        class View
+        public class View
         {
             public int Id { get; set; }
             public DateTime CreatedAt { get; set; }
@@ -29,14 +29,15 @@ namespace Backend3DForge.Responses
             public string? Street { get; set; }
             public string? House { get; set; }
             public string? Apartment { get; set; }
-            public string? DepartmentNumber { get; set; }
-            public string? DeliveryType { get; set; }
+            public int? DepartmentNumber { get; set; }
+			public int? PostMachineNumber { get; set; }
+			public string? DeliveryType { get; set; }
             public string? BillOfLading { get; set; }
 
             public OrderStatusResponse.View? CurrentStatus { get; set; }
             public double TotalPrice => Models.Sum(p => p.TotalPrice);
 
-            public IEnumerable<OrderedModelResponse.OrderedModel> Models { get; set; }
+            public IEnumerable<OrderedModelResponse.View> Models { get; set; }
             public IEnumerable<OrderStatusResponse.View> OrderStatus { get; set; }
 
             public View(Order order)
@@ -54,10 +55,11 @@ namespace Backend3DForge.Responses
                 House = order.House;
                 Apartment = order.Apartment;
                 DepartmentNumber = order.DepartmentNumber;
-                DeliveryType = order.DeliveryType;
+				PostMachineNumber = order.PostMachineNumber;
+				DeliveryType = order.DeliveryType;
                 BillOfLading = order.BillOfLading;
 
-                Models = order.OrderedModels.Select(p => new OrderedModelResponse.OrderedModel(p));
+                Models = order.OrderedModels.Select(p => new OrderedModelResponse.View(p));
                 OrderStatus = order.OrderStatusOrders.Select(p => new OrderStatusResponse.View(p));
 
                 CurrentStatus = OrderStatus.OrderByDescending(p => p.CreatedAt).FirstOrDefault();

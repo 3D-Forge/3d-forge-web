@@ -102,6 +102,7 @@ namespace Backend3DForge
 			modelBuilder.Entity<PrintMaterial>()
 				.HasKey(p => p.Name)
 				.HasName("PK_PrintMaterial");
+
             modelBuilder.Entity<OrderStatus>()
 				.HasKey(p => p.Name)
 				.HasName("PK_OrderStatus");

@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Backend3DForge.Models;
+﻿using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.FileStorage;
@@ -10,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend3DForge.Controllers
 {
-
 	[ApiController]
 	[Route("api/cart")]
 	public class CartController : BaseController
@@ -39,7 +37,7 @@ namespace Backend3DForge.Controllers
 
 			if (cart is null)
 			{
-				return Ok(new BaseResponse.SuccessResponse("No items in the cart", new OrderedModelResponse.OrderedModel[] { }));
+				return Ok(new BaseResponse.SuccessResponse("No items in the cart", new OrderedModelResponse.View[] { }));
 			}
 
 			return Ok(new CartResponse(cart));
@@ -84,10 +82,8 @@ namespace Backend3DForge.Controllers
 
 				try
 				{
-					using (var fs = addRequest.File.OpenReadStream())
-					{
-						printParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(addRequest.File.FileName).Replace(".", ""));
-					}
+					using var fs = addRequest.File.OpenReadStream();
+					printParameters = modelCalculator.CalculateSurfaceArea(fs, Path.GetExtension(addRequest.File.FileName).Replace(".", ""));
 				}
 				catch (Exception ex)
 				{
@@ -133,7 +129,7 @@ namespace Backend3DForge.Controllers
 
 			if (cart is null)
 			{
-				cart = new Models.Cart()
+				cart = new Cart()
 				{
 					CreatedAt = DateTime.UtcNow,
 					UserId = AuthorizedUser.Id
@@ -142,7 +138,7 @@ namespace Backend3DForge.Controllers
 				await DB.SaveChangesAsync();
 			}
 
-			var orderedModel = new Models.OrderedModel()
+			var orderedModel = new OrderedModel()
 			{
 				CartId = cart.Id,
 				CatalogModelId = catalogModel is null ? null : catalogModel.Id,
@@ -167,7 +163,7 @@ namespace Backend3DForge.Controllers
 			{
 				Task.WaitAll(new[]
 				{
-					this.fileStorage.UploadPrintFile(orderedModel, addRequest.File.OpenReadStream())
+					fileStorage.UploadPrintFile(orderedModel, addRequest.File.OpenReadStream())
 				});
 			}
 
