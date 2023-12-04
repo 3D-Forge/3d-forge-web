@@ -47,7 +47,7 @@ const AdminPage = () => {
                             <p className={cl.model_Owner}> {model.owner}</p>
                             <p className={cl.model_Name}> {model.name}</p>
                             <p className={cl.model_Depth}> {model.depth}₴</p>
-                            <p className={cl.model_Uploaded}> {model.uploaded}</p>
+                            <p className={cl.model_Uploaded}> {model.uploaded.replace(/T.*/, "T")}</p>
                         </div>
                     ))}
                 </div>
