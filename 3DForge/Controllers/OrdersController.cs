@@ -212,6 +212,18 @@ namespace Backend3DForge.Controllers
 
             await DB.SaveChangesAsync();
 
+            // update cart`s ordered models
+            var orderedModels = await DB.OrderedModels
+                .Include(p => p.Cart)
+                .Where(p => p.CartId == cart.Id && p.OrderId != null)
+                .ToArrayAsync();
+
+            foreach (var orderedModel in orderedModels)
+            {
+                orderedModel.OrderId = order.Id;
+            }
+            await DB.SaveChangesAsync();
+
             return Ok(new OrderStatusOrderResponse(orderStatusOrder));
         }
 

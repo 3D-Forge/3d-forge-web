@@ -31,9 +31,9 @@ namespace Backend3DForge
 		public DbSet<CatalogModelFeedback> CatalogModelFeedbacks { get; set; }
 		public DbSet<BannedWord> BannedWords { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Post>()
+            modelBuilder.Entity<Post>()
 				.HasOne(p => p.User)
 				.WithMany()
 				.HasForeignKey(p => p.UserId)
@@ -65,6 +65,12 @@ namespace Backend3DForge
 				.HasForeignKey(o => o.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<User>()
+				.HasMany(u => u.Orders)
+				.WithOne(o => o.User)
+				.HasForeignKey(o => o.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Keyword>()
 				.HasKey(p => p.Name)
 				.HasName("PK_Keyword");
@@ -89,7 +95,19 @@ namespace Backend3DForge
 				.HasForeignKey(o => o.CatalogModelId)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<CatalogModel>()
+            modelBuilder.Entity<OrderedModel>()
+				.HasOne(o => o.Order)
+				.WithMany(o => o.OrderedModels)
+				.HasForeignKey(o => o.OrderId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Order>()
+				.HasMany(o => o.OrderedModels)
+				.WithOne(o => o.Order)
+				.HasForeignKey(o => o.OrderId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CatalogModel>()
 				.HasMany(cm => cm.Pictures)
 				.WithOne(mp => mp.CatalogModel)
 				.HasForeignKey(mp => mp.CatalogModelId)
