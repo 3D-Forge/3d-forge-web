@@ -38,7 +38,7 @@ const AccountPageLayout = () => {
         if (isAuthorized) {
             return (
                 <>
-                    <img className={cl.shop} alt="shop" />
+                    <img className={cl.shop} alt="shop" onClick={() => { navigate("/cart") }} />
                     {!userAvatar ?
                         <div className={cl.loading_avatar}>
                             <LoadingAnimation size="30px" loadingCurveWidth="6px" />

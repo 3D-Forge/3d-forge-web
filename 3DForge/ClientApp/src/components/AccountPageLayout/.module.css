@@ -148,6 +148,7 @@
     transform: translateY(-50%);
     max-width: 40px;
     content: url(./img/shop.png);
+    cursor: pointer;
 }
 
 .avatar {

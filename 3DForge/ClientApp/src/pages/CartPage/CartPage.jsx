@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import cl from "./.module.css";
-import { CartAPI } from "../../services/api/CartController";
+import { CartAPI } from "../../services/api/CartAPI";
 import { CatologAPI } from "../../services/api/CatalogAPI";
 const CartPage = () => {
     const [modelsInfo, setModelsInfo] = React.useState(undefined);
@@ -29,7 +29,7 @@ const CartPage = () => {
                     console.log(modelsInfo);
 
                     // Initialize quantities state for each model
-                    const initialQuantities = resModel.data.reduce((acc, model) => {
+                    const initialQuantities = resModel.data.orderedModelIDs.reduce((acc, model) => {
                         acc[model.id] = 1;
                         return acc;
                     }, {});
@@ -112,6 +112,7 @@ const CartPage = () => {
                                 type="number"
                                 id={`quantity-${model.data.id}`}
                                 name={`quantity-${model.data.id}`}
+                                defaultValue={1}
                                 value={quantities[model.data.id]}
                                 min="1"
                                 onChange={(event) => handleInputChange(event, model.data.id)}
