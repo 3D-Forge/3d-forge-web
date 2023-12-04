@@ -247,6 +247,7 @@ namespace Backend3DForge.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost]
+        [RequestSizeLimit(1024 * 1024 * 50 * 4)]
         public async Task<IActionResult> AddNewModel([FromForm] Publish3DModelRequest request, [FromForm] IFormFileCollection files)
         {
             if (files.Count == 0)
