@@ -28,7 +28,7 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
-		[HttpGet]
+		[HttpGet("getItems")]
 		public async Task<IActionResult> GetItems()
 		{
 			var cart = await DB.Carts

@@ -7,8 +7,9 @@ namespace Backend3DForge
 	{
 		public DbApp(DbContextOptions<DbApp> options) : base(options)
 		{
-			Database.EnsureCreated();
-			Tools.InitSystem.Init(this);
+            Database.EnsureCreated();
+            //Database.EnsureDeleted();
+            Tools.InitSystem.Init(this);
 		}
 
 		public DbSet<User> Users { get; set; }

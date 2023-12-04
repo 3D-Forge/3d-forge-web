@@ -1,20 +1,32 @@
 ﻿import React from "react";
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import cl from "./.module.css";
+import { CartAPI } from "../../services/api/CartController";
+import { CatologAPI } from "../../services/api/CatalogAPI";
 const CartPage = () => {
     const [modelsInfo, setModelsInfo] = React.useState(undefined);
     const [quantities, setQuantities] = React.useState({});
+    const [selectedModels, setSelectedModels] = React.useState([]);
 
     React.useEffect(() => {
         let isMounted = true;
         const fetchData = async () => {
             try {
-                const response = await CatalogAPI.GetUnacceptedModels();
+                const response = await CartAPI.getItems();
                 console.log(response.status);
                 if (response.ok) {
                     const resModel = await response.json();
-                    console.log(resModel);
-                    setModelsInfo(resModel.data);
+                    console.log(resModel.data);
+                    let Models = [];
+                    for (let i = 0; i < resModel.data.orderedModelIDs.length; i++) {
+                        const modelResponse = await CatalogAPI.getModel(
+                            resModel.data.orderedModelIDs[i].id);
+                        Models[i] = await modelResponse.json();
+                        //console.log(modelResponse.json())
+                    }
+                    console.log(Models);
+                    setModelsInfo(Models);
+                    console.log(modelsInfo);
 
                     // Initialize quantities state for each model
                     const initialQuantities = resModel.data.reduce((acc, model) => {
@@ -52,7 +64,25 @@ const CartPage = () => {
             [modelId]: direction === 'up' ? prevQuantities[modelId] + 1 : Math.max(prevQuantities[modelId] - 1, 1),
         }));
     };
-
+    const handleCheckboxChange = (modelId) => {
+        setSelectedModels((prevSelected) => {
+            if (prevSelected.includes(modelId)) {
+                return prevSelected.filter((id) => id !== modelId);
+            } else {
+                return [...prevSelected, modelId];
+            }
+        });
+    };
+    const calculateTotalPrice = () => {
+        let sum = 0;
+        modelsInfo?.map((model) => {
+            sum += model.data.depth * quantities[model.data.id];
+        });
+        return sum;
+    };
+    const info = (model) => {
+        console.log(model);
+    }
     function RenderCatalogSection() {
         if (Array.isArray(modelsInfo)) {
             return (
@@ -62,21 +92,31 @@ const CartPage = () => {
                         <p className={cl.Depth}>Ціна</p>
                         <p className={cl.Count}>Кількість</p>
                         <p className={cl.Sum}>Загалом</p></div>
-                    {modelsInfo.map((model) => (
-                        <div key={model.id} className={cl.model_item}>
-                            <input className={cl.checkbox} type="checkbox" name="verification"></input>
-                            <img className={cl.model_image} src={`/api/catalog/model/picture/${model.picturesIDs[0]}`}></img>
-                            <p className={cl.model_Name}> {model.name}</p>
-                            <p className={cl.model_Depth}> {model.depth}₴</p>
-                            <input className={cl.count_input}
-                                type="number"
-                                id={`quantity-${model.id}`}
-                                name={`quantity-${model.id}`}
-                                value={quantities[model.id]}
-                                min="1"
-                                onChange={(event) => handleInputChange(event, model.id)}
+                    {modelsInfo?.map((model) => (
+                        
+                        <div key={model.data.id} className={cl.model_item}>
+                            {model && model.data.picturesIDs && model.data.picturesIDs.length > 0 && (
+                                <img className={cl.model_image} src={`/api/catalog/model/picture/${model.data.picturesIDs[0]}`} alt={`Model ${model.name}`} />
+                            )}
+                            <input
+                                className={cl.checkbox}
+                                type="checkbox"
+                                name="verification"
+                                checked={selectedModels.includes(model.data.id)}
+                                onChange={() => handleCheckboxChange(model.data.id)}
                             />
-                            <p className={cl.model_Sum}> {model.depth * quantities[model.id]}₴</p>
+                            <p className={cl.model_Name}> {model.data.name}</p>
+                            <p className={cl.model_Depth}> {model.data.depth}₴</p>
+                            <input
+                                className={cl.count_input}
+                                type="number"
+                                id={`quantity-${model.data.id}`}
+                                name={`quantity-${model.data.id}`}
+                                value={quantities[model.data.id]}
+                                min="1"
+                                onChange={(event) => handleInputChange(event, model.data.id)}
+                            />
+                            <p className={cl.model_Sum}> {model.data.depth * quantities[model.data.id]}₴</p>
                         </div>
                     ))}
                 </div>
@@ -90,12 +130,19 @@ const CartPage = () => {
     return (
         <div>
             <div>{RenderCatalogSection()}</div>
-            <button>Повернутися до каталогу</button>
+            <button className={cl.back_button}>{'<'}Повернутися до каталогу</button>
             <div class={cl.order_group}>
-                <div>За моделі</div>
-                <div>За доставку</div>
-                <div>Загалом</div>
-                <button>Замовити</button>
+                <div>За моделі: {calculateTotalPrice()}₴</div>
+                <div>За доставку: 150₴</div>
+                <br></br>
+                <div>Загалом: {calculateTotalPrice() + 150}₴</div>
+                <br></br>
+                <br></br>
+                <div className={cl.buy_model_button}>
+                    <img className={cl.buy_model_button_img} alt="buy model" />
+                    <span className={cl.buy_model_button_text}>Придбати</span>
+                </div>
+                <br></br>
             </div>
         </div>
     );

@@ -55,7 +55,6 @@
     position: relative;
     left: 30%;
     width: 50px; /* Опціонально: встановіть ширину поля вводу */
-    border: 1px solid #ccc; /* Опціонально: додайте рамку для вигляду меж */
     border-radius: 5px; /* Опціонально: закруглення кутів */
     overflow: hidden; /* Щоб обрізати стрілки, які виходять за межі */
     /* Приховати стандартний стиль фону та стрілочок */
@@ -67,15 +66,6 @@
     color: white;
 }
 
-    .count_input::after {
-        content: '\25B2 \25BC'; /* Unicode символи стрілок вгору та вниз */
-        position: absolute;
-        right: 5px; /* Опціонально: відстань від правого краю */
-        top: 50%; /* Вирівняти вертикально в центрі */
-        transform: translateY(-50%); /* Коригування для точного вирівнювання по центру */
-        font-size: 10px; /* Опціонально: розмір шрифту стрілок */
-        pointer-events: none; /* Запобігає взаємодії з стрілками, зберігаючи можливість вводу в поле */
-    }
 .model_Name {
     max-width: 100%;
     width: 30%;
@@ -96,4 +86,49 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.back_button {
+    padding: 10px 20px; /* Увеличьте отступы, чтобы увеличить размер кнопки */
+    background: none; /* Убирает фон кнопки */
+    border: none; /* Убирает границу кнопки, если она есть */
+    cursor: pointer; /* Делает курсор указателя при наведении, чтобы подчеркнуть интерактивность */
+    font-size: 35px;
+    letter-spacing: 1px;
+    color: white;
+    position:relative;
+    left:10%;
+    top:8vh;
+}
+.order_group {
+    font-size: 35px;
+    letter-spacing: 1px;
+    color: white;
+    position: relative;
+    left: 70%;
+}
+
+.buy_model_button {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    width:15%;
+    height:50px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    background-color: goldenrod;
+}
+
+    .buy_model_button:hover {
+        box-shadow: 0px 0px 4px 2px rgb(0, 0, 0);
+    }
+
+.buy_model_button_img {
+    content: url(./img/buy.png);
+}
+
+.buy_model_button_text {
+    margin-left: 5%;
+    font-size: 24px;
 }
