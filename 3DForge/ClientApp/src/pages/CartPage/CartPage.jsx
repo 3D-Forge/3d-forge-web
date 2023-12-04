@@ -76,8 +76,7 @@ const CartPage = () => {
                                 min="1"
                                 onChange={(event) => handleInputChange(event, model.id)}
                             />
-                            <button onClick={() => handleArrowClick('up', model.id)}>Up</button>
-                            <button onClick={() => handleArrowClick('down', model.id)}>Down</button>
+                            <p className={cl.model_Sum}> {model.depth * quantities[model.id]}₴</p>
                         </div>
                     ))}
                 </div>

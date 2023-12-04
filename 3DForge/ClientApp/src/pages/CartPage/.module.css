@@ -20,15 +20,15 @@
 }
 .Depth {
     position: relative;
-    left: 30%;
+    left: 50%;
 }
 .Count {
     position: relative;
-    left: 60%;
+    left: 58%;
 }
 .Sum {
     position: relative;
-    left: 70%;
+    left: 60%;
 }
 .model_item {
     position: relative;
@@ -39,10 +39,13 @@
     color: white;
 }
 .checkbox {
-    width: 20px; /* задайте ширину чекбоксу */
-    height: 20px; /* задайте висоту чекбоксу */
+    width: 30px; /* задайте ширину чекбоксу */
+    height: 30px; /* задайте висоту чекбоксу */
     position: relative;
-    top: 50%;
+    top: 80px;
+    display: flex;
+    border: 1px solid; /* Замініть #your_color на бажаний колір */
+    border-radius: 5px; /* Закругление углов, значение можно настроить по вашему желанию */
 }
 .model_image {
     width: 160px; /* задайте ширину чекбоксу */
@@ -50,6 +53,7 @@
 }
 .count_input {
     position: relative;
+    left: 30%;
     width: 50px; /* Опціонально: встановіть ширину поля вводу */
     border: 1px solid #ccc; /* Опціонально: додайте рамку для вигляду меж */
     border-radius: 5px; /* Опціонально: закруглення кутів */
@@ -73,10 +77,23 @@
         pointer-events: none; /* Запобігає взаємодії з стрілками, зберігаючи можливість вводу в поле */
     }
 .model_Name {
-    max-width:100%;
-    width :30%;
+    max-width: 100%;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .model_Depth {
     position: relative;
-    left: 50%;
+    left: 17%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.model_Sum {
+    position: relative;
+    left: 38%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
