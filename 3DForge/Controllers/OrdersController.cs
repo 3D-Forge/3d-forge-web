@@ -48,36 +48,6 @@ namespace Backend3DForge.Controllers
         }
 
 		[Authorize]
-		[HttpGet("ordersHistory")]
-		public async Task<IActionResult> GetOrdersHistory()
-		{
-			var orderStatusOrders = await DB.OrderStatusOrders
-				.Include(p => p.Order)
-                .Include(p => p.Order.User)
-				.Where(p => p.Order.UserId == AuthorizedUserId)
-				.ToArrayAsync();
-
-			return Ok(new OrderStatusOrderResponse(orderStatusOrders));
-		}
-
-		[Authorize]
-		[HttpGet("ordersHistory/{id}")]
-		public async Task<IActionResult> GetOrdersHistory(int id)
-		{
-			var orderStatusOrder = await DB.OrderStatusOrders
-				.Include(p => p.Order)
-                .Include(p => p.Order.User)
-				.FirstOrDefaultAsync(p => p.Id == id && p.Order.UserId == AuthorizedUserId);
-
-			if (orderStatusOrder is null)
-			{
-				return NotFound(new BaseResponse.ErrorResponse("Selected order status order does not found."));
-			}
-
-			return Ok(new OrderStatusOrderResponse(orderStatusOrder));
-		}
-
-		[Authorize]
         [HttpPost("change")]
         public async Task<IActionResult> ChangeProperties([FromBody] ChangeOrderedModelRequest request)
         {
