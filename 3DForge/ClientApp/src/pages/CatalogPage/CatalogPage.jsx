@@ -4,11 +4,11 @@ import { CatalogAPI } from '../../services/api/CatalogAPI';
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 import sortAcsImg from './img/sort-by-asc.png';
 import sortDecsImg from './img/sort-by-desc.png';
-import { useNavigate } from "react-router-dom";
+import { UserAPI } from "../../services/api/UserAPI";
+import UploadModelWindow from "../../components/UploadModelWindow/UploadModelWindow";
 
 const CatalogPage = () => {
-
-    const navigate = useNavigate();
+    const [isAuthorized, setAuthStatus] = React.useState(null);
 
     const [modelList, setModelList] = React.useState(undefined);
     const [categoryList, setCategoryList] = React.useState(undefined);
@@ -21,6 +21,7 @@ const CatalogPage = () => {
     const [isCategoryListVisible, setCategoryListVisibility] = React.useState(true);
     const [isAuthorListVisible, setAuthorListVisibility] = React.useState(true);
     const [isRatingListVisible, setRatingListVisibility] = React.useState(true);
+    const [isUploadModelMenuVisible, setUploadModelMenuVisibility] = React.useState(false);
 
     const [categorySearch, setCategorySearch] = React.useState('');
     const [sortMode, setSortMode] = React.useState({ value: 'name', asc: true });
@@ -30,13 +31,22 @@ const CatalogPage = () => {
 
     const [modelListPageInfo, setModelListPageInfo] = React.useState({ count: undefined, current: 1 });
 
-    const [isUploadModelMenuVisible, setUploadModelMenuVisibility] = React.useState(false);
-
     const minPriceInputRef = React.useRef();
     const maxPriceInputRef = React.useRef();
     const modelSearchInputRef = React.useRef();
     const authorSearchInputRef = React.useRef();
     const allAuthorsRadioRef = React.useRef();
+
+    function CheckAuthStatus() {
+        UserAPI.check().then(res => {
+            if (res.status === 200) {
+                setAuthStatus(true);
+            }
+            else {
+                setAuthStatus(false);
+            }
+        });
+    }
 
     async function LoadModelList(
         sortParameter = sortMode.value,
@@ -256,20 +266,6 @@ const CatalogPage = () => {
         return result;
     }
 
-    function RenderUploadModelMenu() {
-        if (!isUploadModelMenuVisible) {
-            return;
-        }
-
-        return (
-            <div className={cl.model_upload_window_background}>
-                <div className={cl.model_upload_window}>
-
-                </div>
-            </div>
-        );
-    }
-
     function RenderPageNavigator() {
         if (modelListPageInfo.count <= 1) {
             return;
@@ -386,6 +382,10 @@ const CatalogPage = () => {
     }
 
     React.useEffect(() => {
+        if (isAuthorized === null) {
+            CheckAuthStatus();
+        }
+
         if (modelList === undefined) {
             LoadModelList(sortMode.value, true);
         }
@@ -443,7 +443,11 @@ const CatalogPage = () => {
                                 defaultValue={0}
                                 ref={minPriceInputRef}
                                 onChange={() => LoadModelList()} />
-                            <input className={cl.price_filter_max} type="number" defaultValue={10000} ref={maxPriceInputRef} />
+                            <input className={cl.price_filter_max}
+                                type="number"
+                                defaultValue={10000}
+                                ref={maxPriceInputRef}
+                                onChange={() => LoadModelList()} />
                         </div>
                     </div>
                     <div className={`${cl.filter} ${cl.category_filter} ${isCategoryListVisible ? '' : cl.closed_filter}`}>
@@ -563,10 +567,21 @@ const CatalogPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className={cl.add_model_button} onClick={() => setUploadModelMenuVisibility(true)}>
-                            <img className={cl.add_model_button_img} alt="add model" />
-                            <span className={cl.add_model_button_text}>Додати модель</span>
-                        </div>
+                        {isAuthorized !== null ?
+                            <div className={cl.add_model_button}
+                                style={{
+                                    opacity: isAuthorized === false ? '0.3' : '1',
+                                    pointerEvents: isAuthorized === false ? 'none' : 'all'
+                                }}
+                                onClick={() => setUploadModelMenuVisibility(true)}>
+                                <img className={cl.add_model_button_img} alt="add model" />
+                                <span className={cl.add_model_button_text}>Додати модель</span>
+                            </div>
+                            :
+                            <div className={cl.add_model_button_loading}>
+                                <LoadingAnimation size="40px" loadingCurveWidth="8px" />
+                            </div>
+                        }
                     </div>
                     {isModelListLoading ?
                         <div className={cl.model_list_is_unloaded}>
@@ -586,7 +601,13 @@ const CatalogPage = () => {
                     }
                 </div>
             </div>
-            {RenderUploadModelMenu()}
+            <UploadModelWindow
+                visible={isUploadModelMenuVisible}
+                onUpload={() => {
+                    setUploadModelMenuVisibility(false);
+                    alert('Your model is uploaded!');
+                }}
+                onClose={() => setUploadModelMenuVisibility(false)} />
         </div>
     );
 }

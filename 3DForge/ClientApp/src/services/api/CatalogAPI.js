@@ -4,6 +4,11 @@ export class CatalogAPI {
         return await BaseAPI.get('catalog/categories');
     }
 
+    static async searchKeywords(query) {
+        const q = `?q=${query}`;
+        return await BaseAPI.get(`catalog/keywords${q}`);
+    }
+
     static async getAuthors(query, pageNumber = 1, pageSize = 10) {
         const p = pageNumber ? `?page=${pageNumber}` : '?page=1';
         const ps = pageSize ? `&page_size=${pageSize}` : '&page_size=10';
@@ -45,6 +50,10 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/search${p}${ps}${q}${minP}${maxP}${sp}${sd}${a}${cl}${rl}`);
     }
 
+    static async addNewModel(formData) {
+        return await BaseAPI.post(`catalog`, formData);
+    }
+
     static async getModel(id) {
         return await BaseAPI.get(`catalog/${id}`);
     }
@@ -52,6 +61,7 @@ export class CatalogAPI {
     static async getModelPicture(id) {
         return await BaseAPI.get(`catalog/model/picture/${id}`);
     }
+
     static async GetUnacceptedModels() {
         return await BaseAPI.get('catalog/unaccepted');
     }
