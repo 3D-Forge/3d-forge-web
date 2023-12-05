@@ -6,6 +6,7 @@ const AdminPage = () => {
     const [currentSection, setCurrentSection] = React.useState(undefined);
     const [modelsInfo, setModelsInfo] = React.useState(undefined);
     React.useEffect(() => {
+        
         let isMounted = true;
         const fetchData = async () => {
             try {
@@ -15,7 +16,6 @@ const AdminPage = () => {
                     const resModel = await response.json();
                     console.log(resModel);
                     setModelsInfo(resModel.data);
-                
                 }
                 else {
                     console.error('Помилка отримання моделі:', response.statusText);
@@ -23,10 +23,10 @@ const AdminPage = () => {
             } catch (error) {
                 console.error('Помилка отримання моделі:', error);
             }
-
         };
-
-        fetchData();
+        if (modelsInfo === undefined) {
+            fetchData();
+        }
 
         return () => {
             isMounted = false;
