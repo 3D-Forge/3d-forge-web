@@ -2,8 +2,8 @@ import React from "react";
 import cl from './.module.css';
 import { CatalogAPI } from '../../services/api/CatalogAPI';
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
-import sortAcsImg from './img/sort-by-asc.png';
-import sortDecsImg from './img/sort-by-desc.png';
+import sortAscImg from './img/sort-by-asc.png';
+import sortDescImg from './img/sort-by-desc.png';
 import { UserAPI } from "../../services/api/UserAPI";
 import UploadModelWindow from "../../components/UploadModelWindow/UploadModelWindow";
 
@@ -534,7 +534,7 @@ const CatalogPage = () => {
                                         LoadModelList(parameter, direction);
                                     }}>
                                     <img className={`${cl.sort_mode_img} ${cl.sort_by_name_img}`} alt="sort"
-                                        src={sortMode.value === 'name' && sortMode.asc === false ? sortDecsImg : sortAcsImg} />
+                                        src={sortMode.value === 'name' && sortMode.asc === false ? sortDescImg : sortAscImg} />
                                     <span className={`${cl.sort_mode_text} ${cl.sort_by_name_text}`}>НАЗВА</span>
                                 </div>
                             </div>
@@ -548,7 +548,7 @@ const CatalogPage = () => {
                                         LoadModelList(parameter, direction);
                                     }}>
                                     <img className={`${cl.sort_mode_img} ${cl.sort_by_price_img}`} alt="sort"
-                                        src={sortMode.value === 'price' && sortMode.asc === false ? sortDecsImg : sortAcsImg} />
+                                        src={sortMode.value === 'price' && sortMode.asc === false ? sortDescImg : sortAscImg} />
                                     <span className={`${cl.sort_mode_text} ${cl.sort_by_price_text}`}>ЦІНА</span>
                                 </div>
                             </div>
@@ -562,7 +562,7 @@ const CatalogPage = () => {
                                         LoadModelList(parameter, direction);
                                     }}>
                                     <img className={`${cl.sort_mode_img} ${cl.sort_by_rating_img}`} alt="sort"
-                                        src={sortMode.value === 'rating' && sortMode.asc === false ? sortDecsImg : sortAcsImg} />
+                                        src={sortMode.value === 'rating' && sortMode.asc === false ? sortDescImg : sortAscImg} />
                                     <span className={`${cl.sort_mode_text} ${cl.sort_by_rating_text}`}>ОЦІНКА</span>
                                 </div>
                             </div>

@@ -1,4 +1,5 @@
-﻿using Backend3DForge.Attributes;
+﻿using Azure.Core;
+using Backend3DForge.Attributes;
 using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NuGet.Packaging;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using CatalogModelResponse = Backend3DForge.Responses.CatalogModelResponse;
 
 namespace Backend3DForge.Controllers
@@ -509,24 +511,36 @@ namespace Backend3DForge.Controllers
         }
 
         [Authorize]
+        [CanModerateCatalog]
         [HttpGet("unaccepted")]
-        public async Task<IActionResult> GetUnacceptedModels()
+        public async Task<IActionResult> GetUnacceptedModels([FromQuery(Name = "sort_parameter")] string? sortParam, [FromQuery(Name = "sort_direction")] string? sortDir)
         {
-            if (!AuthorizedUser.CanModerateCatalog)
-            {
-                return StatusCode(403);
-            }
-
-            var models = await DB.CatalogModels
+            var query = DB.CatalogModels
                 .Include(p => p.User)
                 .Include(p => p.ModelCategoryes)
                 .Include(p => p.Keywords)
                 .Include(p => p.ModelExtension)
                 .Include(p => p.PrintExtension)
                 .Include(p => p.Pictures)
-                .Where(x => x.Publicized == null).ToListAsync();
+                .Where(x => x.Publicized == null);
 
-            return Ok(new CatalogModelResponse(models));
+            switch (sortParam)
+            {
+                case "login":
+                    query = sortDir == "asc" ? query.OrderBy(p => p.User.Login) : query.OrderByDescending(p => p.User.Login);
+                    break;
+                case "name":
+                    query = sortDir == "asc" ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
+                    break;
+                case "price":
+                    query = sortDir == "asc" ? query.OrderBy(p => p.MinPrice) : query.OrderByDescending(p => p.MinPrice);
+                    break;
+                case "date":
+                    query = sortDir == "asc" ? query.OrderBy(p => p.Uploaded) : query.OrderByDescending(p => p.Uploaded);
+                    break;
+            }
+
+            return Ok(new CatalogModelResponse(await query.ToListAsync()));
         }
 
         [Authorize]

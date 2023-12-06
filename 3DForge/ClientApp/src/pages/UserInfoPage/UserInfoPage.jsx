@@ -7,6 +7,16 @@ const UserInfoPage = () => {
     const [userAvatar, setUserAvatar] = React.useState(undefined);
     const [userInfo, setUserInfo] = React.useState(undefined);
 
+    function IsAdmin() {
+        return userInfo !== null &&
+            (
+                userInfo.canAdministrateSystem ||
+                userInfo.canModerateCatalog ||
+                userInfo.canAdministrateForum ||
+                userInfo.canRetrieveDelivery
+            );
+    }
+
     function GetCountryAndCity() {
         if (userInfo?.country && userInfo?.city) {
             return `${userInfo.country}, ${userInfo.city}`;
@@ -72,7 +82,7 @@ const UserInfoPage = () => {
                         }
                         <div className={cl.login_email_country_city}>
                             <p className={cl.login}>{userInfo?.login ?? '-'}</p>
-                            {userInfo.canAdministrateSystem
+                            {IsAdmin()
                                 ? <p className={cl.is_administrator}>Адміністратор</p>
                                 : <></>
                             }

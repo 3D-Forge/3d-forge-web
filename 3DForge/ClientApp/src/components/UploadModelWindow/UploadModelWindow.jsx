@@ -30,7 +30,7 @@ const useRefDimensions = (ref) => {
     return dimensions;
 }
 
-const ModelUploadWindow = ({ visible = false, onUpload = null, onClose = null }) => {
+const ModelUploadWindow = ({ visible = false, editingModelId = null, onUpload = null, onClose = null }) => {
     const [isTagListLoading, setTagListLoading] = React.useState(false);
     const [isModelUploading, setModelUploading] = React.useState(false);
 
@@ -277,9 +277,14 @@ const ModelUploadWindow = ({ visible = false, onUpload = null, onClose = null })
                     alt="cancel"
                     onClick={onClose} />
                 <div className={cl.model_upload_window_top}>
-                    <h2 className={cl.model_upload_window_header}>Додати модель</h2>
+                    <h2 className={cl.model_upload_window_header}>
+                        {editingModelId === null ? "Додати модель" : "Зміна інформації моделі"}
+                    </h2>
                     <p className={cl.model_upload_window_instruction}>
-                        Додайте інформацію про модель, необхідні файли, категорії та теги (необов’язково)
+                        {editingModelId === null ? 
+                            "Додайте інформацію про модель, необхідні файли, категорії та теги (необов’язково)"
+                            : "Змініть модель, ваш підпис, адресу, гроші, ще одного кота та пса, бхехе"
+                        }
                     </p>
                 </div>
                 <div className={cl.model_upload_window_panel}>
