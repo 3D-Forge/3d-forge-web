@@ -240,10 +240,9 @@ namespace Backend3DForge.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                return Ok(new BaseResponse.SuccessResponse(
-                    AuthorizedUser.CanAdministrateSystem ? "administrator" : null));
+                return Ok(new UserRightResponse(true, null, AuthorizedUser));
             }
-            return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized"));
+            return Unauthorized(new BaseResponse.ErrorResponse(null));
         }
 
         [HttpPost("{userLogin}/send-reset-password-permission")]

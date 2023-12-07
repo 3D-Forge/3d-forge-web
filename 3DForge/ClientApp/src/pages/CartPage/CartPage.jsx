@@ -113,7 +113,7 @@ const CartPage = () => {
                                 id={`quantity-${model.data.id}`}
                                 name={`quantity-${model.data.id}`}
                                 defaultValue={1}
-                                value={quantities[model.data.id]}
+                              
                                 min="1"
                                 onChange={(event) => handleInputChange(event, model.data.id)}
                             />
@@ -132,7 +132,7 @@ const CartPage = () => {
         <div>
             <div>{RenderCatalogSection()}</div>
             <button className={cl.back_button}>{'<'}Повернутися до каталогу</button>
-            <div class={cl.order_group}>
+            <div className={cl.order_group}>
                 <div>За моделі: {calculateTotalPrice()}₴</div>
                 <div>За доставку: 150₴</div>
                 <br></br>

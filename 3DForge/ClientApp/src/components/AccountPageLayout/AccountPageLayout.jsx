@@ -11,10 +11,20 @@ const AccountPageLayout = () => {
     const [isAuthorized, setAuthorizationState] = React.useState(false);
     const [isCheckingAuthState, setCheckingAuthState] = React.useState(true);
     const [isDropMenuVisible, setDropMenuVisibility] = React.useState(false);
-    const [canAdministrateSystem, setAdministrateSystemRight] = React.useState(false);
-    const [userAvatar, setUserAvatar] = React.useState(undefined);
+    const [userRights, setUserRights] = React.useState(null);
+    const [userAvatar, setUserAvatar] = React.useState(null);
 
     const dropMenuRef = React.useRef();
+
+    function IsAdmin() {
+        return userRights !== null &&
+            (
+                userRights.canAdministrateSystem ||
+                userRights.canModerateCatalog ||
+                userRights.canAdministrateForum ||
+                userRights.canRetrieveDelivery
+            );
+    }
 
     function LogoutRequest() {
         UserAPI.logout().then(() => {
@@ -56,7 +66,7 @@ const AccountPageLayout = () => {
                                     window.location.pathname = 'user/edit';
                                     setDropMenuVisibility(false);
                                 }}>Налаштування</p>
-                            {canAdministrateSystem ?
+                            {IsAdmin() ?
                                 <p className={`${cl.drop_list_element} ${cl.drop_list_element_admin}`}
                                     onClick={() => {
                                         window.location.pathname = 'admin';
@@ -91,28 +101,40 @@ const AccountPageLayout = () => {
     }
 
     React.useEffect(() => {
-        UserAPI.check().then(res => res.json()).then(json => {
-            if (json.success) {
-                setAuthorizationState(true);
-                setAdministrateSystemRight(json.message === "administrator" ? true : false);
-            }
+        if (isCheckingAuthState) {
+            UserAPI.check().then(res => res.json()).then(json => {
+                if (json.success) {
+                    setAuthorizationState(true);
+                    setUserRights(json.data);
+                }
 
-            const isCurrentPageAllowed =
-                window.location.pathname === '/'
-                || window.location.pathname.includes('/catalog');
+                const isCurrentPageAllowed =
+                    window.location.pathname === '/'
+                    || window.location.pathname.includes('/catalog');
 
-            if (!isCurrentPageAllowed && !json.success) {
-                window.history.back();
-            }
+                const isAdmin = json.success &&
+                    (
+                        json.data.canAdministrateSystem ||
+                        json.data.canModerateCatalog ||
+                        json.data.canAdministrateForum ||
+                        json.data.canRetrieveDelivery
+                    );
 
-            if (json.message !== "administrator" && window.location.pathname === '/admin') {
-                window.history.back();
-            }
+                if (!isCurrentPageAllowed && !json.success) {
+                    window.history.back();
+                }
+                if (
+                    (!isAdmin && window.location.pathname === '/admin') ||
+                    (!json?.data?.canModerateCatalog && window.location.pathname === '/admin/catalog')
+                ) {
+                    window.history.back();
+                }
 
-            setCheckingAuthState(false);
-        });
+                setCheckingAuthState(false);
+            });
+        }
 
-        if (userAvatar === undefined) {
+        if (userRights !== null && userAvatar === null) {
             UserAPI.getSelfAvatar()
                 .then(res => { return res.blob(); })
                 .then(blob => { setUserAvatar(URL.createObjectURL(blob)); });

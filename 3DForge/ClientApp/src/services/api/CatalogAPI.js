@@ -1,4 +1,5 @@
 import { BaseAPI } from "./BaseAPI";
+
 export class CatalogAPI {
     static async getCategories() {
         return await BaseAPI.get('catalog/categories');
@@ -62,7 +63,9 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/model/picture/${id}`);
     }
 
-    static async GetUnacceptedModels() {
-        return await BaseAPI.get('catalog/unaccepted');
+    static async getUnacceptedModels(sortParam, sortDir) {
+        const sp = sortParam ? `?sort_parameter=${sortParam}` : '?sort_parameter=login';
+        const sd = sortDir ? `&sort_direction=${sortDir}` : '&sort_direction=asc';
+        return await BaseAPI.get(`catalog/unaccepted${sp}${sd}`);
     }
 }

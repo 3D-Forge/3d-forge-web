@@ -1,70 +1,28 @@
 import React from "react";
 import cl from './.module.css';
-import { CatalogAPI } from "../../services/api/CatalogAPI";
+import { Outlet, useNavigate } from "react-router-dom";
+import { UserAPI } from "../../services/api/UserAPI";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+
 const AdminPage = () => {
+    const navigate = useNavigate();
 
-    const [currentSection, setCurrentSection] = React.useState(undefined);
-    const [modelsInfo, setModelsInfo] = React.useState(undefined);
+    const [userRights, setUserRights] = React.useState(null);
+
     React.useEffect(() => {
-        let isMounted = true;
-        const fetchData = async () => {
-            try {
-                const response = await CatalogAPI.GetUnacceptedModels();
-                console.log(response.status);
-                if (response.ok) {
-                    const resModel = await response.json();
-                    console.log(resModel);
-                    setModelsInfo(resModel.data);
-                
-                }
-                else {
-                    console.error('Помилка отримання моделі:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Помилка отримання моделі:', error);
-            }
-
-        };
-
-        fetchData();
-
-        return () => {
-            isMounted = false;
-        };
+        if (userRights === null) {
+            UserAPI.check()
+                .then(res => res.json())
+                .then(json => { setUserRights(json.data); });
+        }
     });
-    function RenderCatalogSection() {
-        if (Array.isArray(modelsInfo)) {
-            return (
-                <div className={cl.models_group}>
 
-                    <p className={cl.Owner}> Автор </p>
-                    <p className={cl.Name}> Модель </p>
-                    <p className={cl.Depth}>Ціна</p>
-                    <p className={cl.Uploaded}>Дата завантаження</p>
-                    {modelsInfo.map((model) => (
-                        <div key={model.id} className={cl.model_item}>
-                            {/* Render your content for each model */}
-                            <p className={cl.model_Owner}> {model.owner}</p>
-                            <p className={cl.model_Name}> {model.name}</p>
-                            <p className={cl.model_Depth}> {model.depth}₴</p>
-                            <p className={cl.model_Uploaded}> {model.uploaded.replace(/T.*/, "T")}</p>
-                        </div>
-                    ))}
-                </div>
-            );
-        } else {
-            // Handle the case where modelsInfo is not an array
-            return <p>modelsInfo is not an array.</p>;
-        }
-    }
-
-    function RenderSections() {
-        switch (currentSection) {
-            case "catalog":
-                return RenderCatalogSection();
-            default:
-                return;
-        }
+    if (userRights === null) {
+        return (
+            <div className={cl.page_loading}>
+                <LoadingAnimation size="100px" loadingCurveWidth="20px" />
+            </div>
+        )
     }
 
     return (
@@ -102,9 +60,19 @@ const AdminPage = () => {
                                 Модерація
                             </h2>
                         </div>
-                        <div className={`${cl.section} ${cl.section_catalog}`}>
-                            <span className={`${cl.section_name} ${cl.section_name_catalog}`}
-                                onClick={() => setCurrentSection("catalog")}>
+                        <div className={`
+                        ${cl.section} 
+                        ${cl.section_catalog} 
+                        ${window.location.pathname.includes('/admin/catalog') ? cl.selected_section : ''}
+                        ${!userRights.canModerateCatalog ? cl.disabled_section : ''}`}
+                            style={{ pointerEvents: !userRights.canModerateCatalog ? 'none' : 'all' }}>
+                            <span className={`
+                            ${cl.section_name} ${cl.section_name_catalog}`}
+                                onClick={() => {
+                                    if (userRights.canModerateCatalog) {
+                                        navigate('catalog');
+                                    }
+                                }}>
                                 Каталог
                             </span>
                         </div>
@@ -117,7 +85,7 @@ const AdminPage = () => {
                 </div>
                 <div className={cl.separating_line} />
                 <div className={cl.section_content}>
-                    {RenderSections()}
+                    <Outlet />
                 </div>
             </div>
         </div>
