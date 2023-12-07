@@ -5,6 +5,7 @@ using Backend3DForge.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 
 namespace Backend3DForge.Controllers
 {
@@ -47,7 +48,7 @@ namespace Backend3DForge.Controllers
             return Ok(new OrderResponse(order));
         }
 
-		[Authorize]
+        [Authorize]
         [HttpPost("change")]
         public async Task<IActionResult> ChangeProperties([FromBody] ChangeOrderedModelRequest request)
         {
@@ -101,11 +102,17 @@ namespace Backend3DForge.Controllers
         {
             var cart = await DB.Carts
                 .Include(p => p.User)
+                .Include(p => p.OrderedModels)
                 .FirstOrDefaultAsync(p => p.Id == request.CartId && p.UserId == AuthorizedUserId);
 
             if (cart is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Selected cart does not found."));
+            }
+
+            if (cart.OrderedModels.Count == 0)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Cart is empty."));
             }
 
             if (request.Country is null)
@@ -123,24 +130,24 @@ namespace Backend3DForge.Controllers
 
             var order = new Order();
             order.CreatedAt = DateTime.UtcNow;
-			order.UserId = AuthorizedUserId;
+            order.UserId = AuthorizedUserId;
             order.Firstname = request.Firstname;
             order.Midname = request.Midname;
             order.Lastname = request.Lastname;
-			order.Country = request.Country;
+            order.Country = request.Country;
             order.Region = request.Region;
             order.City = request.City;
 
             if (request.DepartmentNumber is not null)
             {
                 order.DeliveryType = "department";
-				order.DepartmentNumber = request.DepartmentNumber;
-			}
+                order.DepartmentNumber = request.DepartmentNumber;
+            }
             else if (request.PostMachineNumber is not null)
             {
                 order.DeliveryType = "postMachine";
                 order.PostMachineNumber = request.PostMachineNumber;
-			}
+            }
             else
             {
                 order.DeliveryType = "courier";
@@ -152,45 +159,40 @@ namespace Backend3DForge.Controllers
                 if (request.Street is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse("Street can't be null"));
-				}
-				if (request.House is null)
+                }
+                if (request.House is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse("House can't be null"));
-				}
-				if (request.Apartment is null)
+                }
+                if (request.Apartment is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse("Apartment can't be null"));
-				}
+                }
 
                 order.CityRegion = request.CityRegion;
                 order.Street = request.Street;
                 order.House = request.House;
                 order.Apartment = request.Apartment;
-			}
+            }
 
             var orderStatus = new OrderStatus("ordered");
 
-			order = (await DB.Orders.AddAsync(order)).Entity;
+            order = (await DB.Orders.AddAsync(order)).Entity;
 
-			await DB.SaveChangesAsync();
+            await DB.SaveChangesAsync();
 
-			var orderStatusOrder = new OrderStatusOrder();
-			orderStatusOrder.OrderId = order.Id;
+            var orderStatusOrder = new OrderStatusOrder();
+            orderStatusOrder.OrderId = order.Id;
             orderStatusOrder.OrderStatusName = orderStatus.Name;
 
             DB.OrderStatusOrders.Add(orderStatusOrder);
 
             await DB.SaveChangesAsync();
 
-            // update cart`s ordered models
-            var orderedModels = await DB.OrderedModels
-                .Include(p => p.Cart)
-                .Where(p => p.CartId == cart.Id && p.OrderId != null)
-                .ToArrayAsync();
-
-            foreach (var orderedModel in orderedModels)
+            foreach (var orderedModel in cart.OrderedModels)
             {
                 orderedModel.OrderId = order.Id;
+                orderedModel.CartId = null;
             }
             await DB.SaveChangesAsync();
 
@@ -199,14 +201,14 @@ namespace Backend3DForge.Controllers
 
         [Authorize]
         [CanRetrieveDelivery]
-		[HttpPost("orderStatus")]
-		public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest request)
+        [HttpPost("orderStatus")]
+        public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest request)
         {
             var orderStatusOrder = await DB.OrderStatusOrders
                 .Include(p => p.OrderStatus)
                 .Include(p => p.Order)
                 .Include(p => p.Order.User)
-				.FirstOrDefaultAsync(p => p.Id == request.Id);
+                .FirstOrDefaultAsync(p => p.Id == request.Id);
 
             if (orderStatusOrder == null)
             {
@@ -224,6 +226,6 @@ namespace Backend3DForge.Controllers
             orderStatusOrder.OrderStatusName = orderStatus.Name;
 
             return Ok(new OrderStatusOrderResponse(orderStatusOrder));
-		}
+        }
     }
 }

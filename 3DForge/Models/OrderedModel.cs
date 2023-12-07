@@ -37,9 +37,8 @@ namespace Backend3DForge.Models
 		[Required]
 		public string PrintMaterialName { get; set; }
 		public PrintMaterial PrintMaterial { get; set; }
-		[Required]
-		public int CartId { get; set; }
-		public Cart Cart { get; set; }
+		public int? CartId { get; set; }
+		public Cart? Cart { get; set; }
 
 		public ICollection<CatalogModelFeedback> CatalogModelResponses { get; set; } = new List<CatalogModelFeedback>();
 	}
