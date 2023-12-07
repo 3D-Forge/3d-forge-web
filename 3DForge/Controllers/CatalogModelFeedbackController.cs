@@ -52,6 +52,7 @@ namespace Backend3DForge.Controllers
 
             var orderedModel = await DB.OrderedModels
                 .Include(p => p.Order).ThenInclude(p => p.User)
+                .Include(p => p.CatalogModel)
                 .SingleOrDefaultAsync(p => p.Id == feedback.OrderedModelId);
 
             if (orderedModel is null)
@@ -76,6 +77,12 @@ namespace Backend3DForge.Controllers
             })).Entity;
 
             await DB.SaveChangesAsync();
+
+            if(orderedModel.CatalogModel is not null)
+            {
+                orderedModel.CatalogModel.Rating = (float)await DB.CatalogModelFeedbacks.Where(p => p.CatalogModelId == modelId).AverageAsync(p => p.Rate);
+                await DB.SaveChangesAsync();
+            }
 
             var result = await DB.CatalogModelFeedbacks.Where(p => p.Id == model.Id)
                 .Include(x => x.Order).ThenInclude(x => x.Order).ThenInclude(o => o.User)
