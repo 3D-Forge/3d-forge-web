@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
-	public class PrintType
+	public class PrintType : ITableKey<string>
 	{
 		[Key]
-		public string Name { get; set; }
+		public string Id { get; set; }
 
 		public PrintType() { }
 
 		public PrintType(string name)
 		{
-			Name = name;
+			Id = name;
 		}
 
 		public ICollection<OrderedModel> OrderedModels { get; set; } = new List<OrderedModel>();

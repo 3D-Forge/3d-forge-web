@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
-	public class PrintExtension
+	public class PrintExtension : ITableKey<string>
 	{
 		[Key]
-		public string Name { get; set; }
+		public string Id { get; set; }
 
 		public PrintExtension() { }
 
 		public PrintExtension(string name)
 		{
-			Name = name;
+			Id = name;
 		}
 
 		public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();

@@ -223,7 +223,7 @@ namespace Backend3DForge.Controllers
             .Include(p => p.ModelExtension)
             .Include(p => p.PrintExtension)
             .Include(p => p.Pictures)
-            .Where(p => p.UserId == AuthorizedUserId);
+            .Where(p => p.UserId == AuthorizedUserId && p.Publicized != null);
 
             int totalItemsCount = await query.CountAsync();
             int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / request.PageSize);
@@ -299,14 +299,14 @@ namespace Backend3DForge.Controllers
                 previewImages.Add(files[i]);
             }
 
-            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Name == printEx);
+            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Id == printEx);
 
             if (printExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
             }
 
-            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Name == modelEx);
+            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Id == modelEx);
             if (modelExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
@@ -393,8 +393,8 @@ namespace Backend3DForge.Controllers
                 ZSize = modelParameters.Z,
                 Volume = modelParameters.Volume,
                 Depth = request.Depth,
-                ModelExtensionName = modelExtension.Name,
-                PrintExtensionName = printExtension.Name,
+                ModelExtensionId = modelExtension.Id,
+                PrintExtensionId = printExtension.Id,
                 ModelFileSize = model.Length,
                 PrintFileSize = print.Length,
                 User = AuthorizedUser,
@@ -484,7 +484,7 @@ namespace Backend3DForge.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse(ex.Message, ex));
             }
             HttpContext.Response.ContentLength = model.ModelFileSize;
-            HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename={model.Name}_{model.User.Login}.{model.ModelExtensionName}");
+            HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename={model.Name}_{model.User.Login}.{model.ModelExtensionId}");
             return new FileStreamResult(fileStream, "application/octet-stream");
         }
 
@@ -711,14 +711,14 @@ namespace Backend3DForge.Controllers
             var print = files[1];
             var printEx = Path.GetExtension(print.FileName).Replace(".", "");
 
-            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Name == printEx);
+            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Id == printEx);
 
             if (printExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
             }
 
-            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Name == modelEx);
+            var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Id == modelEx);
             if (modelExtension is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid 3D model file format"));
@@ -738,8 +738,8 @@ namespace Backend3DForge.Controllers
                 return NotFound(new BaseResponse.ErrorResponse("Model not found"));
             }
 
-            catalogModel.ModelExtensionName = modelExtension.Name;
-            catalogModel.PrintExtensionName = printExtension.Name;
+            catalogModel.ModelExtensionId = modelExtension.Id;
+            catalogModel.PrintExtensionId = printExtension.Id;
             catalogModel.ModelFileSize = model.Length;
             catalogModel.PrintFileSize = print.Length;
 

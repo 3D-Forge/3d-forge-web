@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
-    public class PrintMaterialColor
+    public class PrintMaterialColor : ITableKey<int>
     {
         [Key]
         public int Id { get; set; }
@@ -16,7 +17,7 @@ namespace Backend3DForge.Models
         [Required] 
         public byte Blue { get; set; }
         [Required]
-        public string PrintMaterialName { get; set; }
+        public string PrintMaterialId { get; set; }
         public PrintMaterial PrintMaterial { get; set; }
 
         public float Cost { get; set; } = 0;

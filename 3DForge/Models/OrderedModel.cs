@@ -11,7 +11,7 @@ namespace Backend3DForge.Models
 		public int? CatalogModelId { get; set; }
 		public CatalogModel? CatalogModel { get; set; }
 		[Required]
-		public string PrintExtensionName { get; set; }
+		public string PrintExtensionId { get; set; }
 		public PrintExtension PrintExtension { get; set; }
 		[Required]
 		public double PricePerPiece { get; set; }
@@ -33,10 +33,10 @@ namespace Backend3DForge.Models
 		public int PrintMaterialColorId{ get; set; }
 		public PrintMaterialColor PrintMaterialColor { get; set; }
 		[Required]
-		public string PrintTypeName { get; set; }
+		public string PrintTypeId { get; set; }
 		public PrintType PrintType { get; set; }
 		[Required]
-		public string PrintMaterialName { get; set; }
+		public string PrintMaterialId { get; set; }
 		public PrintMaterial PrintMaterial { get; set; }
 		public int? CartId { get; set; }
 		public Cart? Cart { get; set; }

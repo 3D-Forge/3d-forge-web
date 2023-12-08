@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
-	public class PrintMaterial
+	public class PrintMaterial : ITableKey<string>
 	{
 		[Key]
-		public string Name { get; set; }
+		public string Id { get; set; }
 		[Required]
-		public string PrintTypeName { get; set; }
+		public string PrintTypeId { get; set; }
 		public PrintType PrintType { get; set; }
 		[Required]
 		public float Density { get; set; }

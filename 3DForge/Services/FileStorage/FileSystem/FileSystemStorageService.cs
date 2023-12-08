@@ -120,38 +120,38 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
 
 		public Task<Stream> DownloadPreviewModel(CatalogModel catalogModel)
 		{
-			return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
+			return DownloadFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionId}");
 		}
 
 		public Task UploadPreviewModel(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
 		{
 			return UploadFileAsync(
-					filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}",
+					filename: $"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionId}",
 					fileStream: fileStream,
 					fileSize: fileSize);
 		}
 
 		public Task DeletePreviewModel(CatalogModel catalogModel)
 		{
-			return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionName}");
+			return DeleteFileAsync($"{configuration.PathToPreviewFiles}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.ModelExtensionId}");
 		}
 
 		public Task<Stream> DownloadPrintFile(CatalogModel catalogModel)
 		{
-			return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+			return DownloadFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionId}");
 		}
 
 		public Task UploadPrintFile(CatalogModel catalogModel, Stream fileStream, long fileSize = -1)
 		{
 			return UploadFileAsync(
-					filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}",
+					filename: $"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionId}",
 					fileStream: fileStream,
 					fileSize: fileSize);
 		}
 
 		public Task DeletePrintFile(CatalogModel catalogModel)
 		{
-			return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+			return DeleteFileAsync($"{configuration.PathToFilesToPrint}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionId}");
 		}
 
         public Task<Stream> Download3DModelsPicture(ModelPicture modelPicture)
@@ -174,20 +174,20 @@ namespace Backend3DForge.Services.FileStorage.FileSystem
 
 		public Task<Stream> DownloadPrintFile(OrderedModel orderedModel)
 		{
-			return DownloadFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionName}");
+			return DownloadFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionId}");
 		}
 
 		public Task UploadPrintFile(OrderedModel orderedModel, Stream fileStream, long fileSize = -1)
 		{
 			return UploadFileAsync(
-					filename: $"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionName}",
+					filename: $"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{orderedModel.Id}.{orderedModel.PrintExtensionId}",
 					fileStream: fileStream,
 					fileSize: fileSize);
 		}
 
 		public Task DeletePrintFile(OrderedModel catalogModel)
 		{
-			return DeleteFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionName}");
+			return DeleteFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionId}");
 		}
 	}
 }

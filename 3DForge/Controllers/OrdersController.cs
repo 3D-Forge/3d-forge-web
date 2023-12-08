@@ -65,26 +65,26 @@ namespace Backend3DForge.Controllers
 
             if (request.PrintType is not null)
             {
-                var printTypeName = await DB.PrintTypes.FirstOrDefaultAsync(x => x.Name == request.PrintType);
+                var printTypeName = await DB.PrintTypes.FirstOrDefaultAsync(x => x.Id == request.PrintType);
 
                 if (printTypeName is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse("This print type does not exists"));
                 }
 
-                orderModel.PrintTypeName = printTypeName.Name;
+                orderModel.PrintTypeId = printTypeName.Id;
             }
 
             if (request.PrintMaterial is not null)
             {
-                var printMaterialName = await DB.PrintMaterials.FirstOrDefaultAsync(x => x.Name == request.PrintMaterial);
+                var printMaterialName = await DB.PrintMaterials.FirstOrDefaultAsync(x => x.Id == request.PrintMaterial);
 
                 if (printMaterialName is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse("This print material does not exists"));
                 }
 
-                orderModel.PrintMaterialName = printMaterialName.Name;
+                orderModel.PrintMaterialId = printMaterialName.Id;
             }
 
             orderModel.Scale = request.Scale ?? orderModel.Scale;
@@ -92,10 +92,10 @@ namespace Backend3DForge.Controllers
 
             if (request.PrintColor is not null)
             {
-                var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialName == orderModel.PrintMaterialName && p.Id == request.PrintColor);
+                var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialId == orderModel.PrintMaterialId && p.Id == request.PrintColor);
                 if(color is null)
                 {
-                    return BadRequest(new BaseResponse.ErrorResponse($"This color [{request.PrintColor}] does not exists in material [{orderModel.PrintMaterialName}]"));
+                    return BadRequest(new BaseResponse.ErrorResponse($"This color [{request.PrintColor}] does not exists in material [{orderModel.PrintMaterialId}]"));
                 }
                 orderModel.PrintMaterialColorId = color.Id;
             }

@@ -32,7 +32,7 @@
 			{
 				Id = model.Id;
 				CatalogModelId = model.CatalogModelId;
-				PrintExtensionName = model.PrintExtensionName;
+				PrintExtensionName = model.PrintExtensionId;
 				PricePerPiece = model.PricePerPiece;
 				Pieces = model.Pieces;
 				XSize = model.XSize;
@@ -44,8 +44,8 @@
 				ColorId = model.PrintMaterialColorId;
 				ColorRGB = model.PrintMaterialColor.RGB;
 				ColorHex = model.PrintMaterialColor.Hex;
-				PrintTypeName = model.PrintTypeName;
-				PrintMaterialName = model.PrintMaterialName;
+				PrintTypeName = model.PrintTypeId;
+				PrintMaterialName = model.PrintMaterialId;
 			}
 		}
 	}

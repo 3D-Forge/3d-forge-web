@@ -20,7 +20,7 @@ namespace Backend3DForge.Responses
 
             public View(PrintType print)
             {
-                Name = print.Name;
+                Name = print.Id;
             }
         }
     }

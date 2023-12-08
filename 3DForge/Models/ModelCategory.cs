@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
-	public class ModelCategory
-	{
+	public class ModelCategory : ITableKey<int>
+    {
 		[Key]
 		public int Id { get; set; }
 		[Required]

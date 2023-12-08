@@ -54,7 +54,7 @@ namespace Backend3DForge.Tools
                 dataKey: "printExtensions",
                 getEntityDbSet: (db) => db.PrintExtensions,
                 createNewEntity: (record, index) => new(record),
-                validate: (existingEntity, entity) => existingEntity.Name == entity
+                validate: (existingEntity, entity) => existingEntity.Id == entity
             );
 
             InitializeTableWithData<ModelExtension, string>(
@@ -62,7 +62,7 @@ namespace Backend3DForge.Tools
                 dataKey: "previewExtensions",
                 getEntityDbSet: (db) => db.ModelExtensions,
                 createNewEntity: (record, index) => new(record),
-                validate: (existingEntity, entity) => existingEntity.Name == entity
+                validate: (existingEntity, entity) => existingEntity.Id == entity
             );
 
             InitializeTableWithData<PrintType, string>(
@@ -70,7 +70,7 @@ namespace Backend3DForge.Tools
                 dataKey: "printTypes",
                 getEntityDbSet: (db) => db.PrintTypes,
                 createNewEntity: (record, index) => new(record),
-                validate: (existingEntity, entity) => existingEntity.Name == entity
+                validate: (existingEntity, entity) => existingEntity.Id == entity
             );
 
             InitializeTableWithData<PrintMaterial, PrintMaterialJson>(
@@ -81,10 +81,10 @@ namespace Backend3DForge.Tools
                 {
                     var entity = new PrintMaterial()
                     {
-                        Name = record.Name,
+                        Id = record.Name,
                         Cost = record.Cost,
                         Density = record.Density,
-                        PrintTypeName = record.PrintTypeName
+                        PrintTypeId = record.PrintTypeName
                     };
 
                     foreach (var color in record.Colors)
@@ -104,7 +104,7 @@ namespace Backend3DForge.Tools
 
                     return entity;
                 },
-                validate: (existingEntity, entity) => existingEntity.Name == entity.Name
+                validate: (existingEntity, entity) => existingEntity.Id == entity.Name
             );
 
             var forPrintingPath = Path.Combine(Directory.GetCurrentDirectory(), "src", "3dModels", "forPrinting");
@@ -167,8 +167,8 @@ namespace Backend3DForge.Tools
                     CopyFile(printFile, Path.Combine(previewFileDirPath, Path.GetFileName(previewFile)), true);
 
                     var user = db.Users.Single(p => p.Login == record.UserLogin);
-                    var printExtension = db.PrintExtensions.Single(p => p.Name == printFileEx);
-                    var modelExtension = db.ModelExtensions.Single(p => p.Name == previewFileEx);
+                    var printExtension = db.PrintExtensions.Single(p => p.Id == printFileEx);
+                    var modelExtension = db.ModelExtensions.Single(p => p.Id == previewFileEx);
 
                     var model = new CatalogModel
                     {

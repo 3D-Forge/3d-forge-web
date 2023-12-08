@@ -62,7 +62,7 @@ namespace Backend3DForge.Controllers
 					return BadRequest(new BaseResponse.ErrorResponse("Model with chosen ID does not exists"));
 				}
 
-				printExtenstion = catalogModel.PrintExtensionName;
+				printExtenstion = catalogModel.PrintExtensionId;
 				price = catalogModel.MinPrice;
 			}
 			else if (addRequest.File is not null)
@@ -74,7 +74,7 @@ namespace Backend3DForge.Controllers
 					return BadRequest(new BaseResponse.ErrorResponse("Print file is too large. Max size: 50MB"));
 				}
 
-				var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Name == printExtenstion);
+				var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Id == printExtenstion);
 
 				if (printExtension is null)
 				{
@@ -112,24 +112,24 @@ namespace Backend3DForge.Controllers
 				return BadRequest(new BaseResponse.ErrorResponse("Chose something one!"));
 			}
 
-			var printTypeName = await DB.PrintTypes.FirstOrDefaultAsync(x => x.Name == addRequest.PrintTypeName);
+			var printTypeName = await DB.PrintTypes.FirstOrDefaultAsync(x => x.Id == addRequest.PrintTypeName);
 
 			if (printTypeName is null)
 			{
 				return BadRequest(new BaseResponse.ErrorResponse("This print type does not exists"));
 			}
 
-			var printMaterialName = await DB.PrintMaterials.FirstOrDefaultAsync(x => x.Name == addRequest.PrintMaterialName);
+			var printMaterialName = await DB.PrintMaterials.FirstOrDefaultAsync(x => x.Id == addRequest.PrintMaterialName);
 
 			if (printMaterialName is null)
 			{ 
 				return BadRequest(new BaseResponse.ErrorResponse("This print material does not exists"));
             }
 
-            var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialName == printMaterialName.Name && p.Id == addRequest.ColorId);
+            var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialId == printMaterialName.Id && p.Id == addRequest.ColorId);
             if (color is null)
             {
-                return BadRequest(new BaseResponse.ErrorResponse($"This color [{addRequest.ColorId}] does not exists in material [{printMaterialName.Name}]"));
+                return BadRequest(new BaseResponse.ErrorResponse($"This color [{addRequest.ColorId}] does not exists in material [{printMaterialName.Id}]"));
             }
 
             var cart = await DB.Carts.FirstOrDefaultAsync(x => x.UserId == AuthorizedUser.Id);
@@ -149,7 +149,7 @@ namespace Backend3DForge.Controllers
 			{
 				CartId = cart.Id,
 				CatalogModelId = catalogModel is null ? null : catalogModel.Id,
-				PrintExtensionName = printExtenstion,
+				PrintExtensionId = printExtenstion,
 				PricePerPiece = price,
 				Pieces = addRequest.Pieces,
 				XSize = catalogModel?.XSize ?? printParameters?.X ?? 0f,
@@ -159,8 +159,8 @@ namespace Backend3DForge.Controllers
 				Scale = addRequest.Scale,
 				PrintMaterialColorId = color.Id,
 				PrintMaterialColor = color,
-				PrintTypeName = printTypeName.Name,
-				PrintMaterialName = printMaterialName.Name,
+				PrintTypeId = printTypeName.Id,
+				PrintMaterialId = printMaterialName.Id,
 			};
 
 			await DB.OrderedModels.AddAsync(orderedModel);

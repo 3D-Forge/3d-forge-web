@@ -23,8 +23,8 @@ namespace Backend3DForge.Responses
 
             public View(PrintMaterial material)
             {
-                Material = material.Name;
-                PrintType = material.PrintTypeName;
+                Material = material.Id;
+                PrintType = material.PrintTypeId;
                 Density = material.Density;
                 Cost = material.Cost;
             }

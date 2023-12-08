@@ -36,13 +36,13 @@ namespace Backend3DForge.Controllers
 
             if (response is null)
             {
-                if (!await DB.PrintTypes.AnyAsync(p => p.Name == type))
+                if (!await DB.PrintTypes.AnyAsync(p => p.Id == type))
                 {
                     return NotFound(new BaseResponse.ErrorResponse("Selected print type does not found."));
                 }
 
                 var printMaterials = await DB.PrintMaterials
-                    .Where(p => p.PrintTypeName == type)
+                    .Where(p => p.PrintTypeId == type)
                     .ToListAsync();
                 response = new PrintMaterialResponse(printMaterials);
                 this.memoryCache.Set($"GET api/print/types/{type}", response, TimeSpan.FromSeconds(30));
@@ -58,19 +58,19 @@ namespace Backend3DForge.Controllers
 
             if (response is null)
             {
-                if (!await DB.PrintTypes.AnyAsync(p => p.Name == type))
+                if (!await DB.PrintTypes.AnyAsync(p => p.Id == type))
                 {
                     return NotFound(new BaseResponse.ErrorResponse("Selected print type does not found."));
                 }
 
-                if (!await DB.PrintMaterials.AnyAsync(p => p.Name == material))
+                if (!await DB.PrintMaterials.AnyAsync(p => p.Id == material))
                 {
                     return NotFound(new BaseResponse.ErrorResponse("Selected print material does not found."));
                 }
 
                 var printMaterialColors = await DB.PrintMaterialColors
                     .Include(p => p.PrintMaterial)
-                    .Where(p => p.PrintMaterialName == material && p.PrintMaterial.PrintTypeName == type)
+                    .Where(p => p.PrintMaterialId == material && p.PrintMaterial.PrintTypeId == type)
                     .ToListAsync();
                 response = new PrintMaterialColorResponse(printMaterialColors);
                 this.memoryCache.Set($"GET api/print/types/{type}/{material}", response, TimeSpan.FromSeconds(30));
