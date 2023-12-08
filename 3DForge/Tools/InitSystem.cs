@@ -73,11 +73,37 @@ namespace Backend3DForge.Tools
                 validate: (existingEntity, entity) => existingEntity.Name == entity
             );
 
-            InitializeTableWithData<PrintMaterial, PrintMaterial>(
+            InitializeTableWithData<PrintMaterial, PrintMaterialJson>(
                 dbContext: db,
                 dataKey: "printMaterials",
                 getEntityDbSet: (db) => db.PrintMaterials,
-                createNewEntity: (record, index) => record,
+                createNewEntity: (record, index) =>
+                {
+                    var entity = new PrintMaterial()
+                    {
+                        Name = record.Name,
+                        Cost = record.Cost,
+                        Density = record.Density,
+                        PrintTypeName = record.PrintTypeName
+                    };
+
+                    foreach (var color in record.Colors)
+                    {
+                        var colorEntity = new PrintMaterialColor()
+                        {
+                            Name = color.Name,
+                            Red = color.R,
+                            Green = color.G,
+                            Blue = color.B,
+                            Cost = color.Cost
+                        };
+
+                        colorEntity = db.PrintMaterialColors.Add(colorEntity).Entity;
+                        entity.PrintMaterialColors.Add(colorEntity);
+                    }
+
+                    return entity;
+                },
                 validate: (existingEntity, entity) => existingEntity.Name == entity.Name
             );
 

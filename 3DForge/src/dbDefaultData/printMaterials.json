@@ -3,108 +3,294 @@
     "Name": "ABS",
     "PrintTypeName": "FDM",
     "Density": 1.04,
-    "Cost": 0.405888
+    "Cost": 0.405888,
+    "Colors": [
+      {
+        "Name": "White",
+        "RGB": "255,255,255",
+        "Cost": 1
+      },
+      {
+        "Name": "Black",
+        "RGB": "0,0,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Red",
+        "RGB": "255,0,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Gold",
+        "RGB": "255,215,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Silver",
+        "RGB": "192,192,192",
+        "Cost": 1
+      },
+      {
+        "Name": "Clear",
+        "RGB": "255,255,255",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "PLA",
     "PrintTypeName": "FDM",
     "Density": 1.25,
-    "Cost": 0.45300000000000007
+    "Cost": 0.45300000000000007,
+    "Colors": [
+      {
+        "Name": "Blue",
+        "RGB": "0,0,255",
+        "Cost": 1
+      },
+      {
+        "Name": "Green",
+        "RGB": "0,255,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Yellow",
+        "RGB": "255,255,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Orange",
+        "RGB": "255,165,0",
+        "Cost": 1
+      },
+      {
+        "Name": "Purple",
+        "RGB": "128,0,128",
+        "Cost": 1
+      },
+      {
+        "Name": "Pink",
+        "RGB": "255,192,203",
+        "Cost": 1
+      },
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      },
+      {
+        "Name": "Brown",
+        "RGB": "165,42,42",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "3k CFRP",
     "PrintTypeName": "CFRP",
     "Density": 1.79,
-    "Cost": 0.648696
+    "Cost": 0.648696,
+    "Colors": [
+      {
+        "Name": "Black",
+        "RGB": "0,0,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Plexiglass",
     "PrintTypeName": "SLA",
     "Density": 1.18,
-    "Cost": 0.478368
+    "Cost": 0.478368,
+    "Colors": [
+      {
+        "Name": "Clear",
+        "RGB": "255,255,255",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Alumide",
     "PrintTypeName": "SLS",
     "Density": 1.36,
-    "Cost": 0.6668160000000001
+    "Cost": 0.6668160000000001,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Aluminum",
     "PrintTypeName": "DMLS",
     "Density": 2.68,
-    "Cost": 0.9712320000000001
+    "Cost": 0.9712320000000001,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Brass",
     "PrintTypeName": "Binder Jetting",
     "Density": 8.6,
-    "Cost": 3.11664
+    "Cost": 3.11664,
+    "Colors": [
+      {
+        "Name": "Gold",
+        "RGB": "255,215,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Bronze",
     "PrintTypeName": "Binder Jetting",
     "Density": 9,
-    "Cost": 3.2616
+    "Cost": 3.2616,
+    "Colors": [
+      {
+        "Name": "Gold",
+        "RGB": "255,215,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Copper",
     "PrintTypeName": "Binder Jetting",
     "Density": 9,
-    "Cost": 3.2616
+    "Cost": 3.2616,
+    "Colors": [
+      {
+        "Name": "Yellow",
+        "RGB": "255,255,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Gold_14K",
     "PrintTypeName": "Lost-Wax Casting",
     "Density": 13.6,
-    "Cost": 4.928640000000001
+    "Cost": 4.928640000000001,
+    "Colors": [
+      {
+        "Name": "Gold",
+        "RGB": "255,215,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Gold_18K",
     "PrintTypeName": "Lost-Wax Casting",
     "Density": 15.6,
-    "Cost": 5.653440000000001
+    "Cost": 5.653440000000001,
+    "Colors": [
+      {
+        "Name": "Gold",
+        "RGB": "255,215,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Polyamide_MJF",
     "PrintTypeName": "MJF",
     "Density": 1.01,
-    "Cost": 0.366024
+    "Cost": 0.366024,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Polyamide_SLS",
     "PrintTypeName": "SLS",
     "Density": 0.95,
-    "Cost": 0.34428000000000003
+    "Cost": 0.34428000000000003,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Rubber",
     "PrintTypeName": "PolyJet Printing",
     "Density": 1.2,
-    "Cost": 0.521856
+    "Cost": 0.521856,
+    "Colors": [
+      {
+        "Name": "Black",
+        "RGB": "0,0,0",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Silver",
     "PrintTypeName": "Lost-Wax Casting",
     "Density": 10.26,
-    "Cost": 3.718224
+    "Cost": 3.718224,
+    "Colors": [
+      {
+        "Name": "Silver",
+        "RGB": "192,192,192",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Steel",
     "PrintTypeName": "DMLS",
     "Density": 7.86,
-    "Cost": 2.8484640000000003
+    "Cost": 2.8484640000000003,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Titanium",
     "PrintTypeName": "EBM",
     "Density": 4.41,
-    "Cost": 1.598184
+    "Cost": 1.598184,
+    "Colors": [
+      {
+        "Name": "Gray",
+        "RGB": "128,128,128",
+        "Cost": 1
+      }
+    ]
   },
   {
     "Name": "Resin",
     "PrintTypeName": "SLA",
     "Density": 1.2,
-    "Cost": 0.521856
+    "Cost": 0.521856,
+    "Colors": [
+      {
+        "Name": "Black",
+        "RGB": "0,0,0",
+        "Cost": 1
+      }
+    ]
   }
 ]

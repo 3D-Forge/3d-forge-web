@@ -20,8 +20,10 @@
 			public double Volume { get; set; } = 0;
 			public double Scale { get; set; } = 1;
 			public float Depth { get; set; }
-			public string Color { get; set; }
-			public string PrintTypeName { get; set; }
+			public int ColorId { get; set; }
+			public string ColorRGB { get; set; }
+			public string ColorHex { get; set; }
+            public string PrintTypeName { get; set; }
 			public string PrintMaterialName { get; set; }
 
 			public double TotalPrice => PricePerPiece * Pieces;
@@ -39,7 +41,9 @@
 				Volume = model.Volume;
 				Scale = model.Scale;
 				Depth = model.Depth;
-				Color = model.Color;
+				ColorId = model.PrintMaterialColorId;
+				ColorRGB = model.PrintMaterialColor.RGB;
+				ColorHex = model.PrintMaterialColor.Hex;
 				PrintTypeName = model.PrintTypeName;
 				PrintMaterialName = model.PrintMaterialName;
 			}

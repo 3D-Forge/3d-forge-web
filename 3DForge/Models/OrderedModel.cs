@@ -30,7 +30,8 @@ namespace Backend3DForge.Models
 		[Required]
 		public float Depth { get; set; }
 		[Required]
-		public string Color { get; set; }
+		public int PrintMaterialColorId{ get; set; }
+		public PrintMaterialColor PrintMaterialColor { get; set; }
 		[Required]
 		public string PrintTypeName { get; set; }
 		public PrintType PrintType { get; set; }

@@ -15,5 +15,6 @@ namespace Backend3DForge.Models
 		public float Cost { get; set; }
 
 		public ICollection<OrderedModel> OrderedModels { get; set; } = new List<OrderedModel>();
+		public ICollection<PrintMaterialColor> PrintMaterialColors { get; set; } = new List<PrintMaterialColor>();
 	}
 }
