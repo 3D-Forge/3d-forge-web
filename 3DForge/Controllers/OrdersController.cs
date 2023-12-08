@@ -5,7 +5,6 @@ using Backend3DForge.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
 
 namespace Backend3DForge.Controllers
 {
@@ -56,7 +55,8 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.Cart)
                 .Include(p => p.PrintType)
                 .Include(p => p.PrintMaterial)
-                .SingleOrDefaultAsync(p => p.Id == request.Id && p.Cart.UserId == AuthorizedUserId);
+                .Include(p => p.PrintMaterialColor)
+                .SingleOrDefaultAsync(p => p.Id == request.Id && p.Cart != null && p.Cart.UserId == AuthorizedUserId);
 
             if (orderModel == null)
             {
@@ -89,7 +89,16 @@ namespace Backend3DForge.Controllers
 
             orderModel.Scale = request.Scale ?? orderModel.Scale;
             orderModel.Depth = request.Depth ?? orderModel.Depth;
-            orderModel.Color = request.PrintColor ?? orderModel.Color;
+
+            if (request.PrintColor is not null)
+            {
+                var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialName == orderModel.PrintMaterialName && p.Id == request.PrintColor);
+                if(color is null)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse($"This color [{request.PrintColor}] does not exists in material [{orderModel.PrintMaterialName}]"));
+                }
+                orderModel.PrintMaterialColorId = color.Id;
+            }
 
             await DB.SaveChangesAsync();
 

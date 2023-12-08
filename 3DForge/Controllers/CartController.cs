@@ -1,4 +1,5 @@
-﻿using Backend3DForge.Models;
+﻿using Azure.Core;
+using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.FileStorage;
@@ -123,9 +124,15 @@ namespace Backend3DForge.Controllers
 			if (printMaterialName is null)
 			{ 
 				return BadRequest(new BaseResponse.ErrorResponse("This print material does not exists"));
-			}
+            }
 
-			var cart = await DB.Carts.FirstOrDefaultAsync(x => x.UserId == AuthorizedUser.Id);
+            var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialName == printMaterialName.Name && p.Id == addRequest.ColorId);
+            if (color is null)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse($"This color [{addRequest.ColorId}] does not exists in material [{printMaterialName.Name}]"));
+            }
+
+            var cart = await DB.Carts.FirstOrDefaultAsync(x => x.UserId == AuthorizedUser.Id);
 
 			if (cart is null)
 			{
@@ -150,7 +157,8 @@ namespace Backend3DForge.Controllers
 				ZSize = catalogModel?.ZSize ?? printParameters?.Z ?? 0f,
 				Depth = addRequest.Depth,
 				Scale = addRequest.Scale,
-				Color = addRequest.Color,
+				PrintMaterialColorId = color.Id,
+				PrintMaterialColor = color,
 				PrintTypeName = printTypeName.Name,
 				PrintMaterialName = printMaterialName.Name,
 			};

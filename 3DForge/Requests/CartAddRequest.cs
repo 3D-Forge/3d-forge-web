@@ -13,7 +13,7 @@ namespace Backend3DForge.Requests
 		[Required]
 		public float Scale { get; set; } = 1.0f;
 		[Required]
-		public string Color { get; set; }
+		public int ColorId { get; set; }
 		[Required]
 		public string PrintTypeName { get; set; }
 		[Required]
