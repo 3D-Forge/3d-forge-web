@@ -38,12 +38,19 @@
     letter-spacing: 1px;
 }
 
+.catalog_section__uploaded_model_table__list_is_empty {
+    color: white;
+    text-align: center;
+    font-size: 40px;
+    margin-top: 20px;
+}
+
 .catalog_section__uploaded_model_table__list {
     overflow: hidden;
     overflow-y: auto;
     width: calc(100% + 10px);
-    height: calc(100% - 44px);
-    margin-top: 10px;
+    height: calc(100% - 54px);
+    margin-top: 20px;
 }
 
 .catalog_section__uploaded_model_table__list::-webkit-scrollbar {
@@ -66,9 +73,12 @@
     border-radius: 20px;
     border: 2px solid #7C26BF;
     background-color: #9030DB;
-    margin-top: 20px;
     padding-block: 15px;
     width: calc(100% - 9px);
+}
+
+.catalog_section__uploaded_model_table__list_element:not(:first-child) {
+    margin-top: 20px;
 }
 
 .catalog_section__uploaded_model_table__list_element_column {

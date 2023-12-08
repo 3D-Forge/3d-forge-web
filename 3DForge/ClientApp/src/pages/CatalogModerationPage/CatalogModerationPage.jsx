@@ -80,6 +80,14 @@ const CatalogModerationPage = () => {
         }
     });
 
+    if (uploadedModelList?.length === 0) {
+        return (
+            <h4 className={cl.catalog_section__uploaded_model_table__list_is_empty}>
+                На даний момент завантажених моделей не має.
+            </h4>
+        )
+    }
+
     return (
         <>
             <div className={cl.catalog_section__uploaded_model_table__header}>

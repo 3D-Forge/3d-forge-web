@@ -601,7 +601,7 @@ namespace Backend3DForge.Controllers
 
         [Authorize]
         [HttpPut("{modelId}/updateInfo")]
-        public async Task<IActionResult> UpdateModelDescription([FromRoute] int modelId, [FromForm] Update3DModelRequest request)
+        public async Task<IActionResult> UpdateModelInfo([FromRoute] int modelId, [FromForm] Update3DModelRequest request)
         {
 
             bool different = false;

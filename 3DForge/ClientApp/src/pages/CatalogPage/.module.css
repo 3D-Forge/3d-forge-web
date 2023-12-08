@@ -290,7 +290,7 @@
 }
 
 .model_rating_value_star {
-    content: url(./img/sort-by-rating.png);
+    content: url(./img/rating.png);
 }
 
 .model_rating_value_star:not(:first-child) {
@@ -505,16 +505,10 @@
 .model_list {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     grid-column-gap: 10px;
     grid-row-gap: 10px;
     margin-top: 20px;
-}
-
-@media (width < 1200px) {
-    .model_list {
-        grid-template-columns: 1fr 1fr;
-    }
 }
 
 .model_list_is_unloaded {
@@ -552,15 +546,31 @@
 }
 
 .model_name {
+    display: -webkit-box;
     font-size: 28px;
     margin-bottom: 5px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .model_description {
+    display: -webkit-box;
     font-size: 24px;
     margin-bottom: 15px;
     letter-spacing: 1px;
     text-wrap: wrap;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
 }
 
 .model_footer {
@@ -583,7 +593,7 @@
 }
 
 .model_rating_star {
-    content: url(./img/sort-by-rating.png);
+    content: url(./img/rating.png);
 }
 
 .model_rating_star:not(.model_rating_star:first-child) {

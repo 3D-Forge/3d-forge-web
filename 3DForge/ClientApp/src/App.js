@@ -12,6 +12,7 @@ import CatalogPage from './pages/CatalogPage/CatalogPage';
 import AdminPage from './pages/AdminPage/AdminPage';
 import CartPage from './pages/CartPage/CartPage';
 import CatalogModerationPage from './pages/CatalogModerationPage/CatalogModerationPage';
+import MyPublicationsPage from './pages/MyPublicationsPage/MyPublicationsPage';
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
                 <Route path='' element={<AccountPageLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path='user/info' element={<UserInfoPage />} />
+                    <Route path='user/publications' element={<MyPublicationsPage />} />
                     <Route path='user/edit' element={<UserEditPage />} />
                     <Route path='catalog' element={<CatalogPage />} />
                     <Route path='catalog/:id' element={<ModelPage />} />

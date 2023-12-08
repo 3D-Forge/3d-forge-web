@@ -51,6 +51,12 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/search${p}${ps}${q}${minP}${maxP}${sp}${sd}${a}${cl}${rl}`);
     }
 
+    static async getOwnModels(pageNumber = 1, pageSize = 15) {
+        const p = pageNumber ? `?page=${pageNumber}` : '?page=1';
+        const ps = pageSize ? `&page_size=${pageSize}` : '&page_size=15';
+        return await BaseAPI.get(`catalog/own-models${p}${ps}`);
+    }
+
     static async addNewModel(formData) {
         return await BaseAPI.post(`catalog`, formData);
     }
