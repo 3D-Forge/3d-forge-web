@@ -1,3 +1,8 @@
+.main {
+    width: fit-content;
+    height: fit-content;
+}
+
 .loader {
     border: 16px solid #00a193;
     border-top: 16px solid #3498db;

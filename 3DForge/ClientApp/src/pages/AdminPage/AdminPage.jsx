@@ -65,14 +65,14 @@ const AdminPage = () => {
                         ${cl.section_catalog} 
                         ${window.location.pathname.includes('/admin/catalog') ? cl.selected_section : ''}
                         ${!userRights.canModerateCatalog ? cl.disabled_section : ''}`}
-                            style={{ pointerEvents: !userRights.canModerateCatalog ? 'none' : 'all' }}>
+                            style={{ pointerEvents: !userRights.canModerateCatalog ? 'none' : 'all' }}
+                            onClick={() => {
+                                if (userRights.canModerateCatalog) {
+                                    navigate('catalog');
+                                }
+                            }}>
                             <span className={`
-                            ${cl.section_name} ${cl.section_name_catalog}`}
-                                onClick={() => {
-                                    if (userRights.canModerateCatalog) {
-                                        navigate('catalog');
-                                    }
-                                }}>
+                            ${cl.section_name} ${cl.section_name_catalog}`}>
                                 Каталог
                             </span>
                         </div>
