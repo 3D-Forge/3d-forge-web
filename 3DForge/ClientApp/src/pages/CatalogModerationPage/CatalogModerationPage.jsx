@@ -4,10 +4,14 @@ import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import sortAscImg from './img/sort-by-asc.png';
 import sortDescImg from './img/sort-by-desc.png';
+import { ReviewModelWindowContext } from "../../ContextProvider";
 
 const CatalogModerationPage = () => {
+    const {reviewModelWindowInfo, setReviewModelWindowInfo} = React.useContext(ReviewModelWindowContext);
+
     const [uploadedModelList, setUploadedModelList] = React.useState(null);
     const [sortMode, setSortMode] = React.useState({ value: 'login', asc: true });
+
     const [isUploadedModelListLoading, setUploadedModelListLoading] = React.useState(false);
 
     async function LoadUploadedModelList(sortParam = sortMode.value, sortDir = sortMode.asc) {
@@ -63,7 +67,8 @@ const CatalogModerationPage = () => {
                         </div>
                     </div>
                     <div className={cl.catalog_section__uploaded_model_table__list_element_column}>
-                        <div className={cl.catalog_section__uploaded_model_table__list_element_column_open_cont}>
+                        <div className={cl.catalog_section__uploaded_model_table__list_element_column_open_cont}
+                            onClick={() => { setReviewModelWindowInfo({ visible: true, modelId: el.id }); }}>
                             <img className={cl.catalog_section__uploaded_model_table__list_element_column_open_img} alt="open" />
                         </div>
                     </div>

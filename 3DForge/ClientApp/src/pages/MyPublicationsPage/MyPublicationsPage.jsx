@@ -1,14 +1,14 @@
 import React from "react";
 import cl from './.module.css';
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
-import UploadModelWindow from "../../components/UploadModelWindow/UploadModelWindow";
 import { CatalogAPI } from "../../services/api/CatalogAPI";
+import { UploadModelWindowContext } from "../../ContextProvider";
 
 const MyPublicationsPage = () => {
+    const { uploadModelWindowInfo, setUploadModelWindowInfo } = React.useContext(UploadModelWindowContext);
+
     const [modelList, setModelList] = React.useState({ list: null, currentPage: 1, pageCount: 0 });
     const [isModelListLoading, setModelListLoading] = React.useState(false);
-
-    const [uploadModelMenuInfo, setUploadModelMenuInfo] = React.useState({ visible: false, modelId: null });
 
     async function LoadModelList(pageNumber = 1) {
         setModelListLoading(true);
@@ -24,7 +24,7 @@ const MyPublicationsPage = () => {
             result.push(
                 <div className={cl.model_uploader}
                     key="uploader"
-                    onClick={() => setUploadModelMenuInfo({ visible: true, modelId: null })}>
+                    onClick={() => setUploadModelWindowInfo({ visible: true, modelId: null })}>
                     <img className={cl.model_uploader_img} alt="upload" />
                 </div>
             );
@@ -209,14 +209,6 @@ const MyPublicationsPage = () => {
                     </>
                 }
             </div>
-            <UploadModelWindow
-                visible={uploadModelMenuInfo.visible}
-                editingModelId={uploadModelMenuInfo.modelId}
-                onUpload={() => {
-                    setUploadModelMenuInfo({ visible: false, modelId: null });
-                    alert(uploadModelMenuInfo.modelId ? 'Your model is uploaded!' : 'Your model info is updated!');
-                }}
-                onClose={() => setUploadModelMenuInfo(p => { return { visible: false, modelId: p.modelId } })} />
         </div>
     );
 }

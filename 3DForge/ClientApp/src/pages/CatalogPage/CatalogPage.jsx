@@ -5,9 +5,11 @@ import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation
 import sortAscImg from './img/sort-by-asc.png';
 import sortDescImg from './img/sort-by-desc.png';
 import { UserAPI } from "../../services/api/UserAPI";
-import UploadModelWindow from "../../components/UploadModelWindow/UploadModelWindow";
+import { UploadModelWindowContext } from "../../ContextProvider";
 
 const CatalogPage = () => {
+    const { uploadModelWindowInfo, setUploadModelWindowInfo } = React.useContext(UploadModelWindowContext);
+
     const [isAuthorized, setAuthStatus] = React.useState(null);
 
     const [modelList, setModelList] = React.useState(undefined);
@@ -21,7 +23,6 @@ const CatalogPage = () => {
     const [isCategoryListVisible, setCategoryListVisibility] = React.useState(true);
     const [isAuthorListVisible, setAuthorListVisibility] = React.useState(true);
     const [isRatingListVisible, setRatingListVisibility] = React.useState(true);
-    const [isUploadModelMenuVisible, setUploadModelMenuVisibility] = React.useState(false);
 
     const [categorySearch, setCategorySearch] = React.useState('');
     const [sortMode, setSortMode] = React.useState({ value: 'name', asc: true });
@@ -573,7 +574,11 @@ const CatalogPage = () => {
                                     opacity: isAuthorized === false ? '0.3' : '1',
                                     pointerEvents: isAuthorized === false ? 'none' : 'all'
                                 }}
-                                onClick={() => setUploadModelMenuVisibility(true)}>
+                                onClick={() => setUploadModelWindowInfo(p => {
+                                    let newP = { ...p };
+                                    newP.visible = true;
+                                    return newP;
+                                })}>
                                 <img className={cl.add_model_button_img} alt="add model" />
                                 <span className={cl.add_model_button_text}>Додати модель</span>
                             </div>
@@ -601,13 +606,6 @@ const CatalogPage = () => {
                     }
                 </div>
             </div>
-            <UploadModelWindow
-                visible={isUploadModelMenuVisible}
-                onUpload={() => {
-                    setUploadModelMenuVisibility(false);
-                    alert('Your model is uploaded!');
-                }}
-                onClose={() => setUploadModelMenuVisibility(false)} />
         </div>
     );
 }

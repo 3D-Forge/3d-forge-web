@@ -30,7 +30,7 @@ const useRefDimensions = (ref) => {
     return dimensions;
 }
 
-const ModelUploadWindow = ({ visible = false, editingModelId = null, onUpload = null, onClose = null }) => {
+const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = null, onClose = null }) => {
     const [isTagListLoading, setTagListLoading] = React.useState(false);
     const [isModelUploading, setModelUploading] = React.useState(false);
 
@@ -649,4 +649,4 @@ const ModelUploadWindow = ({ visible = false, editingModelId = null, onUpload = 
     );
 }
 
-export default ModelUploadWindow;
+export default UploadModelWindow;

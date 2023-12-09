@@ -1,5 +1,4 @@
 .main {
-    position: relative;
     margin-top: 40px;
     margin-bottom: 150px;
 }
@@ -13,7 +12,6 @@
 }
 
 .content {
-    position: relative;
     display: grid;
     grid-template-columns: calc(100px + 17%) 3px auto;
     grid-column-gap: calc(0.5% + 10px);
@@ -88,6 +86,5 @@
 }
 
 .section_content {
-    position: relative;
     max-height: 700px;
 }
