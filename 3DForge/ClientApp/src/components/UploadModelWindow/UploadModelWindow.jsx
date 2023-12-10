@@ -26,7 +26,8 @@ const useRefDimensions = (ref) => {
         return () => {
             window.removeEventListener('resize', WindowResizeEvent);
         };
-    }, [ref])
+    }, [ref]);
+
     return dimensions;
 }
 
@@ -37,13 +38,16 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
     const [categoryList, setCategoryList] = React.useState(null);
     const [tagList, setTagList] = React.useState(null);
 
-    const [modelPreviewFile, setModelPreviewFile] = React.useState(null);
-    const [modelPrintFile, setModelPrintFile] = React.useState(null);
-    const [modelImageFile, setModelImageFile] = React.useState(null);
+    const [modelPreviewFile, setModelPreviewFile] = React.useState({ file: null, loading: false });
+    const [modelPrintFile, setModelPrintFile] = React.useState({ file: null, loading: false });
+    const [modelImageFile, setModelImageFile] = React.useState({ file: null, loading: false });
 
     const [categoriesForOwnModel, setCategoriesForOwnModel] = React.useState([]);
     const [tagsForOwnModel, setTagsForOwnModel] = React.useState([]);
 
+    const [modelNameInputValue, setModelNameInputValue] = React.useState("");
+    const [modelDescriptionInputValue, setModelDescriptionInputValue] = React.useState("");
+    const [modelDepthInputValue, setModelDepthInputValue] = React.useState("");
     const [tagNameInputValue, setTagNameInputValue] = React.useState("");
 
     const modalWindowRef = React.useRef();
@@ -75,9 +79,9 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
             formData.append('Keywords', e);
         });
 
-        formData.append('files', modelPreviewFile);
-        formData.append('files', modelPrintFile);
-        formData.append('files', modelImageFile);
+        formData.append('files', modelPreviewFile.file);
+        formData.append('files', modelPrintFile.file);
+        formData.append('files', modelImageFile.file);
 
         let json = await (await CatalogAPI.addNewModel(formData)).json();
 
@@ -248,11 +252,11 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
         let tagContainer = document.getElementsByClassName(cl.model_upload_window_model_tags_cont)[0];
         let tagList = document.getElementsByClassName(cl.model_upload_window_model_edit_tag_menu)[0];
 
-        if (categoryList.style.display === 'flex' && !categoryContainer.contains(event.target)) {
+        if (categoryList?.style.display === 'flex' && !categoryContainer?.contains(event.target)) {
             categoryList.style.display = 'none';
         }
 
-        if (tagList.style.display === 'block' && !tagContainer.contains(event.target)) {
+        if (tagList?.style.display === 'block' && !tagContainer?.contains(event.target)) {
             tagList.style.display = 'none';
         }
     }
@@ -269,8 +273,12 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
         };
     });
 
+    if (!visible) {
+        return;
+    }
+
     return (
-        <div className={cl.model_upload_window_background} style={{ display: visible ? 'block' : 'none' }}
+        <div className={cl.model_upload_window_background}
             onScroll={(e) => e.stopPropagation()}>
             <div className={`${cl.model_upload_window} ${modalWindowDimensions.height > window.innerHeight ? cl.model_upload_window_fixed : ''}`} ref={modalWindowRef}>
                 <img className={cl.model_upload_window_cancel_sign}
@@ -281,7 +289,7 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                         {editingModelId === null ? "Додати модель" : "Зміна інформації моделі"}
                     </h2>
                     <p className={cl.model_upload_window_instruction}>
-                        {editingModelId === null ? 
+                        {editingModelId === null ?
                             "Додайте інформацію про модель, необхідні файли, категорії та теги (необов’язково)"
                             : "Змініть модель, ваш підпис, адресу, гроші, ще одного кота та пса, бхехе"
                         }
@@ -290,7 +298,11 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                 <div className={cl.model_upload_window_panel}>
                     <div className={cl.model_upload_window_main_info}>
                         <h3 className={cl.model_upload_window_model_name_header}>Назва моделі</h3>
-                        <input className={cl.model_upload_window_model_name} type="text" ref={modelNameInputRef} />
+                        <input className={cl.model_upload_window_model_name}
+                            type="text"
+                            value={modelNameInputValue}
+                            ref={modelNameInputRef}
+                            onChange={(e) => { setModelNameInputValue(e.target.value); }} />
                         <div className={`${cl.model_upload_window_files}`}>
                             <div className={`${cl.model_upload_window_load_file_cont}`}>
                                 <div className={`${cl.model_upload_window_load_file_description}`}>
@@ -304,7 +316,7 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                 <div className={`${cl.model_upload_window_load_file_button}`}>
                                     <div className={`${cl.model_upload_window_load_file}`}
                                         onClick={() => {
-                                            if (modelPreviewFile === null) {
+                                            if (modelPreviewFile.file === null) {
                                                 modelPreviewFileInputRef.current.click();
                                             }
                                         }}>
@@ -331,52 +343,56 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                 let formData = new FormData();
                                                 let xml = new XMLHttpRequest();
 
-                                                setModelPreviewFile(file);
+                                                setModelPreviewFile({ file: file, loading: true });
                                                 formData.append('model', file);
 
                                                 xml.onreadystatechange = () => {
                                                     if (xml.readyState === XMLHttpRequest.DONE) {
-                                                        let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[0];
-                                                        let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[0];
-                                                        let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[0];
-                                                        image.src = fileUploadedImg;
-                                                        stateText.innerHTML = "Файл було успішно завантажено!";
-                                                        deleteFileButton.style.display = 'flex';
+                                                        setModelPreviewFile(p => {
+                                                            let newP = { ...p };
+                                                            newP.loading = false;
+                                                            return newP;
+                                                        });
                                                         xml.abort();
                                                     }
                                                 };
 
                                                 xml.upload.addEventListener("progress", (event) => {
-                                                    let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[0];
                                                     let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[0];
                                                     progressBar.style.width = `${(event.loaded / event.total) * 100}%`;
-                                                    stateText.innerHTML = "Завантаження фалу...";
                                                 }, false);
 
                                                 xml.open("POST", "fileupload.php");
                                                 xml.send(formData);
                                             }} />
                                         <div className={cl.model_upload_window_delete_file_button}
+                                            style={{ display: modelPreviewFile.file && !modelPreviewFile.loading ? 'flex' : 'none' }}
                                             title="Видалити"
                                             onClick={() => {
-                                                let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[0];
-                                                let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[0];
-                                                let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[0];
-                                                let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[0];
-                                                image.src = uploadFileImg;
-                                                stateText.innerHTML = "Перетягніть файл сюди";
-                                                deleteFileButton.style.display = 'none';
-                                                progressBar.style.width = '0%';
-                                                setModelPreviewFile(null);
+                                                setModelPreviewFile({ file: null, loading: false });
                                                 modelPreviewFileInputRef.current.value = "";
                                             }}>
                                             <img className={cl.model_upload_window_delete_file_button_img} alt="delete file" />
                                         </div>
                                         <img className={cl.model_upload_window_load_file_img} alt="load file"
-                                            src={uploadFileImg} />
-                                        <span className={cl.model_upload_window_load_file_text}>Перетягніть файл сюди</span>
+                                            src={modelPreviewFile.file && !modelPreviewFile.loading ? fileUploadedImg : uploadFileImg} />
+                                        <span className={cl.model_upload_window_load_file_text}>
+                                            {
+                                                !modelPreviewFile.file && !modelPreviewFile.loading
+                                                    ? "Перетягніть файл сюди"
+                                                    : modelPreviewFile.file && !modelPreviewFile.loading
+                                                        ? "Файл було успішно завантажено!"
+                                                        : "Завантаження фалу..."
+                                            }
+                                        </span>
                                         <div className={`${cl.model_upload_window_load_file_progress}`}>
-                                            <div className={`${cl.model_upload_window_load_file_done_progress}`} />
+                                            <div className={`${cl.model_upload_window_load_file_done_progress}`}
+                                                style={{
+                                                    width:
+                                                        !modelPreviewFile.file && !modelPreviewFile.loading ? '0%'
+                                                            : modelPreviewFile.file && !modelPreviewFile.loading ? '100%'
+                                                                : undefined
+                                                }} />
                                         </div>
                                     </div>
                                 </div>
@@ -393,7 +409,7 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                 <div className={`${cl.model_upload_window_load_file_button}`}>
                                     <div className={`${cl.model_upload_window_load_file}`}
                                         onClick={() => {
-                                            if (modelPrintFile === null) {
+                                            if (modelPrintFile.file === null) {
                                                 modelPrintFileInputRef.current.click();
                                             }
                                         }}>
@@ -420,52 +436,56 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                 let formData = new FormData();
                                                 let xml = new XMLHttpRequest();
 
-                                                setModelPrintFile(file);
+                                                setModelPrintFile({ file: file, loading: true });
                                                 formData.append('model', file);
 
                                                 xml.onreadystatechange = () => {
                                                     if (xml.readyState === XMLHttpRequest.DONE) {
-                                                        let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[1];
-                                                        let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[1];
-                                                        let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[1];
-                                                        image.src = fileUploadedImg;
-                                                        stateText.innerHTML = "Файл було успішно завантажено!";
-                                                        deleteFileButton.style.display = 'flex';
+                                                        setModelPrintFile(p => {
+                                                            let newP = { ...p };
+                                                            newP.loading = false;
+                                                            return newP;
+                                                        });
                                                         xml.abort();
                                                     }
                                                 };
 
                                                 xml.upload.addEventListener("progress", (event) => {
-                                                    let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[1];
                                                     let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[1];
                                                     progressBar.style.width = `${(event.loaded / event.total) * 100}%`;
-                                                    stateText.innerHTML = "Завантаження фалу...";
                                                 }, false);
 
                                                 xml.open("POST", "fileupload.php");
                                                 xml.send(formData);
                                             }} />
                                         <div className={cl.model_upload_window_delete_file_button}
+                                            style={{ display: modelPrintFile.file && !modelPrintFile.loading ? 'flex' : 'none' }}
                                             title="Видалити"
                                             onClick={() => {
-                                                let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[1];
-                                                let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[1];
-                                                let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[1];
-                                                let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[1];
-                                                image.src = uploadFileImg;
-                                                stateText.innerHTML = "Перетягніть файл сюди";
-                                                deleteFileButton.style.display = 'none';
-                                                progressBar.style.width = '0%';
-                                                setModelPrintFile(null);
+                                                setModelPrintFile({ file: null, loading: false });
                                                 modelPrintFileInputRef.current.value = "";
                                             }}>
                                             <img className={cl.model_upload_window_delete_file_button_img} alt="delete file" />
                                         </div>
                                         <img className={`${cl.model_upload_window_load_file_img}`} alt="load file"
-                                            src={uploadFileImg} />
-                                        <span className={`${cl.model_upload_window_load_file_text}`}>Перетягніть файл сюди</span>
+                                            src={modelPrintFile.file && !modelPrintFile.loading ? fileUploadedImg : uploadFileImg} />
+                                        <span className={`${cl.model_upload_window_load_file_text}`}>
+                                            {
+                                                !modelPrintFile.file && !modelPrintFile.loading
+                                                    ? "Перетягніть файл сюди"
+                                                    : modelPrintFile.file && !modelPrintFile.loading
+                                                        ? "Файл було успішно завантажено!"
+                                                        : "Завантаження фалу..."
+                                            }
+                                        </span>
                                         <div className={`${cl.model_upload_window_load_file_progress}`}>
-                                            <div className={`${cl.model_upload_window_load_file_done_progress}`} />
+                                            <div className={`${cl.model_upload_window_load_file_done_progress}`}
+                                                style={{
+                                                    width:
+                                                        !modelPrintFile.file && !modelPrintFile.loading ? '0%'
+                                                            : modelPrintFile.file && !modelPrintFile.loading ? '100%'
+                                                                : undefined
+                                                }} />
                                         </div>
                                     </div>
                                 </div>
@@ -482,7 +502,7 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                 <div className={`${cl.model_upload_window_load_file_button}`}>
                                     <div className={`${cl.model_upload_window_load_file}`}
                                         onClick={() => {
-                                            if (modelImageFile === null) {
+                                            if (modelImageFile.file === null) {
                                                 modelImageFileInputRef.current.click();
                                             }
                                         }}>
@@ -509,52 +529,56 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                 let formData = new FormData();
                                                 let xml = new XMLHttpRequest();
 
-                                                setModelImageFile(file);
+                                                setModelImageFile({ file: file, loading: true });
                                                 formData.append('model', file);
 
                                                 xml.onreadystatechange = () => {
                                                     if (xml.readyState === XMLHttpRequest.DONE) {
-                                                        let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[2];
-                                                        let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[2];
-                                                        let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[2];
-                                                        image.src = fileUploadedImg;
-                                                        stateText.innerHTML = "Файл було успішно завантажено!";
-                                                        deleteFileButton.style.display = 'flex';
+                                                        setModelImageFile(p => {
+                                                            let newP = { ...p };
+                                                            newP.loading = false;
+                                                            return newP;
+                                                        });
                                                         xml.abort();
                                                     }
                                                 };
 
                                                 xml.upload.addEventListener("progress", (event) => {
-                                                    let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[2];
                                                     let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[2];
                                                     progressBar.style.width = `${(event.loaded / event.total) * 100}%`;
-                                                    stateText.innerHTML = "Завантаження фалу...";
                                                 }, false);
 
                                                 xml.open("POST", "fileupload.php");
                                                 xml.send(formData);
                                             }} />
                                         <div className={cl.model_upload_window_delete_file_button}
+                                            style={{ display: modelImageFile.file && !modelImageFile.loading ? 'flex' : 'none' }}
                                             title="Видалити"
                                             onClick={() => {
-                                                let image = document.getElementsByClassName(cl.model_upload_window_load_file_img)[2];
-                                                let stateText = document.getElementsByClassName(cl.model_upload_window_load_file_text)[2];
-                                                let deleteFileButton = document.getElementsByClassName(cl.model_upload_window_delete_file_button)[2];
-                                                let progressBar = document.getElementsByClassName(cl.model_upload_window_load_file_done_progress)[2];
-                                                image.src = uploadFileImg;
-                                                stateText.innerHTML = "Перетягніть файл сюди";
-                                                deleteFileButton.style.display = 'none';
-                                                progressBar.style.width = '0%';
-                                                setModelImageFile(null);
+                                                setModelImageFile({ file: null, loading: false });
                                                 modelImageFileInputRef.current.value = "";
                                             }}>
                                             <img className={cl.model_upload_window_delete_file_button_img} alt="delete file" />
                                         </div>
                                         <img className={`${cl.model_upload_window_load_file_img}`} alt="load file"
-                                            src={uploadFileImg} />
-                                        <span className={`${cl.model_upload_window_load_file_text}`}>Перетягніть файл сюди</span>
+                                            src={modelImageFile.file && !modelImageFile.loading ? fileUploadedImg : uploadFileImg} />
+                                        <span className={`${cl.model_upload_window_load_file_text}`}>
+                                            {
+                                                !modelImageFile.file && !modelImageFile.loading
+                                                    ? "Перетягніть файл сюди"
+                                                    : modelImageFile.file && !modelImageFile.loading
+                                                        ? "Файл було успішно завантажено!"
+                                                        : "Завантаження фалу..."
+                                            }
+                                        </span>
                                         <div className={`${cl.model_upload_window_load_file_progress}`}>
-                                            <div className={cl.model_upload_window_load_file_done_progress} />
+                                            <div className={cl.model_upload_window_load_file_done_progress}
+                                                style={{
+                                                    width:
+                                                        !modelImageFile.file && !modelImageFile.loading ? '0%'
+                                                            : modelImageFile.file && !modelImageFile.loading ? '100%'
+                                                                : undefined
+                                                }} />
                                         </div>
                                     </div>
                                 </div>
@@ -563,7 +587,11 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                     </div>
                     <div className={cl.model_upload_window_additional_info}>
                         <h3 className={cl.model_upload_window_model_description_header}>Опис моделі</h3>
-                        <textarea className={cl.model_upload_window_model_description} rows="8" ref={modelDescriptionInputRef} />
+                        <textarea className={cl.model_upload_window_model_description}
+                            rows="8"
+                            value={modelDescriptionInputValue}
+                            ref={modelDescriptionInputRef}
+                            onChange={(e) => { setModelDescriptionInputValue(e.target.value); }} />
                         <h3 className={cl.model_upload_window_model_categories_header}>Категорії</h3>
                         <div className={cl.model_upload_window_model_categories_cont}>
                             <div className={cl.model_upload_window_model_categories}>
@@ -625,7 +653,9 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                             defaultValue={0}
                             min={5}
                             max={100}
-                            ref={modelDepthInputRef} />
+                            value={modelDepthInputValue}
+                            ref={modelDepthInputRef}
+                            onChange={(e) => { setModelDepthInputValue(e.target.value); }} />
                         <div className={cl.model_upload_window_control}>
                             <div className={cl.model_upload_window_accept_button} onClick={UploadModelRequest}>
                                 {!isModelUploading ?

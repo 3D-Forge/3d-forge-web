@@ -13,6 +13,13 @@
     display: none;
 }
 
+.model_review_window_loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .model_review_window {
     position: absolute;
     top: 50%;
@@ -32,7 +39,7 @@
     left: 50%;
 }
 
-@media (width < 1175px) {
+@media (width < 850px) {
     .model_review_window {
         top: 0;
         transform: translate(0, 0);
@@ -55,4 +62,294 @@
 
 .model_review_window_cancel_sign:hover {
     content: url(./img/close-active.png);
+}
+
+.model_review_window_top {
+    position: relative;
+}
+
+.model_review_window_header {
+    margin-left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+    font-size: 33px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: white;
+}
+
+.model_review_window_instruction {
+    margin-top: 10px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.model_review_window_model_info {
+    display: grid;
+    grid-template-columns: 250px auto;
+    grid-column-gap: 10px;
+    grid-row-gap: 30px;
+    margin-top: 30px;
+}
+
+@media (width < 850px) {
+    .model_review_window_model_info {
+        grid-template-columns: 1fr;
+    }
+}
+
+.model_review_window_model_files {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (width < 850px) {
+    .model_review_window_model_files {
+        flex-direction: row;
+    }
+}
+
+.model_review_window_model_image {
+    width: 250px;
+    height: 250px;
+}
+
+@media (width < 850px) {
+    .model_review_window_model_image {
+        margin-right: 20px;
+    }
+}
+
+.model_review_window_open_preview_file_cont {
+    position: relative;
+}
+
+.model_review_window_open_preview_file_label {
+    color: white;
+    font-size: 23px;
+    letter-spacing: 1px;
+    margin-top: 15px;
+}
+
+.model_review_window_open_file_button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background-color: #7C26BF;
+    width: 220px;
+    height: 55px;
+    margin-top: 5px;
+}
+
+.model_review_window_open_file_button:hover {
+    background-color: #5d1e8e;
+}
+
+.model_review_window_open_file_button_img {
+    width: 30px;
+    content: url(./img/open.png);
+    margin-right: 15px;
+}
+
+.model_review_window_open_file_button_text {
+    color: white;
+    font-size: 25px;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
+
+.model_review_window_model_general_info {
+    position: relative;
+}
+
+.model_review_window_model_general_info>div:not(:first-child) {
+    margin-top: 10px;
+}
+
+.model_review_window_info_field_cont {
+    position: relative;
+    overflow: hidden;
+}
+
+.model_review_window_info_field_header {
+    color: #C9C9C9;
+    font-size: 25px;
+    text-wrap: nowrap;
+}
+
+.model_review_window_model_info_field_set_1 {
+    display: grid;
+    grid-template-columns: 45% 25% 30%;
+}
+
+.model_review_window_model_info_field_set_2 {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.model_review_window_info_field {
+    background-color: white;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 25px;
+    padding-block: 5px;
+    letter-spacing: 0.5px;
+    padding-left: 8px;
+    margin-top: 3px;
+}
+
+.model_review_window_info_field:focus {
+    outline: none;
+}
+
+.model_review_window_info_field_cont_login .model_review_window_info_field {
+    width: calc(100% - 15px);
+}
+
+.model_review_window_info_field_cont_price .model_review_window_info_field {
+    width: calc(100% - 15px);
+}
+
+.model_review_window_info_field_cont_uploaded .model_review_window_info_field {
+    width: calc(100% - 8px);
+}
+
+.model_review_window_info_field_cont_name .model_review_window_info_field {
+    width: calc(100% - 8px);
+}
+
+.model_review_window_info_field_cont_tags .model_review_window_info_field {
+    width: calc(100% - 15px);
+}
+
+.model_review_window_info_field_cont_categories .model_review_window_info_field {
+    width: calc(100% - 8px);
+}
+
+.model_review_window_info_field_description {
+    background-color: white;
+    width: calc(100% - 8px);
+    border: none;
+    border-radius: 8px;
+    font-size: 25px;
+    padding-block: 5px;
+    letter-spacing: 0.5px;
+    padding-left: 8px;
+    overflow: hidden;
+    resize: none;
+}
+
+.model_review_window_info_field_description:focus {
+    outline: none;
+}
+
+.model_review_window_control {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+    justify-content: end;
+    margin-top: 20px;
+}
+
+.model_review_window_accept_button {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #C99E22;
+    border-radius: 8px;
+    padding-block: 5px;
+    padding-inline: 10px;
+    margin-left: 30px;
+    margin-top: 20px;
+}
+
+.model_review_window_accept_button:hover {
+    background-color: #8a6e19;
+}
+
+.model_review_window_accept_button_img {
+    content: url(./img/accept.png);
+    margin-right: 10px;
+}
+
+.model_review_window_accept_button_text {
+    color: white;
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.model_review_window_deny_button {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #D72E18;
+    border-radius: 8px;
+    padding-block: 5px;
+    padding-inline: 10px;
+    margin-left: 30px;
+    margin-top: 20px;
+}
+
+.model_review_window_deny_button:hover {
+    background-color: #892316;
+}
+
+.model_review_window_deny_button_img {
+    content: url(./img/deny.png);
+    margin-right: 10px;
+}
+
+.model_review_window_deny_button_text {
+    color: white;
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.model_review_window_block_button {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    background-color: #D72E18;
+    border-radius: 8px;
+    padding-block: 5px;
+    padding-inline: 10px;
+    margin-top: 20px;
+}
+
+.model_review_window_block_button:hover {
+    background-color: #892316;
+}
+
+.model_review_window_block_button_img {
+    content: url(./img/block.png);
+    margin-right: 10px;
+}
+
+.model_review_window_block_button_text {
+    color: white;
+    font-size: 30px;
+    letter-spacing: 1px;
 }

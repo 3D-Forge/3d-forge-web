@@ -65,6 +65,10 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/${id}`);
     }
 
+    static async getModelPreview(id) {
+        return await BaseAPI.get(`catalog/${id}/preview`);
+    }
+
     static async getModelPicture(id) {
         return await BaseAPI.get(`catalog/model/picture/${id}`);
     }
