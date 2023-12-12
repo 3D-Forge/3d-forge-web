@@ -18,14 +18,16 @@ namespace Backend3DForge.Responses
 		public class View
 		{
 			public int Id { get; set; }
-			public OrderResponse Order { get; set; }
+			public OrderResponse.View Order { get; set; }
 			public string OrderStatusName { get; set; }
+			public int OrderStatus { get; set; }
 
 			public View(OrderStatusOrder orderStatusOrder)
 			{
 				Id = orderStatusOrder.Id;
-				Order = new OrderResponse(orderStatusOrder.Order);
-				OrderStatusName = orderStatusOrder.OrderStatusName;
+				Order = new OrderResponse.View(orderStatusOrder.Order);
+				OrderStatusName = Enum.GetName(orderStatusOrder.OrderStatus) ?? "unknown";
+				OrderStatus = (int)orderStatusOrder.OrderStatus;
 			}
 		}
 	}

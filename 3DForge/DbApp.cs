@@ -23,7 +23,6 @@ namespace Backend3DForge
 		public DbSet<PrintMaterial> PrintMaterials { get; set; }
 		public DbSet<PrintType> PrintTypes { get; set; }
 		public DbSet<PrintMaterialColor> PrintMaterialColors { get; set; }
-		public DbSet<OrderStatus> OrderStatuses { get; set; }
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<OrderStatusOrder> OrderStatusOrders { get; set; }
 		public DbSet<OrderedModel> OrderedModels { get; set; }
@@ -134,10 +133,6 @@ namespace Backend3DForge
 				.WithMany(p => p.OrderedModels)
 				.HasForeignKey(o => o.PrintMaterialColorId)
 				.OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrderStatus>()
-				.HasKey(p => p.Name)
-				.HasName("PK_OrderStatus");
 
             base.OnModelCreating(modelBuilder);
 		}

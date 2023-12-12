@@ -218,15 +218,6 @@ namespace Backend3DForge.Tools
                     db.SaveChanges();
                 }
             );
-
-            InitializeTableWithData<OrderStatus, string>(
-                dbContext: db,
-                dataKey: "orderedStatuses",
-                getEntityDbSet: (db) => db.OrderStatuses,
-                createNewEntity: (record, index) => new(record),
-				validate: (existingEntity, entity) => false
-				);
-
 		}
 
         /// <summary>

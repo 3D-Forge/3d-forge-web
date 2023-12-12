@@ -52,6 +52,7 @@ namespace Backend3DForge.Controllers
 			ModelCalculatorResult? printParameters = null;
 			string? printExtenstion = null;
 			double price = 0;
+			long fileSize = 0;
 
 			if (addRequest.CatalogModelId is not null)
 			{
@@ -64,7 +65,8 @@ namespace Backend3DForge.Controllers
 
 				printExtenstion = catalogModel.PrintExtensionId;
 				price = catalogModel.MinPrice;
-			}
+				fileSize = catalogModel.PrintFileSize;
+            }
 			else if (addRequest.File is not null)
 			{
 				printExtenstion = Path.GetExtension(addRequest.File.FileName).Replace(".", "");
@@ -106,7 +108,10 @@ namespace Backend3DForge.Controllers
 				{
 					price += ValueAdded;
 				}
-			}
+
+                fileSize = addRequest.File.Length;
+
+            }
 			else
 			{
 				return BadRequest(new BaseResponse.ErrorResponse("Chose something one!"));
@@ -155,6 +160,7 @@ namespace Backend3DForge.Controllers
 				XSize = catalogModel?.XSize ?? printParameters?.X ?? 0f,
 				YSize = catalogModel?.YSize ?? printParameters?.Y ?? 0f,
 				ZSize = catalogModel?.ZSize ?? printParameters?.Z ?? 0f,
+				FileSize = fileSize,
 				Depth = addRequest.Depth,
 				Scale = addRequest.Scale,
 				PrintMaterialColorId = color.Id,
@@ -175,7 +181,7 @@ namespace Backend3DForge.Controllers
 				});
 			}
 
-			return Ok(new BaseResponse.SuccessResponse("Model added", new OrderedModelResponse(orderedModel)));
+			return Ok(new OrderedModelResponse(orderedModel));
 		}
 
 		[Authorize]

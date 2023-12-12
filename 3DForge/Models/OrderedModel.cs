@@ -11,6 +11,8 @@ namespace Backend3DForge.Models
 		public int? CatalogModelId { get; set; }
 		public CatalogModel? CatalogModel { get; set; }
 		[Required]
+		public long FileSize { get; set; }
+		[Required]
 		public string PrintExtensionId { get; set; }
 		public PrintExtension PrintExtension { get; set; }
 		[Required]

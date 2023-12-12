@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Requests
 {
 	public class UpdateOrderStatusRequest
 	{
 		[Required]
-		public int Id { get; set; }
-		[Required]
-		public string Status { get; set; }
+		public OrderStatusType Status { get; set; }
 	}
 }

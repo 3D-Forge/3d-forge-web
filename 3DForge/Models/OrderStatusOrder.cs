@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend3DForge.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend3DForge.Models
 {
@@ -10,8 +11,7 @@ namespace Backend3DForge.Models
 		public int OrderId { get; set; }
 		public Order Order { get; set; }
 		[Required]
-		public string OrderStatusName { get; set; }
-		public OrderStatus OrderStatus { get; set; }
+		public OrderStatusType OrderStatus { get; set; }
 		[Required]
 		public DateTime CreatedAt { get; set; }
 	}

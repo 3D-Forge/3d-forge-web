@@ -1,10 +1,14 @@
 ﻿using Backend3DForge.Attributes;
+using Backend3DForge.Enums;
 using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
+using Backend3DForge.Services.FileStorage;
+using Backend3DForge.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace Backend3DForge.Controllers
 {
@@ -12,8 +16,11 @@ namespace Backend3DForge.Controllers
     [ApiController]
     public class OrdersController : BaseController
     {
-        public OrdersController(DbApp db) : base(db)
+        protected readonly IFileStorage fileStorage;
+
+        public OrdersController(DbApp db, IFileStorage fileStorage) : base(db)
         {
+            this.fileStorage = fileStorage;
         }
 
         [Authorize]
@@ -93,7 +100,7 @@ namespace Backend3DForge.Controllers
             if (request.PrintColor is not null)
             {
                 var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialId == orderModel.PrintMaterialId && p.Id == request.PrintColor);
-                if(color is null)
+                if (color is null)
                 {
                     return BadRequest(new BaseResponse.ErrorResponse($"This color [{request.PrintColor}] does not exists in material [{orderModel.PrintMaterialId}]"));
                 }
@@ -184,15 +191,13 @@ namespace Backend3DForge.Controllers
                 order.Apartment = request.Apartment;
             }
 
-            var orderStatus = new OrderStatus("ordered");
-
             order = (await DB.Orders.AddAsync(order)).Entity;
 
             await DB.SaveChangesAsync();
 
             var orderStatusOrder = new OrderStatusOrder();
             orderStatusOrder.OrderId = order.Id;
-            orderStatusOrder.OrderStatusName = orderStatus.Name;
+            orderStatusOrder.OrderStatus = OrderStatusType.Paid;
 
             DB.OrderStatusOrders.Add(orderStatusOrder);
 
@@ -205,36 +210,123 @@ namespace Backend3DForge.Controllers
             }
             await DB.SaveChangesAsync();
 
-            return Ok(new OrderStatusOrderResponse(orderStatusOrder));
+            order = DB.Orders
+                .Include(p => p.User)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor)
+                .Include(p => p.OrderStatusOrders)
+                .FirstOrDefault(p => p.Id == order.Id);
+
+            return Ok(new OrderResponse(order));
         }
 
         [Authorize]
         [CanRetrieveDelivery]
-        [HttpPost("orderStatus")]
-        public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest request)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateOrderStatus([FromRoute] int id, [FromBody] UpdateOrderStatusRequest request)
         {
-            var orderStatusOrder = await DB.OrderStatusOrders
-                .Include(p => p.OrderStatus)
-                .Include(p => p.Order)
-                .Include(p => p.Order.User)
-                .FirstOrDefaultAsync(p => p.Id == request.Id);
-
-            if (orderStatusOrder == null)
+            if(Enum.GetName(typeof(OrderStatusType), request.Status) is null)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Selected order status order does not exists"));
+                var values = Enum.GetValues<OrderStatusType>();
+                var names = values.Select(p => $"{Enum.GetName(typeof(OrderStatusType), p)}[{(int)p}]");
+                return BadRequest(new BaseResponse.ErrorResponse($"Invalid status. Supported only: {string.Join(", ", names)}"));
             }
 
-            var orderStatus = await DB.OrderStatuses
-                .FirstOrDefaultAsync(x => x.Name == request.Status);
+            var order = await DB.Orders
+                .Include(p => p.User)
+                .Include(p => p.OrderStatusOrders)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (orderStatus == null)
+            if (order == null)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Selected order status does not exists"));
+                return BadRequest(new BaseResponse.ErrorResponse("Selected order does not exists"));
             }
 
-            orderStatusOrder.OrderStatusName = orderStatus.Name;
+            var lastStatus = order.OrderStatusOrders.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
+            if (lastStatus is not null && lastStatus.OrderStatus == request.Status)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Order already has this status"));
+            }
 
-            return Ok(new OrderStatusOrderResponse(orderStatusOrder));
+            var orderStatusOrder = new OrderStatusOrder();
+            orderStatusOrder.OrderId = order.Id;
+            orderStatusOrder.CreatedAt = DateTime.UtcNow;
+            orderStatusOrder.OrderStatus = request.Status;
+
+            orderStatusOrder = (await DB.OrderStatusOrders.AddAsync(orderStatusOrder)).Entity;
+
+            await DB.SaveChangesAsync();
+
+            return Ok(new OrderResponse(order));
+        }
+
+        [Authorize]
+        [CanRetrieveDelivery]
+        [HttpGet("list")]
+        public async Task<IActionResult> GetOrdersList([FromQuery] ListOrdersRequest request)
+        {
+            IQueryable<Order> orders = DB.Orders
+                .Include(p => p.User)
+                .Include(p => p.OrderStatusOrders)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor);
+
+            if(request.OrderStatus is not null)
+            {
+                orders = orders.Where(p => p.OrderStatusOrders.OrderByDescending(p => p.CreatedAt).First().OrderStatus == request.OrderStatus);
+            }
+
+            if(request.Query is not null)
+            {
+                orders = orders.Where(p => p.Firstname.Contains(request.Query) || p.Midname.Contains(request.Query) || p.Id.ToString().Contains(request.Query));
+            }
+
+            switch (request.SortParameter)
+            {
+                case "createdAt":
+                    orders = request.SortDirection == "asc" ? orders.OrderBy(p => p.CreatedAt) : orders.OrderByDescending(p => p.CreatedAt);
+                    break;
+                case "status":
+                    orders = request.SortDirection == "asc" ? 
+                        orders.OrderBy(p => p.OrderStatusOrders.OrderByDescending(p => p.CreatedAt).First().OrderStatus) :
+                        orders.OrderByDescending(p => p.OrderStatusOrders.OrderByDescending(p => p.CreatedAt).First().OrderStatus);
+                    break;
+                default:
+                    orders = orders.OrderByDescending(p => p.CreatedAt);
+                    break;
+            }
+
+            orders = orders.ToPaged(request, out int count);
+
+            var result = await orders.Select(p => new OrderResponse.View(p)).ToListAsync();
+
+            return Ok(new PageResponse<OrderResponse.View>(result, request, count));
+        }
+
+        [Authorize]
+        [CanRetrieveDelivery]
+        [HttpGet("{orderId}/{modelId}/download-print-file")]
+        public async Task<IActionResult> DownloadPrintFile([FromRoute] int orderId, [FromRoute] int modelId)
+        {
+            var order = await DB.Orders
+                .Include(p => p.User)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.CatalogModel)
+                .FirstOrDefaultAsync(p => p.Id == orderId);
+            if (order == null)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Selected order does not exists"));
+            }
+            var orderedModel = order.OrderedModels.FirstOrDefault(p => p.Id == modelId);
+            if (orderedModel == null)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Selected model does not exists"));
+            }
+            var fileStream = orderedModel.CatalogModel is null ? 
+                await fileStorage.DownloadPrintFile(orderedModel) : 
+                await fileStorage.DownloadPrintFile(orderedModel.CatalogModel);
+            HttpContext.Response.ContentLength = orderedModel.FileSize;
+            HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename=order-{order.Id}-{orderedModel.Id}.{orderedModel.PrintExtensionId}");
+            return new FileStreamResult(fileStream, "application/octet-stream");
         }
     }
 }
