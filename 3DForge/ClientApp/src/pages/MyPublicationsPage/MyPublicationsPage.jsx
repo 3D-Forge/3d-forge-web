@@ -5,7 +5,9 @@ import { CatalogAPI } from "../../services/api/CatalogAPI";
 import { UploadModelWindowContext } from "../../ContextProvider";
 
 const MyPublicationsPage = () => {
-    const { uploadModelWindowInfo, setUploadModelWindowInfo } = React.useContext(UploadModelWindowContext);
+    const { setUploadModelWindowInfo, setUploadModelWindowEvents } = React.useContext(UploadModelWindowContext);
+    
+    const [areModalWindowEventsLoaded, setAreModalWindowEventsLoaded] = React.useState(false);
 
     const [modelList, setModelList] = React.useState({ list: null, currentPage: 1, pageCount: 0 });
     const [isModelListLoading, setModelListLoading] = React.useState(false);
@@ -59,8 +61,8 @@ const MyPublicationsPage = () => {
                         </div>
                         <div className={cl.edit_model_button}
                             onClick={(e) => {
-                                /*e.stopPropagation();
-                                setUploadModelMenuInfo({ visible: true, modelId: el.id });*/
+                                e.stopPropagation();
+                                setUploadModelWindowInfo({ visible: true, modelId: el.id });
                             }}>
                             <img className={cl.edit_model_button_img} alt="edit model" />
                             <span className={cl.edit_model_button_text}>Змінити</span>
@@ -185,6 +187,11 @@ const MyPublicationsPage = () => {
     React.useEffect(() => {
         if (modelList.list === null) {
             LoadModelList();
+        }
+
+        if (!areModalWindowEventsLoaded) {
+            setUploadModelWindowEvents({ onUpload: () => { window.location.reload(); }, onClose: () => { } });
+            setAreModalWindowEventsLoaded(true);
         }
     });
 

@@ -4,6 +4,7 @@ import uploadFileImg from './img/upload-file.png';
 import fileUploadedImg from './img/file-uploaded.png';
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import { UploadModelWindowContext } from "../../ContextProvider";
 
 const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = React.useState({ width: 1, height: 2 });
@@ -32,8 +33,13 @@ const useRefDimensions = (ref) => {
 }
 
 const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = null, onClose = null }) => {
+    const { uploadModelWindowInfo, setUploadModelWindowInfo } = React.useContext(UploadModelWindowContext);
+
+    const [isModelDataLoading, setModelDataLoading] = React.useState(false);
     const [isTagListLoading, setTagListLoading] = React.useState(false);
-    const [isModelUploading, setModelUploading] = React.useState(false);
+    const [isSaving, setSaving] = React.useState(false);
+
+    const [currentModelId, setCurrentModelId] = React.useState(null);
 
     const [categoryList, setCategoryList] = React.useState(null);
     const [tagList, setTagList] = React.useState(null);
@@ -41,6 +47,10 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
     const [modelPreviewFile, setModelPreviewFile] = React.useState({ file: null, loading: false });
     const [modelPrintFile, setModelPrintFile] = React.useState({ file: null, loading: false });
     const [modelImageFile, setModelImageFile] = React.useState({ file: null, loading: false });
+
+    const [isModelPreviewFileChanged, setModelPreviewFileChanged] = React.useState(false);
+    const [isModelPrintFileChanged, setModelPrintFileChanged] = React.useState(false);
+    const [isModelImageFileChanged, setModelImageFileChanged] = React.useState(false);
 
     const [categoriesForOwnModel, setCategoriesForOwnModel] = React.useState([]);
     const [tagsForOwnModel, setTagsForOwnModel] = React.useState([]);
@@ -64,9 +74,10 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
     const modalWindowDimensions = useRefDimensions(modalWindowRef);
 
     async function UploadModelRequest() {
-        setModelUploading(true);
+        setSaving(true);
 
         let formData = new FormData();
+
         formData.append('Name', modelNameInputRef.current.value);
         formData.append('Description', modelDescriptionInputRef.current.value);
         formData.append('Depth', modelDepthInputRef.current.value);
@@ -86,6 +97,8 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
         let json = await (await CatalogAPI.addNewModel(formData)).json();
 
         if (json.success) {
+            alert('Your model is uploaded!');
+            setUploadModelWindowInfo({ visible: false, modelId: null });
             onUpload();
             return;
         }
@@ -97,7 +110,123 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
             alert("Invalid data!");
         }
 
-        setModelUploading(false);
+        setSaving(false);
+    }
+
+    async function EditModelRequest() {
+        setSaving(true);
+
+        let formDataInfo = new FormData();
+
+        formDataInfo.append('Name', modelNameInputRef.current.value);
+        formDataInfo.append('Description', modelDescriptionInputRef.current.value);
+        formDataInfo.append('Depth', modelDepthInputRef.current.value);
+
+        categoriesForOwnModel.map(el => el.id).forEach((e) => {
+            formDataInfo.append('Categories', e);
+        });
+
+        tagsForOwnModel.forEach((e) => {
+            formDataInfo.append('Keywords', e);
+        });
+
+        let jsonInfo = await (await CatalogAPI.updateModelInfo(editingModelId, formDataInfo)).json();
+
+        if (jsonInfo.success === false) {
+            alert(jsonInfo.message);
+            setSaving(false);
+            return;
+        }
+
+        if (!jsonInfo.success) {
+            alert("Info is not saved!");
+            setSaving(false);
+            return;
+        }
+
+        if (isModelPreviewFileChanged) {
+            let formDataPreviewFile = new FormData();
+            formDataPreviewFile.append('file', modelPreviewFile.file);
+
+            let jsonFile = await (await CatalogAPI.updatePreviewFile(editingModelId, formDataPreviewFile)).json();
+
+            if (jsonFile.success === false) {
+                alert(jsonInfo.message);
+                setSaving(false);
+                return;
+            }
+
+            if (!jsonInfo.success) {
+                alert("Preview is not saved!");
+                setSaving(false);
+                return;
+            }
+        }
+
+        if (isModelPrintFileChanged) {
+            let formDataPrintFile = new FormData();
+            formDataPrintFile.append('file', modelPrintFile.file);
+
+            let jsonFile = await (await CatalogAPI.updatePrintFile(editingModelId, formDataPrintFile)).json();
+
+            if (jsonFile.success === false) {
+                alert(jsonInfo.message);
+                setSaving(false);
+                return;
+            }
+
+            if (!jsonInfo.success) {
+                alert("Print is not saved!");
+                setSaving(false);
+                return;
+            }
+        }
+
+        if (isModelImageFileChanged) {
+            let formDataImageFile = new FormData();
+            formDataImageFile.append('files', modelImageFile.file);
+
+            let jsonFile = await (await CatalogAPI.updatePictureFiles(editingModelId, formDataImageFile)).json();
+
+            if (jsonFile.success === false) {
+                alert(jsonInfo.message);
+                setSaving(false);
+                return;
+            }
+
+            if (!jsonInfo.success) {
+                alert("Image is not saved!");
+                setSaving(false);
+                return;
+            }
+        }
+
+        alert('Model data is updated!');
+        setUploadModelWindowInfo({ visible: false, modelId: null });
+        onUpload();
+
+        setSaving(false);
+    }
+
+    async function LoadModelData() {
+        setModelDataLoading(true);
+
+        let json = await (await CatalogAPI.getModel(editingModelId)).json();
+        let preview = await CatalogAPI.getModelPreview(json.data.id);
+        let print = await CatalogAPI.getPrintFile(json.data.id);
+        let picture = URL.createObjectURL(await (await CatalogAPI.getModelPicture(json.data.picturesIDs[0])).blob());
+
+        setCurrentModelId(json.data.id);
+        setModelNameInputValue(json.data.name);
+        setModelPreviewFile({ file: preview, loading: false });
+        setModelPrintFile({ file: print, loading: false });
+        setModelImageFile({ file: picture, loading: false });
+        setModelDescriptionInputValue(json.data.description);
+        setCategoriesForOwnModel(json.data.categories);
+        setTagsForOwnModel(json.data.keywords);
+        setModelDepthInputValue(json.data.depth);
+
+        setModelDataLoading(false);
     }
 
     async function LoadCategoryList() {
@@ -266,6 +395,22 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
             LoadCategoryList();
         }
 
+        if (editingModelId === null && currentModelId !== null) {
+            setCurrentModelId(null);
+            setModelNameInputValue("");
+            setModelPreviewFile({ file: null, loading: false });
+            setModelPrintFile({ file: null, loading: false });
+            setModelImageFile({ file: null, loading: false });
+            setModelDescriptionInputValue("");
+            setCategoriesForOwnModel([]);
+            setTagsForOwnModel([]);
+            setModelDepthInputValue("");
+        }
+
+        if (editingModelId !== null && editingModelId !== currentModelId) {
+            LoadModelData();
+        }
+
         window.addEventListener("click", WindowClickEvent);
 
         return () => {
@@ -277,13 +422,27 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
         return;
     }
 
+    if (isModelDataLoading) {
+        return (
+            <div className={cl.model_upload_window_background}
+                onScroll={(e) => e.stopPropagation()}>
+                <div className={cl.model_upload_window_loading}>
+                    <LoadingAnimation size="100px" loadingCurveWidth="20px" />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={cl.model_upload_window_background}
             onScroll={(e) => e.stopPropagation()}>
             <div className={`${cl.model_upload_window} ${modalWindowDimensions.height > window.innerHeight ? cl.model_upload_window_fixed : ''}`} ref={modalWindowRef}>
                 <img className={cl.model_upload_window_cancel_sign}
                     alt="cancel"
-                    onClick={onClose} />
+                    onClick={() => {
+                        setUploadModelWindowInfo({ visible: false, modelId: null });
+                        onClose();
+                    }} />
                 <div className={cl.model_upload_window_top}>
                     <h2 className={cl.model_upload_window_header}>
                         {editingModelId === null ? "Додати модель" : "Зміна інформації моделі"}
@@ -354,6 +513,11 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                             return newP;
                                                         });
                                                         xml.abort();
+
+
+                                                        if (!isModelPreviewFileChanged) {
+                                                            setModelPreviewFileChanged(true);
+                                                        }
                                                     }
                                                 };
 
@@ -447,6 +611,10 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                             return newP;
                                                         });
                                                         xml.abort();
+
+                                                        if (!isModelPrintFileChanged) {
+                                                            setModelPrintFileChanged(true);
+                                                        }
                                                     }
                                                 };
 
@@ -540,6 +708,10 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                                                             return newP;
                                                         });
                                                         xml.abort();
+
+                                                        if (!isModelImageFileChanged) {
+                                                            setModelImageFileChanged(true);
+                                                        }
                                                     }
                                                 };
 
@@ -650,25 +822,33 @@ const UploadModelWindow = ({ visible = false, editingModelId = null, onUpload = 
                         <h3 className={cl.model_upload_window_model_depth_header}>Відсоток заповенення</h3>
                         <input className={cl.model_upload_window_model_depth}
                             type="number"
-                            defaultValue={0}
                             min={5}
                             max={100}
                             value={modelDepthInputValue}
                             ref={modelDepthInputRef}
                             onChange={(e) => { setModelDepthInputValue(e.target.value); }} />
                         <div className={cl.model_upload_window_control}>
-                            <div className={cl.model_upload_window_accept_button} onClick={UploadModelRequest}>
-                                {!isModelUploading ?
+                            <div className={cl.model_upload_window_accept_button} onClick={() => {
+                                if (editingModelId === null) {
+                                    UploadModelRequest();
+                                }
+                                else {
+                                    EditModelRequest();
+                                }
+                            }}>
+                                {!isSaving ?
                                     <>
                                         <img className={cl.model_upload_window_accept_button_img} alt="upload" />
-                                        <span>Додати модель</span>
+                                        <span>{editingModelId ? 'Змінити модель' : 'Додати модель'}</span>
                                     </>
-                                    :
-                                    <LoadingAnimation size="25px" loadingCurveWidth="5px" />
+                                    : <LoadingAnimation size="25px" loadingCurveWidth="5px" />
                                 }
                             </div>
                             <div className={cl.model_upload_window_cancel_button}
-                                onClick={onClose}>
+                                onClick={() => {
+                                    setUploadModelWindowInfo({ visible: false, modelId: null });
+                                    onClose();
+                                }}>
                                 <span>Скасувати</span>
                             </div>
                         </div>

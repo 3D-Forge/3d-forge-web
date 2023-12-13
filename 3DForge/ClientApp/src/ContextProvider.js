@@ -10,23 +10,33 @@ export const ContextProvider = ({ children }) => {
         visible: false,
         modelId: null
     });
+    const [uploadModelWindowEvents, setUploadModelWindowEvents] = React.useState({
+        onUpload: () => {},
+        onClose: () => {}
+    });
+
     const [reviewModelWindowInfo, setReviewModelWindowInfo] = React.useState({
         visible: false,
         modelId: null
     });
 
     return (
-        <UploadModelWindowContext.Provider value={{ uploadModelWindowInfo, setUploadModelWindowInfo }}>
-            <ReviewModelWindowContext.Provider value={{ reviewModelWindowInfo, setReviewModelWindowInfo }}>
+        <UploadModelWindowContext.Provider value={{
+            uploadModelWindowInfo,
+            uploadModelWindowEvents,
+            setUploadModelWindowInfo,
+            setUploadModelWindowEvents
+        }}>
+            <ReviewModelWindowContext.Provider value={{
+                reviewModelWindowInfo,
+                setReviewModelWindowInfo
+            }}>
                 {children}
                 <UploadModelWindow
                     visible={uploadModelWindowInfo.visible}
                     editingModelId={uploadModelWindowInfo.modelId}
-                    onUpload={() => {
-                        setUploadModelWindowInfo({ visible: false, modelId: null });
-                        alert(uploadModelWindowInfo.modelId ? 'Model info is updated!' : 'Your model is uploaded!');
-                    }}
-                    onClose={() => setUploadModelWindowInfo({ visible: false, modelId: null })} />
+                    onUpload={() => uploadModelWindowEvents.onUpload()}
+                    onClose={() => uploadModelWindowEvents.onClose()} />
                 <ReviewModelWindow
                     visible={reviewModelWindowInfo.visible}
                     reviewingModelId={reviewModelWindowInfo.modelId}

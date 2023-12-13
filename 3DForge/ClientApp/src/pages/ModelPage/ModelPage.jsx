@@ -4,7 +4,7 @@ import { CatalogAPI } from '../../services/api/CatalogAPI';
 import { useParams } from "react-router-dom";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { UserAPI } from '../../services/api/UserAPI';
-import { CatalogModelFeedbackAPI } from '../../services/api/CatalogModelFeedback';
+import { CatalogModelFeedbackAPI } from '../../services/api/CatalogModelFeedbackAPI';
 
 
 

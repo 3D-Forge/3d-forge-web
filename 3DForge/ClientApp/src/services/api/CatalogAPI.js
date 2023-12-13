@@ -69,6 +69,10 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/${id}/preview`);
     }
 
+    static async updatePreviewFile(id, formData) {
+        return await BaseAPI.put(`catalog/${id}/preview`, formData);
+    }
+
     static async getModelPicture(id) {
         return await BaseAPI.get(`catalog/model/picture/${id}`);
     }
@@ -77,5 +81,21 @@ export class CatalogAPI {
         const sp = sortParam ? `?sort_parameter=${sortParam}` : '?sort_parameter=login';
         const sd = sortDir ? `&sort_direction=${sortDir}` : '&sort_direction=asc';
         return await BaseAPI.get(`catalog/unaccepted${sp}${sd}`);
+    }
+
+    static async updateModelInfo(id, formData) {
+        return await BaseAPI.put(`catalog/${id}/updateInfo`, formData);
+    }
+
+    static async updatePrintFile(id, formData) {
+        return await BaseAPI.put(`catalog/${id}/print`, formData);
+    }
+
+    static async getPrintFile(id) {
+        return await BaseAPI.get(`catalog/${id}/print`);
+    }
+
+    static async updatePictureFiles(id, formData) {
+        return await BaseAPI.put(`catalog/${id}/pictures`, formData);
     }
 }

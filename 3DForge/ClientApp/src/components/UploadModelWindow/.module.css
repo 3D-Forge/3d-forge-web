@@ -13,6 +13,13 @@
     display: none;
 }
 
+.model_upload_window_loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .model_upload_window {
     position: absolute;
     top: 50%;
@@ -577,12 +584,12 @@
     color: white;
     font-size: 25px;
     font-weight: bold;
-    width: 250px;
+    width: 260px;
     height: 40px;
 }
 
 .model_upload_window_accept_button:hover {
-    background: rgb(255, 217, 0);
+    background: rgb(213, 181, 0);
 }
 
 .model_upload_window_accept_button_img {
