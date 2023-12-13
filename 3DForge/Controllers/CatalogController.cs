@@ -698,25 +698,10 @@ namespace Backend3DForge.Controllers
         }
 
         [Authorize]
-        [HttpPut("{modelId}/updateFiles")]
-        public async Task<IActionResult> UpdateModelFiles([FromRoute] int modelId, [FromForm] IFormFileCollection files)
+        [HttpPut("{modelId}/preview")]
+        public async Task<IActionResult> UpdatePreviewFile([FromRoute] int modelId, [FromForm] IFormFile file)
         {
-            if (files.Count != 2)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Please select 2 files"));
-            }
-
-            var model = files[0];
-            var modelEx = Path.GetExtension(model.FileName).Replace(".", "");
-            var print = files[1];
-            var printEx = Path.GetExtension(print.FileName).Replace(".", "");
-
-            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Id == printEx);
-
-            if (printExtension is null)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
-            }
+            var modelEx = Path.GetExtension(file.FileName).Replace(".", "");
 
             var modelExtension = await DB.ModelExtensions.SingleOrDefaultAsync(p => p.Id == modelEx);
             if (modelExtension is null)
@@ -731,7 +716,7 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.ModelExtension)
                 .Include(p => p.PrintExtension)
                 .Include(p => p.Pictures)
-                .SingleOrDefaultAsync(p => p.Id == modelId);
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.UserId == AuthorizedUserId);
 
             if (catalogModel is null)
             {
@@ -739,17 +724,130 @@ namespace Backend3DForge.Controllers
             }
 
             catalogModel.ModelExtensionId = modelExtension.Id;
-            catalogModel.PrintExtensionId = printExtension.Id;
-            catalogModel.ModelFileSize = model.Length;
-            catalogModel.PrintFileSize = print.Length;
+            catalogModel.ModelFileSize = file.Length;
 
             await DB.SaveChangesAsync();
 
-            Task.WaitAll(new[]
+            await this.fileStorage.UploadPreviewModel(catalogModel, file.OpenReadStream());
+            
+            return Ok(new CatalogModelResponse(catalogModel));
+        }
+
+        [Authorize]
+        [HttpPut("{modelId}/print")]
+        public async Task<IActionResult> UpdatePrintFile([FromRoute] int modelId, [FromForm] IFormFile file)
+        {
+            var printEx = Path.GetExtension(file.FileName).Replace(".", "");
+
+            var printExtension = await DB.PrintExtensions.SingleOrDefaultAsync(p => p.Id == printEx);
+            if (printExtension is null)
             {
-                this.fileStorage.UploadPreviewModel(catalogModel, model.OpenReadStream()),
-                this.fileStorage.UploadPrintFile(catalogModel, print.OpenReadStream())
-            });
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid file format for printing"));
+            }
+
+            var catalogModel = await DB.CatalogModels
+                .Include(p => p.User)
+                .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.UserId == AuthorizedUserId);
+
+            if (catalogModel is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("Model not found"));
+            }
+
+            catalogModel.PrintExtensionId = printExtension.Id;
+            catalogModel.PrintFileSize = file.Length;
+
+            await DB.SaveChangesAsync();
+
+            await this.fileStorage.UploadPrintFile(catalogModel, file.OpenReadStream());
+
+            return Ok(new CatalogModelResponse(catalogModel));
+        }
+
+        [HttpGet("{modelId}/print")]
+        public async Task<IActionResult> GetPrintFile([FromRoute] int modelId)
+        {
+            var catalogModel = await DB.CatalogModels
+                .Include(p => p.PrintExtension)
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.Publicized != null);
+            if (catalogModel is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("Model not found"));
+            }
+            var file = await this.fileStorage.DownloadPrintFile(catalogModel);
+            if (file is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("File not found"));
+            }
+            return File(file, "application/octet-stream", $"{catalogModel.Id}.{catalogModel.PrintExtensionId}");
+        }
+
+        [Authorize]
+        [HttpPut("{modelId}/pictures")]
+        public async Task<IActionResult> UpdatePictureFiles([FromRoute] int modelId, [FromForm] IFormFileCollection files)
+        {
+            if(files.Count > 5)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too many files"));
+            }
+
+            var catalogModel = await DB.CatalogModels
+                .Include(p => p.User)
+                .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.UserId == AuthorizedUserId);
+
+            if (catalogModel is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("Model not found"));
+            }
+
+            IList<IFormFile> previewImages = new List<IFormFile>();
+            for (int i = 0; i < files.Count; i++)
+            {
+                if (files[i].ContentType != "image/png")
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName} is not a png image'"));
+                }
+                if (files[i].Length > 1024 * 1024 * 10)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse($"File '{files[i].FileName}' is too large. Max size: 10MB"));
+                }
+                previewImages.Add(files[i]);
+            }
+
+            foreach(var img in catalogModel.Pictures)
+            {
+                await fileStorage.Delete3DModelsPicture(img);
+            }
+
+            DB.ModelPictures.RemoveRange(catalogModel.Pictures);
+
+            await DB.SaveChangesAsync();
+
+            foreach (var image in previewImages)
+            {
+                var picture = (await DB.ModelPictures.AddAsync(new ModelPicture
+                {
+                    CatalogModelId = catalogModel.Id,
+                    CatalogModel = catalogModel,
+                    Size = image.Length,
+                    Uploaded = DateTime.UtcNow
+                })).Entity;
+
+                await DB.SaveChangesAsync();
+
+                await fileStorage.Upload3DModelsPicture(picture, image.OpenReadStream());
+            }
+
             return Ok(new CatalogModelResponse(catalogModel));
         }
 
