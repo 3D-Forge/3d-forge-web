@@ -10,9 +10,8 @@ namespace Backend3DForge.Models
 		public string ForumName { get; set; }
 		[Required]
 		public DateTime CreatedAt { get; set; }
-		[Required]
-		public int UserId { get; set; }
-		public User User { get; set; }
+		public int? UserId { get; set; }
+		public User? User { get; set; }
 
 		public ICollection<Post> Posts { get; set; } = new List<Post>();
 	}

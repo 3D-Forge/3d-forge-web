@@ -140,7 +140,7 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.ModelExtension)
                 .Include(p => p.PrintExtension)
                 .Include(p => p.Pictures)
-                .Where(p => p.Publicized != null);
+                .Where(p => p.Publicized != null && p.User != null);
 
                 if (request.Author is not null)
                 {
@@ -470,7 +470,7 @@ namespace Backend3DForge.Controllers
 
             var model = await DB.CatalogModels
                 .Include(p => p.User)
-                .SingleOrDefaultAsync(p => p.Id == modelId);
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.User != null);
 
             if (model is null)
                 return NotFound(new BaseResponse.ErrorResponse($"Model '{modelId}' not found"));
@@ -550,7 +550,7 @@ namespace Backend3DForge.Controllers
         {
             var model = await DB.CatalogModels
                 .Include(p => p.User)
-                .SingleOrDefaultAsync(p => p.Id == modelId);
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.User != null);
 
             if (model is null)
             {
@@ -604,6 +604,20 @@ namespace Backend3DForge.Controllers
         public async Task<IActionResult> UpdateModelInfo([FromRoute] int modelId, [FromForm] Update3DModelRequest request)
         {
 
+            var catalogModel = await DB.CatalogModels
+                .Include(p => p.User)
+                .Include(p => p.ModelCategoryes)
+                .Include(p => p.Keywords)
+                .Include(p => p.ModelExtension)
+                .Include(p => p.PrintExtension)
+                .Include(p => p.Pictures)
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.UserId == AuthorizedUserId);
+
+            if (catalogModel is null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("Model not found"));
+            }
+
             bool different = false;
 
             HashSet<Keyword> keywords = new HashSet<Keyword>();
@@ -644,20 +658,6 @@ namespace Backend3DForge.Controllers
                         categories.Add(categoryObj);
                     }
                 }
-            }
-
-            var catalogModel = await DB.CatalogModels
-                .Include(p => p.User)
-                .Include(p => p.ModelCategoryes)
-                .Include(p => p.Keywords)
-                .Include(p => p.ModelExtension)
-                .Include(p => p.PrintExtension)
-                .Include(p => p.Pictures)
-                .SingleOrDefaultAsync(p => p.Id == modelId);
-
-            if (catalogModel is null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("Model not found"));
             }
 
 
@@ -774,7 +774,7 @@ namespace Backend3DForge.Controllers
         {
             var catalogModel = await DB.CatalogModels
                 .Include(p => p.PrintExtension)
-                .SingleOrDefaultAsync(p => p.Id == modelId && p.Publicized != null);
+                .SingleOrDefaultAsync(p => p.Id == modelId && p.Publicized != null && p.UserId != null);
             if (catalogModel is null)
             {
                 return NotFound(new BaseResponse.ErrorResponse("Model not found"));
@@ -861,7 +861,12 @@ namespace Backend3DForge.Controllers
 
             if (model is null)
             {
-                return NotFound("Model not found");
+                return NotFound(new BaseResponse.SuccessResponse("Model not found"));
+            }
+
+            if(model.UserId == null)
+            {
+                return BadRequest(new BaseResponse.SuccessResponse("Model deleted"));
             }
 
             var owner = model.User;
@@ -871,7 +876,7 @@ namespace Backend3DForge.Controllers
                 return StatusCode(403);
             }
 
-            if (owner != AuthorizedUser)
+            if (owner != AuthorizedUser && owner != null)
             {
                 try
                 {
@@ -891,9 +896,15 @@ namespace Backend3DForge.Controllers
                 }
             }
 
-            DB.Remove(model);
+            model.UserId = null;
+            model.User = null;
+            model.ModelFileSize = 0;
+            model.PrintFileSize = 0;
 
             await DB.SaveChangesAsync();
+
+            await fileStorage.DeletePreviewModel(model);
+            await fileStorage.DeletePrintFile(model);
 
             return Ok(new BaseResponse.SuccessResponse("Model deleted"));
         }

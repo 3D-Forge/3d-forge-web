@@ -51,6 +51,7 @@ namespace Backend3DForge.Models
 		public ICollection<Post> Posts { get; set; } = new List<Post>();
 		public ICollection<Cart> Carts { get; set; } = new List<Cart>();
 		public ICollection<CatalogModel> CatalogModels { get; set; } = new List<CatalogModel>();
+		public ICollection<CatalogModelFeedback> CatalogModelFeedbacks { get; set; } = new List<CatalogModelFeedback>();
 		public ICollection<Order> Orders { get; set; } = new List<Order>();
 	}
 }

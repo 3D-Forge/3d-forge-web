@@ -29,7 +29,7 @@ namespace Backend3DForge.Controllers
         {
             var orders = await DB.Orders
                 .Include(p => p.User)
-                .Include(p => p.OrderedModels)
+                .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor)
                 .Include(p => p.OrderStatusOrders)
                 .Where(p => p.UserId == AuthorizedUserId)
                 .ToArrayAsync();
@@ -311,7 +311,7 @@ namespace Backend3DForge.Controllers
                 .Include(p => p.User)
                 .Include(p => p.OrderedModels).ThenInclude(p => p.PrintMaterialColor)
                 .Include(p => p.OrderedModels).ThenInclude(p => p.CatalogModel)
-                .FirstOrDefaultAsync(p => p.Id == orderId);
+                .FirstOrDefaultAsync(p => p.Id == orderId && p.UserId != null);
             if (order == null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Selected order does not exists"));

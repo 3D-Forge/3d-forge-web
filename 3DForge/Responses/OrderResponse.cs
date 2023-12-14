@@ -18,7 +18,7 @@ namespace Backend3DForge.Responses
         {
             public int Id { get; set; }
             public DateTime CreatedAt { get; set; }
-            public string UserLogin { get; set; }
+            public string? UserLogin { get; set; }
             public string Firstname { get; set; }
             public string Midname { get; set; }
             public string? Lastname { get; set; }
@@ -44,7 +44,7 @@ namespace Backend3DForge.Responses
             {
                 Id = order.Id;
                 CreatedAt = order.CreatedAt;
-                UserLogin = order.User.Login;
+                UserLogin = order.User?.Login;
                 Firstname = order.Firstname;
                 Midname = order.Midname;
                 Lastname = order.Lastname;

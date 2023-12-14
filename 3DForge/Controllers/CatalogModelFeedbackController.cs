@@ -24,7 +24,8 @@ namespace Backend3DForge.Controllers
             }
 
             IQueryable<CatalogModelFeedback> feedbacks = DB.CatalogModelFeedbacks.Where(p => p.CatalogModelId == modelId)
-                .Include(x => x.Order).ThenInclude(x => x.Order).ThenInclude(o => o.User);
+                .Include(x => x.Order)
+                .Include(p => p.User);
 
             int totalItemsCount = await feedbacks.CountAsync();
             int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / page.PageSize);
@@ -68,6 +69,7 @@ namespace Backend3DForge.Controllers
             var model = (await DB.CatalogModelFeedbacks.AddAsync(new CatalogModelFeedback
             {
                 CatalogModelId = modelId,
+                UserId = AuthorizedUserId,
                 OrderId = feedback.OrderedModelId,
                 Text = feedback.Text,
                 Cons = feedback.Cons,
@@ -84,9 +86,10 @@ namespace Backend3DForge.Controllers
                 await DB.SaveChangesAsync();
             }
 
-            var result = await DB.CatalogModelFeedbacks.Where(p => p.Id == model.Id)
-                .Include(x => x.Order).ThenInclude(x => x.Order).ThenInclude(o => o.User)
-                .SingleAsync();
+            var result = await DB.CatalogModelFeedbacks
+                .Include(x => x.Order)
+                .Include(o => o.User)
+                .SingleAsync(p => p.Id == model.Id);
 
             return Ok(new CatalogModelFeedbackResponse(result));
         }
@@ -101,7 +104,9 @@ namespace Backend3DForge.Controllers
             }
 
             var feedback = await DB.CatalogModelFeedbacks.Where(p => p.Id == feedbackId)
-                .Include(x => x.Order).ThenInclude(x => x.Order).ThenInclude(o => o.User)
+                .Include(x => x.Order)
+                .Include(p => p.User)
+                .Include(p => p.CatalogModel)
                 .SingleOrDefaultAsync();
 
             if (feedback is null)
@@ -109,7 +114,7 @@ namespace Backend3DForge.Controllers
                 return NotFound(new BaseResponse.ErrorResponse($"Feedback '{feedbackId}' not found"));
             }
 
-            if (feedback.Order.Order?.UserId != AuthorizedUserId)
+            if (feedback.UserId != AuthorizedUserId)
             {
                 return Forbid();
             }
@@ -117,6 +122,9 @@ namespace Backend3DForge.Controllers
             DB.CatalogModelFeedbacks.Remove(feedback);
             await DB.SaveChangesAsync();
 
+            feedback.CatalogModel.Rating = (float)await DB.CatalogModelFeedbacks.Where(p => p.CatalogModelId == modelId).AverageAsync(p => p.Rate);
+            await DB.SaveChangesAsync();
+           
             return Ok(new CatalogModelFeedbackResponse(feedback));
         }
     }

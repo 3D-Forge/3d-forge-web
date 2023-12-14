@@ -13,9 +13,8 @@ namespace Backend3DForge.Models
 		public string PostText { get; set; }
 		[Required]
 		public DateTime CreateAt { get; set; }
-		[Required]
-		public int UserId { get; set; }
-		public User User { get; set; }
+		public int? UserId { get; set; }
+		public User? User { get; set; }
 		[Required]
 		public bool ContainsAbuseContent { get; set; }
 		public int? ReplayPostId { get; set; }

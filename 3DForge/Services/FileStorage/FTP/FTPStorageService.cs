@@ -272,5 +272,10 @@ namespace Backend3DForge.Services.FileStorage.FTP
 		{
 			return DeleteFileAsync($"{configuration.PathToOrderedModels}{Path.DirectorySeparatorChar}{catalogModel.Id}.{catalogModel.PrintExtensionId}");
 		}
-	}
+
+        public Task<Stream> DownloadDefaultAvatar()
+        {
+            return Task.FromResult(new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "src", "img", "no-avatar.png"), FileMode.Open, FileAccess.Read) as Stream);
+        }
+    }
 }

@@ -394,7 +394,7 @@ namespace Backend3DForge.Controllers
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("A user is not found!"));
+                return new FileStreamResult(await fileStorage.DownloadDefaultAvatar(), "image/png");
             }
 
             Stream fileStream;

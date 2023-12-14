@@ -28,8 +28,7 @@ namespace Backend3DForge.Responses
 			public long PrintFileSize { get; set; }
 			[Required]
 			public long ModelFileSize { get; set; }
-			[Required]
-			public string Owner { get; set; }
+			public string? Owner { get; set; }
 			[Required]
 			public DateTime Uploaded { get; set; }
 			[Required]
@@ -59,7 +58,7 @@ namespace Backend3DForge.Responses
 				this.Description = model.Description;
 				this.PrintFileSize = model.PrintFileSize;
 				this.ModelFileSize = model.ModelFileSize;
-				this.Owner = model.User.Login;
+				this.Owner = model.User?.Login;
 				this.Uploaded = model.Uploaded;
 				this.XSize = model.XSize;
 				this.YSize = model.YSize;

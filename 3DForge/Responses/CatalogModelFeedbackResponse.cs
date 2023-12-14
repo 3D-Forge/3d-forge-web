@@ -21,7 +21,7 @@ namespace Backend3DForge.Responses
             public int Id { get; set; }
             public int OrderedModelId { get; set; }
             public int OrderId { get; set; }
-            public string UserLogin { get; set; }
+            public string? UserLogin { get; set; }
             public int Rate { get; set; }
             public string Text { get; set; }
             public string Pros { get; set; }
@@ -33,7 +33,7 @@ namespace Backend3DForge.Responses
                 Id = feedback.Id;
                 OrderedModelId = feedback.OrderId;
                 OrderId = feedback.Order.OrderId ?? -1;
-                UserLogin = feedback.Order.Order?.User.Login ?? "";
+                UserLogin = feedback.User?.Login;
                 Rate = feedback.Rate;
                 Text = feedback.Text;
                 Pros = feedback.Pros;

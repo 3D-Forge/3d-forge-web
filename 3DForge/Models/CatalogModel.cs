@@ -20,9 +20,8 @@ namespace Backend3DForge.Models
 		public ModelExtension ModelExtension { get; set; }
 		[Required]
 		public long ModelFileSize { get; set; }
-		[Required]
-		public int UserId { get; set; }
-		public User User { get; set; }
+		public int? UserId { get; set; }
+		public User? User { get; set; }
 		[Required]
 		public DateTime Uploaded { get; set; }
 		public DateTime? Publicized { get; set; } = null;

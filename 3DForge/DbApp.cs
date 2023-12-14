@@ -35,104 +35,104 @@ namespace Backend3DForge
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
             modelBuilder.Entity<Post>()
-				.HasOne(p => p.User)
-				.WithMany()
-				.HasForeignKey(p => p.UserId)
-				.OnDelete(DeleteBehavior.NoAction);
+               .HasOne(p => p.User)
+               .WithMany()
+               .HasForeignKey(p => p.UserId)
+               .OnDelete(DeleteBehavior.NoAction);
 
-			modelBuilder.Entity<CatalogModelFeedback>()
-				.HasOne(cmr => cmr.Order)
-				.WithMany()
-				.HasForeignKey(cmr => cmr.OrderId)
-				.OnDelete(DeleteBehavior.NoAction);
-
-			modelBuilder.Entity<User>()
-				.HasIndex(u => u.Login)
-				.IsUnique();
-
-			modelBuilder.Entity<User>()
-				.HasIndex(u => u.Email)
-				.IsUnique();
+            modelBuilder.Entity<CatalogModelFeedback>()
+                .HasOne(cmr => cmr.Order)
+                .WithMany()
+                .HasForeignKey(cmr => cmr.OrderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<User>()
-				.HasMany(u => u.Orders)
+                .HasIndex(u => u.Login)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<User>()
-				.HasMany(u => u.CatalogModels)
-				.WithOne(o => o.User)
-				.HasForeignKey(o => o.UserId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .HasMany(u => u.CatalogModels)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<User>()
-				.HasMany(u => u.Orders)
-				.WithOne(o => o.User)
-				.HasForeignKey(o => o.UserId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Keyword>()
-				.HasKey(p => p.Name)
-				.HasName("PK_Keyword");
+                .HasKey(p => p.Name)
+                .HasName("PK_Keyword");
 
-			modelBuilder.Entity<PrintExtension>()
-				.HasKey(p => p.Id)
-				.HasName("PK_PrintExtension");
+            modelBuilder.Entity<PrintExtension>()
+                .HasKey(p => p.Id)
+                .HasName("PK_PrintExtension");
 
-			modelBuilder.Entity<ModelExtension>()
-				.HasKey(p => p.Id)
-				.HasName("PK_ModelExtension");
-
-			modelBuilder.Entity<OrderedModel>()
-				.HasOne(o => o.PrintType)
-				.WithMany(p => p.OrderedModels)
-				.HasForeignKey(o => o.PrintTypeId)
-				.OnDelete(DeleteBehavior.Restrict);
-
-			modelBuilder.Entity<OrderedModel>()
-				.HasOne(o => o.CatalogModel)
-				.WithMany()
-				.HasForeignKey(o => o.CatalogModelId)
-				.OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ModelExtension>()
+                .HasKey(p => p.Id)
+                .HasName("PK_ModelExtension");
 
             modelBuilder.Entity<OrderedModel>()
-				.HasOne(o => o.Order)
-				.WithMany(o => o.OrderedModels)
-				.HasForeignKey(o => o.OrderId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .HasOne(o => o.PrintType)
+                .WithMany(p => p.OrderedModels)
+                .HasForeignKey(o => o.PrintTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Order>()
-				.HasMany(o => o.OrderedModels)
-				.WithOne(o => o.Order)
-				.HasForeignKey(o => o.OrderId)
-				.OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<OrderedModel>()
+                .HasOne(o => o.CatalogModel)
+                .WithMany()
+                .HasForeignKey(o => o.CatalogModelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderedModel>()
+                .HasOne(o => o.Order)
+                .WithMany(o => o.OrderedModels)
+                .HasForeignKey(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderedModels)
+                .WithOne(o => o.Order)
+                .HasForeignKey(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CatalogModel>()
-				.HasMany(cm => cm.Pictures)
-				.WithOne(mp => mp.CatalogModel)
-				.HasForeignKey(mp => mp.CatalogModelId)
-				.OnDelete(DeleteBehavior.Cascade);
+                .HasMany(cm => cm.Pictures)
+                .WithOne(mp => mp.CatalogModel)
+                .HasForeignKey(mp => mp.CatalogModelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PrintType>()
-				.HasKey(p => p.Id)
-				.HasName("PK_PrintType");
-
-			modelBuilder.Entity<PrintMaterial>()
-				.HasKey(p => p.Id)
-				.HasName("PK_PrintMaterial");
+                .HasKey(p => p.Id)
+                .HasName("PK_PrintType");
 
             modelBuilder.Entity<PrintMaterial>()
-				.HasMany(p => p.PrintMaterialColors)
-				.WithOne(p => p.PrintMaterial)
-				.HasForeignKey(p => p.PrintMaterialId)
-				.OnDelete(DeleteBehavior.Cascade);
+                .HasKey(p => p.Id)
+                .HasName("PK_PrintMaterial");
+
+            modelBuilder.Entity<PrintMaterial>()
+                .HasMany(p => p.PrintMaterialColors)
+                .WithOne(p => p.PrintMaterial)
+                .HasForeignKey(p => p.PrintMaterialId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<OrderedModel>()
-				.HasOne(o => o.PrintMaterialColor)
-				.WithMany(p => p.OrderedModels)
-				.HasForeignKey(o => o.PrintMaterialColorId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .HasOne(o => o.PrintMaterialColor)
+                .WithMany(p => p.OrderedModels)
+                .HasForeignKey(o => o.PrintMaterialColorId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
 		}

@@ -7,7 +7,7 @@ namespace Backend3DForge.Requests
     public class ListOrdersRequest : PageRequest
     {
         [FromQuery(Name = "quary")]
-        public string Query { get; set; }
+        public string? Query { get; set; }
         [FromQuery (Name = "status")]
         public OrderStatusType? OrderStatus { get; set; }
         [FromQuery(Name = "sort_parameter")]

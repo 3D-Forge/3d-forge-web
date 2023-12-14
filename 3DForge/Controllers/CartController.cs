@@ -34,6 +34,7 @@ namespace Backend3DForge.Controllers
 		{
 			var cart = await DB.Carts
 				.Include(p => p.OrderedModels)
+				.ThenInclude(p => p.PrintMaterialColor)
 				.FirstOrDefaultAsync(x => x.UserId == AuthorizedUser.Id);
 
 			if (cart is null)

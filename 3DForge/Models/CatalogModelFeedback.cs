@@ -6,6 +6,8 @@ namespace Backend3DForge.Models
 	{
 		[Key]
 		public int Id { get; set; }
+		public int? UserId { get; set; }
+		public User? User { get; set; }
 		[Required]
 		public int CatalogModelId { get; set; }
 		public CatalogModel CatalogModel { get; set; }
