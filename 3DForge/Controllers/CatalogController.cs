@@ -853,7 +853,7 @@ namespace Backend3DForge.Controllers
 
         [Authorize]
         [HttpDelete("{modelId}")]
-        public async Task<IActionResult> DeleteModel([FromRoute] int modelId, [FromBody] string reason)
+        public async Task<IActionResult> DeleteModel([FromRoute] int modelId, [FromBody] string? reason = null)
         {
             var model = await DB.CatalogModels
                 .Include(p => p.User)
@@ -886,7 +886,7 @@ namespace Backend3DForge.Controllers
                         parameters: new Dictionary<string, string>
                         {
                             { "login", owner.Login },
-                            { "reason", reason }
+                            { "reason", reason ?? "" }
                         }
                     );
                 }
