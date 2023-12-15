@@ -98,4 +98,8 @@ export class CatalogAPI {
     static async updatePictureFiles(id, formData) {
         return await BaseAPI.put(`catalog/${id}/pictures`, formData);
     }
+
+    static async deleteModel(id) {
+        return await BaseAPI.delete(`catalog/${id}`);
+    }
 }

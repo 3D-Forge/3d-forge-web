@@ -2,9 +2,8 @@
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import cl from "./.module.css";
 import { CartAPI } from "../../services/api/CartAPI";
-import { CatologAPI } from "../../services/api/CatalogAPI";
 const CartPage = () => {
-    const [modelsInfo, setModelsInfo] = React.useState(undefined);
+    const [modelsInfo, setModelsInfo] = React.useState([]);
     const [quantities, setQuantities] = React.useState({});
     const [selectedModels, setSelectedModels] = React.useState([]);
 
@@ -84,48 +83,43 @@ const CartPage = () => {
         console.log(model);
     }
     function RenderCatalogSection() {
-        if (Array.isArray(modelsInfo)) {
-            return (
-                <div className={cl.page}>
-                    <div className={cl.models_group}>
-                        <p className={cl.Position}> Позиція </p>
-                        <p className={cl.Depth}>Ціна</p>
-                        <p className={cl.Count}>Кількість</p>
-                        <p className={cl.Sum}>Загалом</p></div>
-                    {modelsInfo?.map((model) => (
-                        
-                        <div key={model.data.id} className={cl.model_item}>
-                            {model && model.data.picturesIDs && model.data.picturesIDs.length > 0 && (
-                                <img className={cl.model_image} src={`/api/catalog/model/picture/${model.data.picturesIDs[0]}`} alt={`Model ${model.name}`} />
-                            )}
-                            <input
-                                className={cl.checkbox}
-                                type="checkbox"
-                                name="verification"
-                                checked={selectedModels.includes(model.data.id)}
-                                onChange={() => handleCheckboxChange(model.data.id)}
-                            />
-                            <p className={cl.model_Name}> {model.data.name}</p>
-                            <p className={cl.model_Depth}> {model.data.depth}₴</p>
-                            <input
-                                className={cl.count_input}
-                                type="number"
-                                id={`quantity-${model.data.id}`}
-                                name={`quantity-${model.data.id}`}
-                                defaultValue={1}
-                              
-                                min="1"
-                                onChange={(event) => handleInputChange(event, model.data.id)}
-                            />
-                            <p className={cl.model_Sum}> {model.data.depth * quantities[model.data.id]}₴</p>
-                        </div>
-                    ))}
-                </div>
-            );
-        } else {
-            // Handle the case where modelsInfo is not an array
-            return <p>modelsInfo is not an array.</p>;
-        }
+        return (
+            <div className={cl.page}>
+                <div className={cl.models_group}>
+                    <p className={cl.Position}> Позиція </p>
+                    <p className={cl.Depth}>Ціна</p>
+                    <p className={cl.Count}>Кількість</p>
+                    <p className={cl.Sum}>Загалом</p></div>
+                {modelsInfo?.map((model) => (
+
+                    <div key={model.data.id} className={cl.model_item}>
+                        {model && model.data.picturesIDs && model.data.picturesIDs.length > 0 && (
+                            <img className={cl.model_image} src={`/api/catalog/model/picture/${model.data.picturesIDs[0]}`} alt={`Model ${model.name}`} />
+                        )}
+                        <input
+                            className={cl.checkbox}
+                            type="checkbox"
+                            name="verification"
+                            checked={selectedModels.includes(model.data.id)}
+                            onChange={() => handleCheckboxChange(model.data.id)}
+                        />
+                        <p className={cl.model_Name}> {model.data.name}</p>
+                        <p className={cl.model_Depth}> {model.data.depth}₴</p>
+                        <input
+                            className={cl.count_input}
+                            type="number"
+                            id={`quantity-${model.data.id}`}
+                            name={`quantity-${model.data.id}`}
+                            defaultValue={1}
+
+                            min="1"
+                            onChange={(event) => handleInputChange(event, model.data.id)}
+                        />
+                        <p className={cl.model_Sum}> {model.data.depth * quantities[model.data.id]}₴</p>
+                    </div>
+                ))}
+            </div>
+        );
     }
 
     return (

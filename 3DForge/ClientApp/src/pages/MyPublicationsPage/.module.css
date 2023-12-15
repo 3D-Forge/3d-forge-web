@@ -75,13 +75,46 @@
 }
 
 .model {
-    cursor: pointer;
+    cursor: default;
     position: relative;
     background-color: white;
     border-radius: 8px;
     padding-top: 10px;
     padding-bottom: 80px;
     padding-inline: 15px;
+}
+
+.model_options {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.delete_model_button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 3px solid rgba(0, 0, 0, 0);
+    background-color: #DE0000;
+    padding-block: 2px;
+    padding-inline: 2px;
+}
+
+.delete_model_button:hover {
+    border: 3px solid #DE0000;
+    background-color: #ffffff;
+}
+
+.delete_model_button_img {
+    content: url(./img/delete.png);
+    width: 25px;
+}
+
+.delete_model_button:hover .delete_model_button_img {
+    filter: invert(1);
 }
 
 .model_img_cont {
@@ -207,4 +240,88 @@
 
 .current_page_navigator_obj {
     background-color: #5126bf;
+}
+
+.delete_model_window_background {
+    position: fixed;
+    display: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.801);
+    z-index: 1;
+}
+
+.delete_model_window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    border-radius: 15px;
+    background: linear-gradient(270deg, #7C26BF 0.13%, #BA67D3 99.84%, #7030B5 99.85%);
+    padding-block: 20px;
+    padding-inline: 20px;
+}
+
+.delete_model_window_description {
+    color: white;
+    font-size: 35px;
+    text-align: center;
+}
+
+.delete_model_window_control {
+    position: relative;
+    margin-top: 40px;
+    height: 50px;
+}
+
+.delete_model_window_cancel_button {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 50px;
+    border-radius: 8px;
+}
+
+.delete_model_window_cancel_button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.delete_model_window_cancel_button_text {
+    color: white;
+    font-size: 25px;
+    letter-spacing: 1px;
+}
+
+.delete_model_window_delete_button {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #D72E18;
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 50px;
+    border-radius: 8px;
+}
+
+.delete_model_window_delete_button:hover {
+    background-color: #a22616;
+}
+
+.delete_model_window_delete_button_text {
+    color: white;
+    font-size: 25px;
+    letter-spacing: 1px;
 }

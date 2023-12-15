@@ -6,11 +6,23 @@ import { UploadModelWindowContext } from "../../ContextProvider";
 
 const MyPublicationsPage = () => {
     const { setUploadModelWindowInfo, setUploadModelWindowEvents } = React.useContext(UploadModelWindowContext);
-    
+
     const [areModalWindowEventsLoaded, setAreModalWindowEventsLoaded] = React.useState(false);
 
     const [modelList, setModelList] = React.useState({ list: null, currentPage: 1, pageCount: 0 });
     const [isModelListLoading, setModelListLoading] = React.useState(false);
+
+    const [deleteModelWindowInfo, setDeleteModelWindowInfo] = React.useState({ visible: false, modelId: null });
+    const [isModelDeleting, setModelDeleting] = React.useState(false);
+
+    async function DeleteModelRequest() {
+        setModelDeleting(true);
+
+        await CatalogAPI.deleteModel(deleteModelWindowInfo.modelId);
+        window.location.reload();
+
+        setModelDeleting(false);
+    }
 
     async function LoadModelList(pageNumber = 1) {
         setModelListLoading(true);
@@ -35,6 +47,12 @@ const MyPublicationsPage = () => {
         modelList.list?.forEach((el) => {
             result.push(
                 <div className={cl.model} key={el.id}>
+                    <div className={cl.model_options}>
+                        <div className={cl.delete_model_button}
+                            onClick={() => setDeleteModelWindowInfo({ visible: true, modelId: el.id })}>
+                            <img className={cl.delete_model_button_img} alt="delete" />
+                        </div>
+                    </div>
                     <div className={cl.model_img_cont}>
                         <img className={cl.model_img} alt="model" src={`/api/catalog/model/picture/${el.picturesIDs[0]}`} />
                     </div>
@@ -215,6 +233,27 @@ const MyPublicationsPage = () => {
                         </div>
                     </>
                 }
+            </div>
+            <div className={cl.delete_model_window_background}
+                style={{ display: deleteModelWindowInfo.visible ? 'block' : 'none' }}>
+                <div className={cl.delete_model_window}>
+                    <p className={cl.delete_model_window_description}>
+                        Ви впевнені, що хочете видалити Вашу модель з каталогу?
+                    </p>
+                    <div className={cl.delete_model_window_control}>
+                        <div className={cl.delete_model_window_cancel_button}
+                            onClick={() => setDeleteModelWindowInfo({ visible: false, modelId: null })}>
+                            <span className={cl.delete_model_window_cancel_button_text}>Скасувати</span>
+                        </div>
+                        <div className={cl.delete_model_window_delete_button}
+                            onClick={() => DeleteModelRequest()}>
+                            {isModelDeleting
+                                ? <LoadingAnimation size="30px" loadingCurveWidth="6px" />
+                                : <span className={cl.delete_model_window_delete_button_text}>Видалити</span>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
