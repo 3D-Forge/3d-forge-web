@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Text.RegularExpressions;
 
 namespace Backend3DForge.Controllers
 {
@@ -163,7 +164,9 @@ namespace Backend3DForge.Controllers
 					UserId = AuthorizedUserId,
 				};
 
-				if (await DB.BannedWords.AnyAsync(x => post.PostText.Contains(x.BannedWordName)))
+				var bannedWords = await DB.BannedWords.ToListAsync();
+
+				if (bannedWords.Any(x => Regex.IsMatch(post.PostText, x.BannedWordName)))
 				{
 					post.ContainsAbuseContent = true;
 				}
@@ -199,7 +202,9 @@ namespace Backend3DForge.Controllers
 				ReplayPostId = request.ReplayPostId,
 			};
 
-			if (await DB.BannedWords.AnyAsync(x => post.PostText.Contains(x.BannedWordName)))
+			var bannedWords = await DB.BannedWords.ToListAsync();
+
+			if (bannedWords.Any(x => Regex.IsMatch(post.PostText, x.BannedWordName)))
 			{
 				post.ContainsAbuseContent = true;
 			}
@@ -219,6 +224,13 @@ namespace Backend3DForge.Controllers
 			if (post is null)
 			{
 				return NotFound(new BaseResponse.ErrorResponse("Selected post not found"));
+			}
+
+			var bannedWords = await DB.BannedWords.ToListAsync();
+
+			if (bannedWords.Any(x => Regex.IsMatch(post.PostText, x.BannedWordName)))
+			{
+				post.ContainsAbuseContent = true;
 			}
 
 			post.PostText = request.Text;
