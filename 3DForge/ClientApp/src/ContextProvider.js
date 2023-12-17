@@ -11,13 +11,19 @@ export const ContextProvider = ({ children }) => {
         modelId: null
     });
     const [uploadModelWindowEvents, setUploadModelWindowEvents] = React.useState({
-        onUpload: () => {},
-        onClose: () => {}
+        onUpload: () => { },
+        onClose: () => { }
     });
 
     const [reviewModelWindowInfo, setReviewModelWindowInfo] = React.useState({
         visible: false,
         modelId: null
+    });
+    const [reviewModelWindowEvents, setReviewModelWindowEvents] = React.useState({
+        onClose: () => { },
+        onAccept: () => { },
+        onDeny: () => { },
+        onBlock: () => { }
     });
 
     return (
@@ -29,7 +35,9 @@ export const ContextProvider = ({ children }) => {
         }}>
             <ReviewModelWindowContext.Provider value={{
                 reviewModelWindowInfo,
-                setReviewModelWindowInfo
+                reviewModelWindowEvents,
+                setReviewModelWindowInfo,
+                setReviewModelWindowEvents
             }}>
                 {children}
                 <UploadModelWindow
@@ -40,7 +48,10 @@ export const ContextProvider = ({ children }) => {
                 <ReviewModelWindow
                     visible={reviewModelWindowInfo.visible}
                     reviewingModelId={reviewModelWindowInfo.modelId}
-                    onClose={() => setReviewModelWindowInfo({ visible: false, modelId: null })} />
+                    onClose={() => reviewModelWindowEvents.onClose()}
+                    onAccept={() => reviewModelWindowEvents.onAccept()}
+                    onDeny={() => reviewModelWindowEvents.onDeny()}
+                    onBlock={() => reviewModelWindowEvents.onBlock()} />
             </ReviewModelWindowContext.Provider>
         </UploadModelWindowContext.Provider>
     );

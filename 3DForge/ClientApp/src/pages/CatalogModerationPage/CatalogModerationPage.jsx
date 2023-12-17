@@ -7,7 +7,9 @@ import sortDescImg from './img/sort-by-desc.png';
 import { ReviewModelWindowContext } from "../../ContextProvider";
 
 const CatalogModerationPage = () => {
-    const {reviewModelWindowInfo, setReviewModelWindowInfo} = React.useContext(ReviewModelWindowContext);
+    const { reviewModelWindowInfo, reviewModelWindowEvents, setReviewModelWindowInfo, setReviewModelWindowEvents } = React.useContext(ReviewModelWindowContext);
+
+    const [areModalWindowEventsLoaded, setAreModalWindowEventsLoaded] = React.useState(false);
 
     const [uploadedModelList, setUploadedModelList] = React.useState(null);
     const [sortMode, setSortMode] = React.useState({ value: 'login', asc: true });
@@ -82,6 +84,16 @@ const CatalogModerationPage = () => {
     React.useEffect(() => {
         if (uploadedModelList === null) {
             LoadUploadedModelList();
+        }
+
+        if (!areModalWindowEventsLoaded) {
+            setReviewModelWindowEvents({
+                onClose: () => { },
+                onAccept: () => { LoadUploadedModelList() },
+                onDeny: () => { LoadUploadedModelList() },
+                onBlock: () => { LoadUploadedModelList() }
+            });
+            setAreModalWindowEventsLoaded(true);
         }
     });
 
