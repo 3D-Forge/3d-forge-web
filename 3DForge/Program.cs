@@ -23,7 +23,7 @@ namespace Backend3DForge
 
 			if(!builder.Environment.IsDevelopment())
 			{
-                builder.WebHost.UseUrls("http://0.0.0.0:8686");
+                builder.WebHost.UseUrls("https://0.0.0.0:8686");
             }
 
 			builder.Services.AddSqlServer<DbApp>(builder.Configuration["ConnectionStrings:WebApiDatabase"]);
