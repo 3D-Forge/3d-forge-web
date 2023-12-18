@@ -43,11 +43,10 @@ const ResetPasswordPage = () => {
                 <div className={cl.modal_window}>
                     <div className={cl.modal_window_content}>
                         <h2 className={cl.modal_window_header}>Зміна паролю пройшла успішно!</h2>
-                        <p className={cl.modal_window_description}>Хочите перейти до сторінки авторизації?</p>
                     </div>
                     <div className={cl.modal_window_control}>
                         <div className={cl.modal_window_send_email_button} onClick={() => { window.location.pathname = '/auth' }}>
-                            <span className={cl.modal_window_send_email_button_text}>Перейти</span>
+                            <span className={cl.modal_window_send_email_button_text}>ОК</span>
                         </div>
                     </div>
                 </div>
