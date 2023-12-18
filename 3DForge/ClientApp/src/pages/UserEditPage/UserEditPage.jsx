@@ -628,8 +628,8 @@ const UserEditPage = () => {
                                 <div className={cl.info_container_delivery}>
                                     <div className={cl.post_logo}>
                                         <img className={cl.post_logo_img} alt="nova poshta" />
-                                        <span className={cl.post_logo_text}>Нова Пошта</span>
-                                        <span className={cl.post_price}>Від 50 ₴</span>
+                                        <p className={cl.post_logo_text}>Нова Пошта</p>
+                                        <p className={cl.post_price}>Від 50 ₴</p>
                                     </div>
                                     <div className={cl.delivery_type_list}>
                                         <div className={`${cl.delivery_type} ${cl.delivery_type_branch}`}

@@ -2,6 +2,9 @@ import React from "react";
 import cl from './.module.css';
 import { CatalogAPI } from "../../services/api/CatalogAPI";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import { ReviewModelWindowContext } from "../../ContextProvider";
+import { AdministrateUsersAPI } from "../../services/api/AdministrateUsersAPI";
+import { UserAPI } from "../../services/api/UserAPI";
 
 const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = React.useState({ width: 1, height: 2 });
@@ -29,8 +32,13 @@ const useRefDimensions = (ref) => {
     return dimensions;
 }
 
-const ReviewModelWindow = ({ visible = false, reviewingModelId = null, onClose = null }) => {
+const ReviewModelWindow = ({ visible = false, reviewingModelId = null, onAccept = null, onDeny = null, onBlock = null, onClose = null }) => {
+    const { reviewModelWindowInfo, setReviewModelWindowInfo } = React.useContext(ReviewModelWindowContext);
+
     const [isModelDataLoading, setModelDataLoading] = React.useState(false);
+    const [isAccepting, setAccepting] = React.useState(false);
+    const [isDenying, setDenying] = React.useState(false);
+    const [isBlocking, setBlocking] = React.useState(false);
 
     const [modelInfo, setModelInfo] = React.useState(null);
     const [modelFiles, setModelFiles] = React.useState({ preview: null, print: null, image: null });
@@ -43,6 +51,50 @@ const ReviewModelWindow = ({ visible = false, reviewingModelId = null, onClose =
         let [date, time] = str.split('.')[0].split('T');
         date = date.split('-').reverse().join('.');
         return `${date} ${time}`;
+    }
+
+    async function AcceptRequest() {
+        setAccepting(true);
+
+        let res = await CatalogAPI.acceptModel(reviewingModelId, true, `Model "${modelInfo.name}" is accepted!`);
+
+        if (res.ok) {
+            alert(`Model "${modelInfo.name}" is accepted!`);
+            setReviewModelWindowInfo({ visible: false, modelId: null });
+            onAccept();
+        }
+
+        setAccepting(false);
+    }
+
+    async function DenyRequest() {
+        setDenying(true);
+
+        let res = await CatalogAPI.acceptModel(reviewingModelId, false, `Model "${modelInfo.name}" is denied!`);
+
+        if (res.ok) {
+            alert(`Model "${modelInfo.name}" is denied!`);
+            setReviewModelWindowInfo({ visible: false, modelId: null });
+            onDeny();
+        }
+
+        setDenying(false);
+    }
+
+    async function BlockRequest() {
+        /*setBlocking(true);
+
+        let userId = (await (await UserAPI.getUserInfo(modelInfo.owner)).json()).data.id;
+        let res1 = await AdministrateUsersAPI.blocked(userId);
+        let res2 = await CatalogAPI.acceptModel(reviewingModelId, false, `Model "${modelInfo.name}" is denied!`);
+
+        if (res1.ok && res2.ok) {
+            alert('User is blocked');
+            setReviewModelWindowInfo({ visible: false, modelId: null });
+            onBlock();
+        }
+
+        setBlocking(false);*/
     }
 
     async function LoadModelData() {
@@ -84,7 +136,10 @@ const ReviewModelWindow = ({ visible = false, reviewingModelId = null, onClose =
             <div className={`${cl.model_review_window} ${modalWindowDimensions.height > window.innerHeight ? cl.model_review_window_fixed : ''}`} ref={modalWindowRef}>
                 <img className={cl.model_review_window_cancel_sign}
                     alt="cancel"
-                    onClick={onClose} />
+                    onClick={() => {
+                        setReviewModelWindowInfo({ visible: false, modelId: null });
+                        onClose();
+                    }} />
                 <div className={cl.model_review_window_top}>
                     <h2 className={cl.model_review_window_header}>Затвердження моделі</h2>
                     <p className={cl.model_review_window_instruction}>
@@ -152,15 +207,15 @@ const ReviewModelWindow = ({ visible = false, reviewingModelId = null, onClose =
                     </div>
                 </div>
                 <div className={cl.model_review_window_control}>
-                    <div className={cl.model_review_window_accept_button}>
+                    <div className={cl.model_review_window_accept_button} onClick={() => AcceptRequest()}>
                         <img className={cl.model_review_window_accept_button_img} alt="accept" />
                         <span className={cl.model_review_window_accept_button_text}>Затвердити</span>
                     </div>
-                    <div className={cl.model_review_window_deny_button}>
+                    <div className={cl.model_review_window_deny_button} onClick={() => DenyRequest()}>
                         <img className={cl.model_review_window_deny_button_img} alt="deny" />
                         <span className={cl.model_review_window_deny_button_text}>Відхилити</span>
                     </div>
-                    <div className={cl.model_review_window_block_button}>
+                    <div className={cl.model_review_window_block_button} onClick={() => BlockRequest()}>
                         <img className={cl.model_review_window_block_button_img} alt="block" />
                         <span className={cl.model_review_window_block_button_text}>Заблокувати користувача</span>
                     </div>

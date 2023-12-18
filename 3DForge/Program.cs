@@ -1,4 +1,5 @@
-#if STORAGE_TYPE_FILESYSTEM
+//#if STORAGE_TYPE_FILESYSTEM
+#if true
 using Backend3DForge.Services.FileStorage.FileSystem;
 #else
 using Backend3DForge.Services.FileStorage.FTP;
@@ -19,6 +20,11 @@ namespace Backend3DForge
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
+
+			if(!builder.Environment.IsDevelopment())
+			{
+                builder.WebHost.UseUrls("http://0.0.0.0:8686");
+            }
 
 			builder.Services.AddSqlServer<DbApp>(builder.Configuration["ConnectionStrings:WebApiDatabase"]);
 
@@ -73,7 +79,7 @@ namespace Backend3DForge
 			});
 
 
-#if STORAGE_TYPE_FILESYSTEM
+#if true
 			// Register File Storage Service
 			builder.Services.AddFSFileStorage(o =>
 			{

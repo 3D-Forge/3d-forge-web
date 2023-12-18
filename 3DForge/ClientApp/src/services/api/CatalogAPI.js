@@ -83,6 +83,10 @@ export class CatalogAPI {
         return await BaseAPI.get(`catalog/unaccepted${sp}${sd}`);
     }
 
+    static async acceptModel(id, accepted, message = null) {
+        return await BaseAPI.post(`catalog/${id}/accept`, { accepted, message }, "application/json");
+    }
+
     static async updateModelInfo(id, formData) {
         return await BaseAPI.put(`catalog/${id}/updateInfo`, formData);
     }

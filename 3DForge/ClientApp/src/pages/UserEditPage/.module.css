@@ -392,6 +392,7 @@
     position: relative;
     width: fit-content;
     margin-bottom: 40px;
+    width: 50%;
 }
 
 .post_logo_img {
@@ -403,7 +404,8 @@
     font-size: 22px;
     bottom: 50%;
     transform: translateY(50%);
-    margin-left: 10px;
+    width: 100%;
+    margin-left: 43px;
     letter-spacing: 0.5px;
     text-wrap: nowrap;
 }
@@ -413,6 +415,7 @@
     font-size: 18px;
     top: 33px;
     left: 43px;
+    width: 100%;
     text-wrap: nowrap;
     letter-spacing: 0.3px;
 }

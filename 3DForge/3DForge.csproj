@@ -59,6 +59,9 @@
     <Content Update="src\dbDefaultData\categories.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="src\dbDefaultData\forum.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="src\dbDefaultData\previewExtensions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -256,6 +259,9 @@
     </None>
     <None Update="src\3dModels\icons\9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="src\img\no-avatar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
