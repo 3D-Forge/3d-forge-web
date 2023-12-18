@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Backend3DForge.Models;
+﻿using Backend3DForge.Models;
 using Backend3DForge.Requests;
 using Backend3DForge.Responses;
 using Backend3DForge.Services.FileStorage;
@@ -46,7 +45,7 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
-		[HttpPut]
+		[HttpPost]
 		public async Task<IActionResult> AddItem([FromForm] CartAddRequest addRequest)
 		{
 			CatalogModel? catalogModel = null;
@@ -133,6 +132,7 @@ namespace Backend3DForge.Controllers
             }
 
             var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialId == printMaterialName.Id && p.Id == addRequest.ColorId);
+
             if (color is null)
             {
                 return BadRequest(new BaseResponse.ErrorResponse($"This color [{addRequest.ColorId}] does not exists in material [{printMaterialName.Id}]"));
@@ -186,12 +186,67 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
+		[HttpPut]
+		public async Task<IActionResult> UpdateItem([FromForm] CartUpdateRequest request)
+		{
+			var cart = await DB.Carts
+				.Include(p => p.OrderedModels)
+				.FirstOrDefaultAsync(x => x.UserId == AuthorizedUserId);
+
+			if (cart is null)
+			{
+				return BadRequest(new BaseResponse.SuccessResponse("Cart not found"));
+			}
+
+			var orderedModel = cart.OrderedModels.FirstOrDefault(x => x.Id == request.OrderedModelId);
+
+			if (orderedModel is null)
+			{
+				return BadRequest(new BaseResponse.ErrorResponse("Selected ordered model does not exists"));
+			}
+
+			var printTypeName = await DB.PrintTypes.FirstOrDefaultAsync(x => x.Id == request.PrintTypeName);
+
+			if (printTypeName is null)
+			{
+				return BadRequest(new BaseResponse.ErrorResponse("This print type does not exists"));
+			}
+
+			var printMaterialName = await DB.PrintMaterials.FirstOrDefaultAsync(x => x.Id == request.PrintMaterialName);
+
+			if (printMaterialName is null)
+			{
+				return BadRequest(new BaseResponse.ErrorResponse("This print material does not exists"));
+			}
+
+			var color = await DB.PrintMaterialColors.SingleOrDefaultAsync(p => p.PrintMaterialId == printMaterialName.Id && p.Id == request.ColorId);
+
+			if (color is null)
+			{
+				return BadRequest(new BaseResponse.ErrorResponse($"This color [{request.ColorId}] does not exists in material [{printMaterialName.Id}]"));
+			}
+
+			orderedModel.Pieces = request.Pieces;
+			orderedModel.Depth = request.Depth;
+			orderedModel.Scale = request.Scale;
+			orderedModel.PrintMaterialColor = color;
+			orderedModel.PrintTypeId = printTypeName.Id;
+			orderedModel.PrintMaterialId = printMaterialName.Id;
+
+			DB.OrderedModels.Update(orderedModel);
+
+			await DB.SaveChangesAsync();
+
+			return Ok(new BaseResponse.SuccessResponse("Model has been updated"));
+		}
+
+		[Authorize]
 		[HttpDelete]
 		public async Task<IActionResult> RemoveItem(int orderedModelId)
 		{
 			var cart = await DB.Carts
 				.Include(p => p.OrderedModels)
-				.FirstOrDefaultAsync(x => x.UserId == AuthorizedUser.Id);
+				.FirstOrDefaultAsync(x => x.UserId == AuthorizedUserId);
 
 			if (cart is null)
 			{
