@@ -45,7 +45,7 @@ namespace Backend3DForge.Controllers
 		}
 
 		[Authorize]
-		[HttpPost]
+		[HttpPut("AddItem")]
 		public async Task<IActionResult> AddItem([FromForm] CartAddRequest addRequest)
 		{
 			CatalogModel? catalogModel = null;

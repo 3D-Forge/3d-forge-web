@@ -12,6 +12,7 @@
     justify-content: center;
     width: 100%;
 }
+
 .keywords_group {
     position: relative;
     left: 100px;
@@ -22,6 +23,7 @@
     width: 100%; /* Важливо встановити ширину відсотком або іншою відносною величиною */
     margin-bottom: 10px; /* Додає пробіл між рядками */
 }
+
 .categories_group {
     position: relative;
     left: 100px;
@@ -31,6 +33,7 @@
     max-width: 550px; /* або інший розмір, якщо ви хочете обмежити ширину */
     width: 550px;
 }
+
 .keywords_buttons {
     margin-right: 100px;
     background: #FFC300;
@@ -41,6 +44,7 @@
     font-family: "Montserrat", Helvetica; /* Замініть 'Your Cool Font' на обраний вами шрифт */
     margin-bottom: 10px; /* Додає пробіл між рядками */
 }
+
 .categories_buttons {
     margin-right: 100px;
     background: #FF00FB;
@@ -52,8 +56,9 @@
     top: 100px;
     margin-bottom: 10px; /* Додає пробіл між рядками */
 }
+
 .div_2 {
-    height: 4439px;
+    min-height: 3639px;
     position: relative;
     width: 100%;
 }
@@ -675,7 +680,7 @@
     line-height: normal;
     position: absolute;
     top: 0;
-    width:50%;
+    width: 50%;
 }
 
 .text_wrapper_18 {
@@ -684,8 +689,8 @@
     font-size: 28px;
     font-weight: 500;
     letter-spacing: 0;
-    position:absolute;
-    left:-100%;
+    position: absolute;
+    left: -100%;
 }
 
 .text_wrapper_19 {
@@ -852,6 +857,7 @@
     width: 156px;
     content: url(img/0_5_star.png)
 }
+
 .group_0_5_star {
     height: 26px;
     left: 55%;
@@ -869,6 +875,7 @@
     width: 156px;
     content: url(img/1star.png)
 }
+
 .group_1_5_star {
     height: 26px;
     left: 55%;
@@ -886,6 +893,7 @@
     width: 156px;
     content: url(img/2star.png)
 }
+
 .group_2_5_star {
     height: 26px;
     left: 55%;
@@ -903,6 +911,7 @@
     width: 156px;
     content: url(img/3star.png)
 }
+
 .group_3_5_star {
     height: 26px;
     left: 55%;
@@ -920,6 +929,7 @@
     width: 156px;
     content: url(img/4star.png)
 }
+
 .group_4_5_star {
     height: 26px;
     left: 55%;
@@ -937,14 +947,16 @@
     width: 156px;
     content: url(img/5_star.png)
 }
+
 .box_image {
     height: 58px;
     left: 40%;
-    position:absolute;
+    position: absolute;
     top: 202px;
     width: 227px;
     content: url(img/cube-image.svg)
 }
+
 .edit_image {
     height: 48px;
     left: 41%;
@@ -953,6 +965,7 @@
     width: 210px;
     content: url(img/edit-icon.svg)
 }
+
 .edit_image_invisible {
     height: 48px;
     left: 41%;
@@ -962,6 +975,7 @@
     content: url(img/edit-icon.svg);
     visibility: hidden;
 }
+
 .group_13 {
     height: 58px;
     left: 0;
@@ -971,7 +985,6 @@
 }
 
 .overlap_4 {
-
     background-color: #e9e9e9;
     border-radius: 20px;
     height: 58px;
@@ -1029,7 +1042,7 @@
     position: absolute;
     top: 0;
     width: 45px;
-    content:url(img/return-box.svg)
+    content: url(img/return-box.svg)
 }
 
 .text_wrapper_29 {
@@ -1316,13 +1329,19 @@
 }
 
 .overlap_7 {
-    height: 1615px;
+    min-height: 1615px; /* Змініть на відповідну висоту, яка вам потрібна */
     left: 5%;
     position: relative;
     top: 205px;
     width: 100%;
 }
-
+.custom_height {
+    height: 200px ; /* !important допоможе перевертати інші стилі, які можуть впливати на висоту */
+    left: 5%;
+    position: relative;
+    top: 205px;
+    width: 100%;
+}
 .avatar_svgrepo_com_2 {
     height: 78px;
     left: 107px;
@@ -1332,7 +1351,7 @@
 }
 
 .view_16 {
-    height: 1615px;
+    min-height: 1615px; /* Змініть на відповідну висоту, яка вам потрібна */
     left: 0;
     position: absolute;
     top: 0;
@@ -1342,12 +1361,13 @@
 .overlap_8 {
     background-color: #ffffff;
     border-radius: 10px;
-    height: 1615px;
+    min-height: 1615px; /* Змініть на відповідну висоту, яка вам потрібна */
     position: relative;
     width: 100%;
 }
 
 .group_18 {
+    position: relative;
     left: 8%;
     top: 194px;
     width: 1052px;
@@ -1364,12 +1384,11 @@
 }
 
 .group_19 {
-    height: 113px;
+
     left: 0;
-    position: absolute;
     top: 0;
     width: 265px;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 .div_7 {
@@ -1418,20 +1437,16 @@
     color: #000000;
     font-family: "Montserrat", Helvetica;
     font-size: 36px;
+    position: relative;
+    top: -100px;
+    left: 110px;
     font-weight: 500;
-    height: 44px;
-    left: 132px;
     letter-spacing: 0;
     line-height: normal;
-    top: 23px;
 }
 
 .group_20 {
-    height: 88px;
-    left: 132px;
-    position: absolute;
-    top: 87px;
-    width: 920px;
+    height: 50px;
 }
 
 .text_wrapper_48 {
@@ -1439,31 +1454,29 @@
     font-family: "Montserrat", Helvetica;
     font-size: 36px;
     font-weight: 500;
-    height: 88px;
-    left: 58px;
+    left: 120px;
+    height:300px;
+    position: relative; 
     letter-spacing: 0;
     line-height: normal;
-    top: 0;
     width: 560px;
 }
 
 .img_3 {
-    height: 30px;
-    left: 0;
-    position: absolute;
-    top: 60px;
+    left: 120px;
+    position:absolute;
+    top: 80px;
     width: 30px;
-    content:url(img/plus.svg)
+    content: url(img/plus.svg)
 }
 
 .img_minus {
-    height: 30px;
-    left: 0;
+    left: 120px;
     position: absolute;
-    top: 60px;
     width: 30px;
     content: url(img/minus.svg)
 }
+
 .group_21 {
     height: 44px;
     left: 724px;
@@ -1479,6 +1492,7 @@
     top: 11px;
     width: 132px;
 }
+
 .image_star {
     height: 22px;
     left: 150px;
@@ -1486,16 +1500,18 @@
     top: 11px;
     width: 132px;
 }
+
 .text_wrapper_49 {
     color: #696969;
     font-family: "Montserrat", Helvetica;
-    font-size: 36px;
+    font-size: 24px;
     font-weight: 500;
+    position: absolute;
     height: 44px;
-    left: 300px;
+    left: 50%;
     letter-spacing: 0;
     line-height: normal;
-    top: 0;
+    top: 20px;
 }
 
 .text_wrapper_50 {
@@ -1503,11 +1519,10 @@
     font-family: "Montserrat", Helvetica;
     font-size: 36px;
     font-weight: 500;
-    height: 176px;
-    left: 132px;
+    position: absolute;
+    left: 170px;
     letter-spacing: 0;
     line-height: normal;
-    top: 403px;
     width: 515px;
 }
 
@@ -1523,12 +1538,12 @@
     color: #000000;
     font-family: "Montserrat", Helvetica;
     font-size: 36px;
+    position: absolute;
     font-weight: 500;
-    height: 88px;
-    left: 55px;
+    left: 170px;
+    top:75px;
     letter-spacing: 0;
     line-height: normal;
-    top: 50px;
     width: 460px;
 }
 
@@ -1662,7 +1677,12 @@
     position: relative;
     width: 442px;
 }
-
+.filled_star {
+    content: url(img/full_star.png)
+}
+.empty_star{
+    content:url(img/empty_star.png)
+}
 .text_wrapper_55 {
     color: #acacac;
     font-family: "Montserrat", Helvetica;
@@ -1760,6 +1780,7 @@
     width: 20px;
     content: url(img/plus.svg)
 }
+
 .img_4_minus {
     height: 20px;
     left: 0;
@@ -1931,7 +1952,7 @@
     position: absolute;
     top: 68px;
     width: 247px;
-    content:url(img/5_star.png)
+    content: url(img/5_star.png)
 }
 
 .frame_wrapper {
@@ -1945,7 +1966,6 @@
     border: none; /* Видаляє границю кнопки */
     background-size: cover; /* Заповнює кнопку зображенням */
     background-repeat: no-repeat; /* Забороняє повторення зображення */
-
 }
 
 .frame_2 {
@@ -1955,4 +1975,3 @@
     height: 64px;
     position: relative;
 }
-
