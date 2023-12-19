@@ -58,7 +58,13 @@ const ModelPage = () => {
         return cl.edit_image_invisible;
     }
     function addItemToCart() {
-        CartAPI.addItem(1, 1, 5, 1, 1, "FDM", `ABS`);
+        if (userInfo === undefined) {
+            alert("Ви маєте бути зареєстровані!")
+        }
+        else {
+            CartAPI.addItem(1, 1, 5, 1, 1, "FDM", `ABS`);
+            alert("Модель додано до кошика!");
+        }
        // alert('FEWf')
     }
     const handleRatingChange = (newRating) => {
